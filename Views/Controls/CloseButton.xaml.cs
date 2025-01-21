@@ -10,31 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace JNR.Views
+namespace JNR.Views.Controls
 {
     /// <summary>
-    /// Lógica de interacción para LoginView.xaml
+    /// Lógica de interacción para CloseButton.xaml
     /// </summary>
-    public partial class LoginView : Window
+    public partial class CloseButton : UserControl
     {
-        public LoginView()
+        public CloseButton()
         {
-             InitializeComponent();
-        }
-
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                DragMove();
-            }
-        }
-
-        private void btnMinimizar_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState= WindowState.Minimized;
+            InitializeComponent();
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)

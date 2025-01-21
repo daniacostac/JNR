@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 C:\Users\danie\source\repos\JNR\App.xaml
-21727942632
+4289377294
 
-5-133790484
+7914011476
 198-556154604
-MainWindow.xaml;Views\LoginView.xaml;
+MainWindow.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Login\LoginView.xaml;
 
 False
 
