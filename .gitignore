@@ -1,0 +1,9 @@
+# Ignore Visual Studio folders
+.vs/
+
+# Ignore system files
+Thumbs.db
+.DS_Store
+
+# Ignore log files
+*.log
