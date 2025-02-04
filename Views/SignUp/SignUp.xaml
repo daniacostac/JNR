@@ -176,7 +176,8 @@
                         <TextBox.Background>
                             <ImageBrush ImageSource="pack://application:,,,/Images/email-icon.png"
                                         Stretch="None"
-                                        AlignmentX="Left"/>
+                                        AlignmentX="Left"
+                                        />
                         </TextBox.Background>
 
                     </TextBox>

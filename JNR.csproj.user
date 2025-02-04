@@ -13,10 +13,13 @@
     <Compile Update="Views\Controls\MinimizeButton.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\Login\LoginView.xaml.cs">
+    <Compile Update="ViewModels\Login\LoginView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\SignUp\SignUp.xaml.cs">
+    <Compile Update="ViewModels\MainPage\MainPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ViewModels\SignUp\SignUp.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -31,6 +34,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Login\LoginView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\MainPage\MainPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\SignUp\SignUp.xaml">
