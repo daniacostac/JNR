@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JNR.Views.SignUp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,13 @@ namespace JNR.Views
         public LoginView()
         {
              InitializeComponent();
+        }
+
+        private void SignUp_Click(object sender, MouseButtonEventArgs e)
+        {
+            JNR.Views.SignUp.SignUp signUpWindow = new SignUp.SignUp();
+            signUpWindow.Show();
+            this.Close();  
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

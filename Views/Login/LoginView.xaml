@@ -225,6 +225,7 @@
                                FontFamily="Fonts/#Dosis"
                                Margin="10, 0, 0, 0"
                                Cursor="Hand"
+                               MouseDown="SignUp_Click"
                                TextWrapping="Wrap"/>
                     </StackPanel>
                 </StackPanel>

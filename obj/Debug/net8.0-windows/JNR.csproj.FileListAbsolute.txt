@@ -26,3 +26,5 @@ C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\Views\Controls\Minimize
 C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\Views\Controls\CloseButton.baml
 C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\Views\Controls\MinimizeButton.baml
 C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\Views\SignUp\SignUp.g.cs
+C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\Views\SignUp\SignUp.baml

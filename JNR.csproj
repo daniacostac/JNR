@@ -10,12 +10,15 @@
 
   <ItemGroup>
     <None Remove="Images\bg.jpg" />
+    <None Remove="Images\email-icon.png" />
+    <None Remove="Images\email.png" />
     <None Remove="Images\key-icon.png" />
     <None Remove="Images\logo.png" />
     <None Remove="Images\user-icon.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\email-icon.png" />
     <Resource Include="Images\key-icon.png" />
     <Resource Include="Images\logo.png" />
   </ItemGroup>
