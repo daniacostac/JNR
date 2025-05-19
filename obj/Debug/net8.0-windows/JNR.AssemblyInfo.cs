@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("JNR")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+687b71f04c18b8839c07aec27d13d0bcc4c1d999")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ea1a85cbe56c17d183d17e63ac0a34916f01177c")]
 [assembly: System.Reflection.AssemblyProductAttribute("JNR")]
 [assembly: System.Reflection.AssemblyTitleAttribute("JNR")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
