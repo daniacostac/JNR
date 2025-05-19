@@ -27,10 +27,19 @@
     <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Themes\MainButtonTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\SearchBoxStyle.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Controls\CloseButton.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Controls\MinimizeButton.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Controls\starRatingSampler.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Login\LoginView.xaml">

@@ -9,16 +9,36 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\add_circle.png" />
+    <None Remove="Images\atcqPlaceHolder.jpg" />
     <None Remove="Images\bg.jpg" />
     <None Remove="Images\email-icon.png" />
     <None Remove="Images\email.png" />
+    <None Remove="Images\folder.png" />
+    <None Remove="Images\headphones.png" />
     <None Remove="Images\key-icon.png" />
+    <None Remove="Images\list.png" />
     <None Remove="Images\logo.png" />
+    <None Remove="Images\magdalenaPlaceHolder.jpg" />
+    <None Remove="Images\musica.png" />
+    <None Remove="Images\pinkfloydPlaceHolder.jfif" />
     <None Remove="Images\user-icon.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Images\list.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\add_circle.png" />
+    <Resource Include="Images\atcqPlaceHolder.jpg" />
     <Resource Include="Images\email-icon.png" />
+    <Resource Include="Images\folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\headphones.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\key-icon.png" />
     <Resource Include="Images\logo.png" />
   </ItemGroup>
@@ -29,6 +49,11 @@
 
   <ItemGroup>
     <Resource Include="Images\bg.jpg" />
+    <Resource Include="Images\magdalenaPlaceHolder.jpg" />
+    <Resource Include="Images\musica.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\pinkfloydPlaceHolder.jfif" />
     <Resource Include="Images\user-icon.png" />
   </ItemGroup>
 

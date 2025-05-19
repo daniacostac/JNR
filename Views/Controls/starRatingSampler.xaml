@@ -1,0 +1,58 @@
+﻿<Window x:Class="starRatingSampler.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="starRatingSampler" Height="200" Width="300">
+    <Grid>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <!-- Star 1 -->
+            <Grid x:Name="Star1Grid" Width="30" Height="30">
+                <Path x:Name="Star1Left" Data="M12,2 L13,17 6,21 8,14 2,9 9,9 Z"
+                      Fill="Gray" Stroke="Transparent" StrokeThickness="1"
+                      MouseEnter="Star_MouseEnter" MouseLeave="Star_MouseLeave" MouseLeftButtonDown="Star_MouseLeftButtonDown"/>
+                <Path x:Name="Star1Right" Data="M12,2 L15,9 22,9 16,14 18,21 12,17 Z"
+                      Fill="Gray" Stroke="Transparent" StrokeThickness="1"
+                      MouseEnter="Star_MouseEnter" MouseLeave="Star_MouseLeave" MouseLeftButtonDown="Star_MouseLeftButtonDown"/>
+            </Grid>
+
+            <!-- Star 2 -->
+            <Grid x:Name="Star2Grid" Width="30" Height="30">
+                <Path x:Name="Star2Left" Data="M12,2 L13,17 6,21 8,14 2,9 9,9 Z"
+                      Fill="Gray" Stroke="Transparent" StrokeThickness="1"
+                      MouseEnter="Star_MouseEnter" MouseLeave="Star_MouseLeave" MouseLeftButtonDown="Star_MouseLeftButtonDown"/>
+                <Path x:Name="Star2Right" Data="M12,2 L15,9 22,9 16,14 18,21 12,17 Z"
+                      Fill="Gray" Stroke="Transparent" StrokeThickness="1"
+                      MouseEnter="Star_MouseEnter" MouseLeave="Star_MouseLeave" MouseLeftButtonDown="Star_MouseLeftButtonDown"/>
+            </Grid>
+
+            <!-- Star 3 -->
+            <Grid x:Name="Star3Grid" Width="30" Height="30">
+                <Path x:Name="Star3Left" Data="M12,2 L13,17 6,21 8,14 2,9 9,9 Z"
+                      Fill="Gray" Stroke="Transparent" StrokeThickness="1"
+                      MouseEnter="Star_MouseEnter" MouseLeave="Star_MouseLeave" MouseLeftButtonDown="Star_MouseLeftButtonDown"/>
+                <Path x:Name="Star3Right" Data="M12,2 L15,9 22,9 16,14 18,21 12,17 Z"
+                      Fill="Gray" Stroke="Transparent" StrokeThickness="1"
+                      MouseEnter="Star_MouseEnter" MouseLeave="Star_MouseLeave" MouseLeftButtonDown="Star_MouseLeftButtonDown"/>
+            </Grid>
+
+            <!-- Star 4 -->
+            <Grid x:Name="Star4Grid" Width="30" Height="30">
+                <Path x:Name="Star4Left" Data="M12,2 L13,17 6,21 8,14 2,9 9,9 Z"
+                      Fill="Gray" Stroke="Transparent" StrokeThickness="1"
+                      MouseEnter="Star_MouseEnter" MouseLeave="Star_MouseLeave" MouseLeftButtonDown="Star_MouseLeftButtonDown"/>
+                <Path x:Name="Star4Right" Data="M12,2 L15,9 22,9 16,14 18,21 12,17 Z"
+                      Fill="Gray" Stroke="Transparent" StrokeThickness="1"
+                      MouseEnter="Star_MouseEnter" MouseLeave="Star_MouseLeave" MouseLeftButtonDown="Star_MouseLeftButtonDown"/>
+            </Grid>
+
+            <!-- Star 5 -->
+            <Grid x:Name="Star5Grid" Width="30" Height="30">
+                <Path x:Name="Star5Left" Data="M12,2 L12,17 6,21 8,14 2,9 9,9 Z"
+                      Fill="Gray" Stroke="Transparent" StrokeThickness="1"
+                      MouseEnter="Star_MouseEnter" MouseLeave="Star_MouseLeave" MouseLeftButtonDown="Star_MouseLeftButtonDown"/>
+                <Path x:Name="Star5Right" Data="M12,2 L15,9 22,9 16,14 18,21 12,17 Z"
+                      Fill="Gray" Stroke="Transparent" StrokeThickness="1"
+                      MouseEnter="Star_MouseEnter" MouseLeave="Star_MouseLeave" MouseLeftButtonDown="Star_MouseLeftButtonDown"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>
