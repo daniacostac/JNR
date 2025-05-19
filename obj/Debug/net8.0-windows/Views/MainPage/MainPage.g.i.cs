@@ -54,7 +54,7 @@ namespace JNR.Views.MainPage {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/JNR;V1.0.0.0;component/views/mainpage/mainpage.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/JNR;component/views/mainpage/mainpage.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\Views\MainPage\MainPage.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

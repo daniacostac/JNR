@@ -4,9 +4,222 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JNR.Views"
+        xmlns:controls="clr-namespace:JNR.Views.Controls"
+        xmlns:models="clr-namespace:JNR.Models"
         mc:Ignorable="d"
-        Title="Overview" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Album Overview - JNR"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowState="Normal">
+
+    <Window.Resources>
+        <FontFamily x:Key="DefaultFont">Segoe UI</FontFamily>
+        <FontFamily x:Key="TitleFont">/Fonts/#Dosis</FontFamily>
+        <SolidColorBrush x:Key="LightTextColor" Color="#E0E0E0"/>
+        <SolidColorBrush x:Key="MediumTextColor" Color="#B0B0B0"/>
+        <SolidColorBrush x:Key="DarkTextColor" Color="#808080"/>
+        <SolidColorBrush x:Key="AccentColorYellow" Color="#FFD700"/>
+        <SolidColorBrush x:Key="PanelBackgroundColor" Color="#1A2035"/>
+        <!-- Slightly lighter than main bg -->
+
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
+            <Setter Property="Foreground" Value="{StaticResource LightTextColor}"/>
+        </Style>
+
+        <Style x:Key="LabelTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource MediumTextColor}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+        </Style>
+
+        <Style x:Key="ValueTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource LightTextColor}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="ActionButtonTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource LightTextColor}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,15,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="12" Background="Transparent">
+        <Border CornerRadius="10" BorderThickness="1" Opacity="1">
+            <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#462AD8" Offset="0"/>
+                    <GradientStop Color="#DA34A3" Offset="0.75"/>
+                    <GradientStop Color="#8A16C1" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                    <GradientStop Color="#100E1E" Offset="0"/>
+                    <!-- Darker base like image -->
+                    <GradientStop Color="#141228" Offset="1"/>
+                    <!-- Slightly different dark tone -->
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Viewbox Stretch="Uniform">
+                <Grid Width="1034" Height="650">
+                    <!-- Approximate dimensions from image for base scaling -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Overview" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" FontWeight="Bold" FontSize="22" HorizontalAlignment="Center" Foreground="{StaticResource LightTextColor}" FontFamily="{StaticResource TitleFont}"/>
+
+                    <Grid Grid.Row="0" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="10"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" CornerRadius="15" Background="#21212F" Margin="10,5,10,5" VerticalAlignment="Center" HorizontalAlignment="Right" MaxWidth="250">
+                            <TextBox Background="Transparent" BorderThickness="0" Foreground="{StaticResource LightTextColor}" FontSize="12" VerticalAlignment="Top" Padding="30,5,10,5" Text="Search..." Style="{StaticResource SearchTextBoxStyle}">
+                                <TextBox.Resources>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="CornerRadius" Value="15"/>
+                                    </Style>
+                                </TextBox.Resources>
+                            </TextBox>
+                        </Border>
+                        <!-- Search Icon (overlayed or part of style if SearchTextBoxStyle supports it) -->
+                        <Path Data="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" 
+                              Fill="{StaticResource MediumTextColor}" Width="12" Height="12" Stretch="Uniform"
+                              VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,235,0" IsHitTestVisible="False" Grid.Column="0"/>
+
+                      
+                    </Grid>
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,20,0,0">
+                        <RadioButton Content="My Albums" IsChecked="True" Height="50" Tag="/Images/folder.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="Genres" Height="50" Tag="/Images/headphones.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="Charts" Tag="/Images/list.png" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="Discover" Tag="/Images/musica.png" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="About" Height="50" Tag="/Images/about-icon.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="Settings" Height="50" Tag="/Images/settings-icon.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="Links" Height="50" Tag="/Images/links-icon.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}"/>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <!-- Art + Tracklist -->
+                                <ColumnDefinition Width="*"/>
+                                <!-- Main Details -->
+                                <ColumnDefinition Width="250"/>
+                                <!-- Description Panel -->
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Column 0: Album Art & Tracklist -->
+                            <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                                <Image Source="/Images/pinkfloyd_animals.jpg" Width="250" Height="250" Stretch="Uniform" Margin="0,0,0,20"/>
+                                <TextBlock Text="Tracklist" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource LightTextColor}" Margin="0,0,0,5"/>
+                                <Border BorderBrush="{StaticResource DarkTextColor}" BorderThickness="0,0,0,1" Margin="0,0,0,10"/>
+                                <ItemsControl ItemsSource="{Binding AlbumTracks}" Foreground="{StaticResource MediumTextColor}" FontSize="13">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Margin="0,2">
+                                                <Run Text="{Binding Number}" FontWeight="Normal"/>
+                                                <Run Text=" - "/>
+                                                <Run Text="{Binding Title}"/>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                    <!-- Sample Data (Remove if binding from code-behind/ViewModel) -->
+                                   
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <!-- Column 1: Main Album Details -->
+                            <StackPanel Grid.Column="1" Margin="0,0,20,0">
+                                <TextBlock Text="Animals - Pink Floyd" FontSize="28" FontWeight="Bold" FontFamily="{StaticResource TitleFont}" Foreground="{StaticResource LightTextColor}" Margin="0,0,0,20"/>
+
+                                <Grid Margin="0,0,0,15">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Genre" Style="{StaticResource LabelTextStyle}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Progressive Rock, Art Rock" Style="{StaticResource ValueTextStyle}"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Released" Style="{StaticResource LabelTextStyle}" Margin="0,5,10,5"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="21 January 1977" Style="{StaticResource ValueTextStyle}" Margin="0,5,0,5"/>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Language" Style="{StaticResource LabelTextStyle}" Margin="0,0,10,5"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="English" Style="{StaticResource ValueTextStyle}" Margin="0,0,0,5"/>
+
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Rating" Style="{StaticResource LabelTextStyle}" Margin="0,5,10,5"/>
+                                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5,0,5">
+                                        <TextBlock Text="★★★★" Foreground="{StaticResource AccentColorYellow}" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBlock Text="☆" Foreground="{StaticResource AccentColorYellow}" FontSize="18" VerticalAlignment="Center" Opacity="0.5"/>
+                                        <!-- Half star look -->
+                                        <TextBlock Text="4.56 / 5.00" Foreground="{StaticResource LightTextColor}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Border BorderBrush="{StaticResource DarkTextColor}" BorderThickness="0,0,0,1" Margin="0,10,0,15"/>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                                    <TextBlock Style="{StaticResource ActionButtonTextStyle}"><Run Text="Rate " FontWeight="Bold"/><Run Text="★★★★★"/></TextBlock>
+                                    <TextBlock Style="{StaticResource ActionButtonTextStyle}"><Run Text="Share "/><Run Text="🔗" FontSize="14"/></TextBlock>
+                                    <TextBlock Style="{StaticResource ActionButtonTextStyle}"><Run Text="Add to Favorites "/><Run Text="⊕" FontSize="14"/></TextBlock>
+                                </StackPanel>
+
+                                <TextBlock Text="Similar" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource LightTextColor}" Margin="0,10,0,10"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel Margin="0,0,15,0" HorizontalAlignment="Center">
+                                        <Image Source="/Images/magdalenaPlaceHolder.jpg" Width="80" Height="80" Stretch="Uniform"/>
+                                        <TextBlock Text="Previous" Foreground="{StaticResource MediumTextColor}" FontSize="11" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                        <TextBlock Text="««" Foreground="{StaticResource MediumTextColor}" FontSize="14" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,15,0" HorizontalAlignment="Center">
+                                        <Image Source="/Images/atcqPlaceHolder.jpg" Width="80" Height="80" Stretch="Uniform"/>
+                                        <TextBlock Text="Next" Foreground="{StaticResource MediumTextColor}" FontSize="11" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                        <TextBlock Text="»»" Foreground="{StaticResource MediumTextColor}" FontSize="14" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,0,0" HorizontalAlignment="Center">
+                                        <Image Source="/Images/pinkFloydPlaceHolder.jfif" Width="80" Height="80" Stretch="Uniform"/>
+                                        <TextBlock Text="Most Popular" Foreground="{StaticResource MediumTextColor}" FontSize="11" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Column 2: Description Panel -->
+                            <Border Grid.Column="2" Background="{StaticResource PanelBackgroundColor}" CornerRadius="8" Padding="15">
+                                <StackPanel>
+                                    <Image Source="/Images/globe_icon.png" Width="32" Height="32" HorizontalAlignment="Left" Margin="0,0,0,50"/>
+                                    <TextBlock Text="Animals is the tenth studio album by the English rock band Pink Floyd, released on 21 January 1977, [2] by Harvest Records and Columbia Records. Animals reached number 2 in the UK and number 3 in the US, and is considered by many to be one of Pink Floyd's greatest albums."
+                                               TextWrapping="Wrap" LineHeight="18" Foreground="{StaticResource MediumTextColor}" FontSize="20" Height="385"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </Viewbox>
+        </Border>
+    </Border>
 </Window>

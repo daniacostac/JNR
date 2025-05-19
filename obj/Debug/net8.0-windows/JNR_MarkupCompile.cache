@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 C:\Users\danie\source\repos\JNR\App.xaml
-91324285072
-1-703687356
-10925095642
-198-556154604
-MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\SignUp\SignUp.xaml;
+10518369817
+2-667880254
+12-268216046
+1981839832580
+MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\Overview.xaml;Views\SignUp\SignUp.xaml;
 
 False
 

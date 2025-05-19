@@ -15,6 +15,7 @@
     <None Remove="Images\email-icon.png" />
     <None Remove="Images\email.png" />
     <None Remove="Images\folder.png" />
+    <None Remove="Images\globe_icon.png" />
     <None Remove="Images\headphones.png" />
     <None Remove="Images\key-icon.png" />
     <None Remove="Images\list.png" />
@@ -22,11 +23,14 @@
     <None Remove="Images\magdalenaPlaceHolder.jpg" />
     <None Remove="Images\musica.png" />
     <None Remove="Images\pinkfloydPlaceHolder.jfif" />
+    <None Remove="Images\pinkfloyd_animals.jpg" />
     <None Remove="Images\user-icon.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Images\globe_icon.png" />
     <Content Include="Images\list.png" />
+    <Resource Include="Images\pinkfloyd_animals.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,10 +45,6 @@
     </Resource>
     <Resource Include="Images\key-icon.png" />
     <Resource Include="Images\logo.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>

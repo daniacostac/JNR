@@ -86,7 +86,7 @@ namespace JNR.Views.SignUp {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/JNR;V1.0.0.0;component/views/signup/signup.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/JNR;component/views/signup/signup.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\Views\SignUp\SignUp.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

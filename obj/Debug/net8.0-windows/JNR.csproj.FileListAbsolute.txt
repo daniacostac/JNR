@@ -36,3 +36,5 @@ C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\Themes\SearchBoxStyle.b
 C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\Views\Controls\starRatingSampler.baml
 C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\Views\Controls\starRatingSampler.g.cs
 C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\JNR_Content.g.cs
+C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\Views\Overview.g.cs
+C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\Views\Overview.baml
