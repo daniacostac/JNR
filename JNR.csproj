@@ -86,4 +86,10 @@
     <Resource Include="Images\user-icon.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Models\DiscogModels\DiscogModels.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
 </Project>

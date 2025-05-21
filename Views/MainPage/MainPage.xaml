@@ -11,6 +11,7 @@
         Background="Transparent"
         AllowsTransparency="True"
         Title="MainPage"
+        WindowStartupLocation="CenterScreen"
         WindowState="Normal">
 
     <Window.Resources>

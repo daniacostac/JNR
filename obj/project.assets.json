@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\DanielAcosta\\Desktop\\JNR\\JNR-master\\JNR.csproj",
+      "projectUniqueName": "C:\\Users\\DanielAcosta\\Documents\\GitHub\\JNR\\JNR.csproj",
       "projectName": "JNR",
-      "projectPath": "C:\\Users\\DanielAcosta\\Desktop\\JNR\\JNR-master\\JNR.csproj",
+      "projectPath": "C:\\Users\\DanielAcosta\\Documents\\GitHub\\JNR\\JNR.csproj",
       "packagesPath": "C:\\Users\\DanielAcosta\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\DanielAcosta\\Desktop\\JNR\\JNR-master\\obj\\",
+      "outputPath": "C:\\Users\\DanielAcosta\\Documents\\GitHub\\JNR\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

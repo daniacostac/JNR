@@ -87,3 +87,54 @@ C:\Users\DanielAcosta\Desktop\JNR\JNR-master\bin\Debug\net8.0-windows\Images\Sid
 C:\Users\DanielAcosta\Desktop\JNR\JNR-master\bin\Debug\net8.0-windows\Images\SideBarIcons\folder-user.png
 C:\Users\DanielAcosta\Desktop\JNR\JNR-master\obj\Debug\net8.0-windows\Views\My Albums\MyAlbums.g.cs
 C:\Users\DanielAcosta\Desktop\JNR\JNR-master\obj\Debug\net8.0-windows\Views\My Albums\MyAlbums.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Images\SideBarIcons\folder-user.png
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\JNR.exe
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Images\SideBarIcons\rows-plus-top.png
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Images\globe_icon.png
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Images\search.png
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Images\SideBarIcons\gear.png
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Images\SideBarIcons\link.png
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Images\SideBarIcons\question.png
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Images\SideBarIcons\radio.png
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\JNR.dll.config
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\JNR.deps.json
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\JNR.runtimeconfig.json
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\JNR.dll
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\JNR.pdb
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Themes\MainButtonTheme.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Themes\SearchBoxStyle.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Controls\starRatingSampler.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\MainWindow.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Controls\CloseButton.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Controls\MinimizeButton.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Controls\starRatingSampler.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Login\LoginView.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\MainPage\MainPage.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\My Albums\MyAlbums.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Overview.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\SignUp\SignUp.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR_Content.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR_MarkupCompile.cache
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR_MarkupCompile.lref
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\App.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\MainWindow.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Controls\CloseButton.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Controls\MinimizeButton.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Login\LoginView.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\MainPage\MainPage.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\My Albums\MyAlbums.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Overview.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\SignUp\SignUp.baml
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR.g.resources
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR.AssemblyInfoInputs.cache
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR.AssemblyInfo.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR.csproj.CoreCompileInputs.cache
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR.sourcelink.json
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR.dll
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\refint\JNR.dll
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR.pdb
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\JNR.genruntimeconfig.cache
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\ref\JNR.dll

@@ -53,7 +53,7 @@ namespace JNR.Views.My_Albums {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/JNR;V1.0.0.0;component/views/my%20albums/myalbums.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/JNR;component/views/my%20albums/myalbums.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\Views\My Albums\MyAlbums.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

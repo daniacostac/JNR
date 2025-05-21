@@ -61,7 +61,7 @@ namespace JNR.Views {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/JNR;V1.0.0.0;component/views/overview.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/JNR;component/views/overview.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Views\Overview.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
