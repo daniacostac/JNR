@@ -13,9 +13,40 @@
         Title="MainPage"
         WindowState="Normal">
 
-    <!-- Viewbox makes everything scale dynamically -->
+    <Window.Resources>
+        <Style TargetType="ListBoxItem" x:Key="NoHighlightListBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Viewbox Stretch="Uniform">
-        <Border CornerRadius="12" Background="Transparent">
+        <Border CornerRadius="10" Background="Transparent">
             <Border CornerRadius="10"
                     BorderThickness="1"
                     Opacity="1">
@@ -29,16 +60,16 @@
 
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-                        <GradientStop Color="#FF100E1E" Offset="0"/>
-                        <GradientStop Color="#1B1448" Offset="1"/>
+                        <GradientStop Color="#100E1E" Offset="0"/>
+                        <GradientStop Color="#141228" Offset="1"/>
                     </LinearGradientBrush>
                 </Border.Background>
 
                 <Grid Width="800" Height="450">
-                    <!-- Set a base size -->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130"/>
                         <ColumnDefinition Width="470"/>
+
                         <ColumnDefinition Width="200"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
@@ -48,27 +79,32 @@
                         <RowDefinition Height="375"/>
                     </Grid.RowDefinitions>
 
-                    <Border Grid.Column="1"
-                            Grid.Row="0"
-                            CornerRadius="20"
-                            Background="#212121"
-                            Margin="5, 5, 5, 5"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Left"
-                            Width="350">
-                        <Grid>
-                            <TextBox Background="Transparent"
+
+                    <DockPanel Grid.Column="1" Margin="5,0,76,0" VerticalAlignment="Center" LastChildFill="True">
+
+                        <Border CornerRadius="15" Background="#21212F" VerticalAlignment="Center" Height="30">
+                            <TextBox x:Name="txtSearchAlbum"
+                                     Tag="Enter album or artist name..."
+                                     Text=""
+                            
+                                Background="Transparent"
                                      BorderThickness="0"
                                      Foreground="White"
-                                     FontSize="10"
+                                     FontSize="8"
                                      VerticalAlignment="Center"
-                                     Padding="10, 5"
-                                     Text="Search..."
-                                     Style="{StaticResource SearchTextBoxStyle}"/>
-                        </Grid>
-                    </Border>
+                                     Padding="10,5"
+                                     Style="{StaticResource SearchTextBoxStyle}">
+                                <TextBox.Resources>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="CornerRadius" Value="15"/>
+                                    </Style>
+                                </TextBox.Resources>
+                            </TextBox>
+                        </Border>
+                    </DockPanel>
 
-                    <TextBlock Text="Welcome"
+
+                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Welcome"
                                VerticalAlignment="Center"
                                FontWeight="Light"
                                HorizontalAlignment="Center"
@@ -77,512 +113,169 @@
                                FontSize="20"
                                FontFamily="/Fonts/#Dosis"/>
 
-                    <StackPanel Grid.Row="1">
-                        <RadioButton Content="My Albums"
-                                     Height="50"
-                                     Tag="/Images/folder.png"
-                                     Foreground="White"
-                                     FontSize="12"
-                                     Style="{StaticResource MainButtonTheme}"/>
 
-                        <RadioButton Content="Genres"
-                                     Height="50"
-                                     Foreground="White"
-                                     FontSize="12"
-                                     Tag="/Images/email-icon.png"
-                                     Style="{StaticResource MainButtonTheme}"/>
-
-                        <RadioButton Content="Charts"
-                                     Height="50"
-                                     Foreground="White"
-                                     FontSize="12"
-                                     Style="{StaticResource MainButtonTheme}"/>
-
-                        <RadioButton Content="Discover"
-                                     Height="50"
-                                     Foreground="White"
-                                     FontSize="12"
-                                     Style="{StaticResource MainButtonTheme}"/>
-
-
-                        <RadioButton Content="About"
-                                     Height="50"
-                                     Foreground="White"
-                                     FontSize="12"
-                                     Style="{StaticResource MainButtonTheme}"/>
-
-                        <RadioButton Content="Settings"
-                                     Height="50"
-                                     Foreground="White"
-                                     FontSize="12"
-                                     Style="{StaticResource MainButtonTheme}"/>
-
-                        <RadioButton Content="Links"
-                                     Height="50"
-                                     Foreground="White"
-                                     FontSize="12"
-                                     Style="{StaticResource MainButtonTheme}"/>
+                    <StackPanel Grid.Column="0" Grid.Row="1">
+                        <!-- MODIFIED LINE: Added Checked="MyAlbumsRadioButton_Checked" -->
+                        <RadioButton Content="My Albums" Height="50" Tag="/Images/folder.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Checked="MyAlbumsRadioButton_Checked"/>
+                        <RadioButton Content="Genres" Height="50" Tag="/Images/headphones.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="Charts" Height="50" Tag="/Images/list.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="About" Height="50" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="Settings" Height="50" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="Links" Height="50" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}"/>
                     </StackPanel>
 
 
-                    <!-- Darkened Box with Rounded Edges -->
-                    <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="1"
-                            Background="Transparent" Margin="0,0,0,-25">
-                        <Grid>
-                            <TextBlock Text="Popular Releases"
+                    <Border Grid.Column="1" Grid.Row="1" Background="Transparent" Margin="0,0,0,-25">
+
+                        <Grid Margin="10,0,10,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+
+                                <RowDefinition Height="*"/>
+
+                            </Grid.RowDefinitions>
+
+                            <TextBlock x:Name="lblResultsTitle"
+                                       Grid.Row="0"
+                                       Text="Search for anything!"
                                        Foreground="AliceBlue"
                                        FontSize="13"
                                        FontFamily="/Fonts/#Dosis"
                                        HorizontalAlignment="Left"
                                        VerticalAlignment="Top"
-                                       FontWeight="Bold"
+                                       FontWeight="Light"
                                        FontStyle="Italic"
-                                       Margin="15,15,0,0"/>
+                                       Margin="5,15,0,5"/>
 
-                            <!-- Integrated Scrollable Content from first code -->
-                            <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="0,0,0,0" 
-                                          Height="360"
-                                          VerticalAlignment="Bottom">
-                                <StackPanel Margin="0, 0, 0, 0"
-                                            VerticalAlignment="Top">
-                                    <!-- First Image and Description -->
-                                    <Border Background="#1b222e" Margin="10,5,10,5">
-                                        <StackPanel Orientation="Horizontal" Margin="10">
-                                            <Image Source="/Images/magdalenaPlaceHolder.jpg" Width="100" Height="100" Margin="0,0,10,0"/>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Imaginal Disk" 
-                                                           Foreground="White" 
-                                                           FontSize="14"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Artist: Magdalena Bay" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Genre: Synthpop" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Release Date: October 8, 2021" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           VerticalAlignment="Top" 
-                                                           FontWeight="ExtraLight" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
+
+                            <ListBox x:Name="searchResultsList"
+                                     Grid.Row="1"
+                                     ItemsSource="{Binding SearchResults}"
+                                     ItemContainerStyle="{StaticResource NoHighlightListBoxItem}"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     BorderBrush="Transparent" 
+                                     Background="#161823">
+                                <ListBox.Template>
+                                    <ControlTemplate TargetType="ListBox">
+                                        <Border x:Name="Bd"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="8" 
+                                                SnapsToDevicePixels="True"
+                                                ClipToBounds="True">
+                                            <ScrollViewer Padding="{TemplateBinding Padding}" Focusable="False">
+                                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                            </ScrollViewer>
+                                        </Border>
+                                    </ControlTemplate>
+                                </ListBox.Template>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+
+                                        <StackPanel Orientation="Horizontal" Margin="5" Background="Transparent"
+                                                    MouseLeftButtonUp="AlbumElement_Click" Cursor="Hand">
+                                            <Image Source="{Binding CoverArtUrl, FallbackValue='/Images/placeholder_album.png'}" 
+                                                   Width="60" Height="60" Stretch="Uniform" VerticalAlignment="Top"/>
+                                            <StackPanel Orientation="Vertical" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding AlbumName}"
+                                                           Foreground="White"
+                                                           FontWeight="Bold"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           MaxWidth="350"/>
+                                                <TextBlock Text="{Binding ArtistName}"
+                                                           Foreground="LightGray"
+                                                           FontSize="11"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           MaxWidth="350"
+                                                           Margin="0,2,0,0"/>
+                                                <TextBlock Foreground="DarkGray" 
+                                                           FontSize="10" 
+                                                           FontStyle="Italic"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           MaxWidth="350"
+                                                           Margin="0,2,0,0">
+
+                                                </TextBlock>
                                             </StackPanel>
                                         </StackPanel>
-                                    </Border>
-
-                                    <!-- Second Image and Description -->
-                                    <Border Background="#1b222e" Margin="10,5,10,5" >
-                                        <StackPanel Orientation="Horizontal" Margin="10">
-                                            <Image Source="/Images/pinkfloydPlaceHolder.jfif" Width="100" Height="100" Margin="0,0,10,0"/>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Wish You Were Here" 
-                                                           Foreground="White" 
-                                                           FontSize="14"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Artist: Pink Floyd" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           VerticalAlignment="Top"
-                                                           FontWeight="ExtraLight"
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Genre: Prog. Rock, Psychedelic Rock" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           VerticalAlignment="Top"
-                                                           FontWeight="ExtraLight"
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Release Date: October 8, 1975" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           VerticalAlignment="Top"
-                                                           FontWeight="ExtraLight"
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Third Image and Description -->
-                                    <Border Background="#1b222e" Margin="10,5,10,5">
-                                        <StackPanel Orientation="Horizontal" Margin="10">
-                                            <Image Source="/Images/atcqPlaceHolder.jpg" Width="100" Height="100" Margin="0,0,10,0"/>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Midnight Marauders" 
-                                                           Foreground="White" 
-                                                           FontSize="14"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Artist: A Tribe Called Quest" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Genre: Conscious Hip-Hop, Boom-Bap" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Release Date: October 8, 1993" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border Background="#1b222e" Margin="10,5,10,5">
-                                        <StackPanel Orientation="Horizontal" Margin="10">
-                                            <Image Source="/Images/atcqPlaceHolder.jpg" Width="100" Height="100" Margin="0,0,10,0"/>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Midnight Marauders" 
-                                                           Foreground="White" 
-                                                           FontSize="14"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Artist: A Tribe Called Quest" 
-                                                           Foreground="White" 
-                                                           FontSize="14"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Genre: Conscious Hip-Hop, Boom-Bap" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Release Date: October 8, 1993" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border Background="#1b222e" Margin="10,5,10,5">
-                                        <StackPanel Orientation="Horizontal" Margin="10">
-                                            <Image Source="/Images/atcqPlaceHolder.jpg" Width="100" Height="100" Margin="0,0,10,0"/>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Midnight Marauders" 
-                                                           Foreground="White" 
-                                                           FontSize="14"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Artist: A Tribe Called Quest" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Genre: Conscious Hip-Hop, Boom-Bap" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Release Date: October 8, 1993" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border Background="#1b222e" Margin="10,5,10,5">
-                                        <StackPanel Orientation="Horizontal" Margin="10">
-                                            <Image Source="/Images/atcqPlaceHolder.jpg" Width="100" Height="100" Margin="0,0,10,0"/>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Midnight Marauders" 
-                                                           Foreground="White" 
-                                                           FontSize="14"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Artist: A Tribe Called Quest" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Genre: Conscious Hip-Hop, Boom-Bap" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Release Date: October 8, 1993" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border Background="#1b222e" Margin="10,5,10,5">
-                                        <StackPanel Orientation="Horizontal" Margin="10">
-                                            <Image Source="/Images/atcqPlaceHolder.jpg" Width="100" Height="100" Margin="0,0,10,0"/>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="Midnight Marauders" 
-                                                           Foreground="White" 
-                                                           FontSize="14"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Artist: A Tribe Called Quest" 
-                                                           Foreground="White" 
-                                                           FontWeight="ExtraLight"
-                                                           FontSize="12"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Genre: Conscious Hip-Hop, Boom-Bap" 
-                                                           Foreground="White" 
-                                                           FontSize="12"
-                                                           FontWeight="ExtraLight"  
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                                <TextBlock Text="Release Date: October 8, 1993" 
-                                                           Foreground="White" 
-                                                           FontSize="14"
-                                                           VerticalAlignment="Top" 
-                                                           TextWrapping="Wrap" 
-                                                           Width="320"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Repeat for more albums as needed -->
-                                </StackPanel>
-                            </ScrollViewer>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
                         </Grid>
                     </Border>
 
-                    <!-- Recent Releases Section -->
+
+
+
                     <Border Grid.Column="2" Grid.Row="1"
                             Background="Transparent"
                             Margin="0 ,0 ,0 , -25"
                             VerticalAlignment="Bottom"
                             Height="340">
-                        <ScrollViewer VerticalScrollBarVisibility="Hidden"
-                                      Height="340"
-                                      VerticalAlignment="Top">
-                            <StackPanel>
-                                <!-- Recent Release 1 -->
-                                <Border Background="Transparent" Margin="0,5,0,5">
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <Image Source="/Images/pinkfloydPlaceHolder.jfif" Width="50" Height="50" Margin="0,0,10,0"/>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBox Text="Record Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                            <TextBox Text="Artist Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Recent Release 2 -->
-                                <Border Background="Transparent" Margin="0,5,0,5">
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <Image Source="/Images/magdalenaPlaceHolder.jpg" Width="50" Height="50" Margin="0,0,10,0"/>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBox Text="Record Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                            <TextBox Text="Artist Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Recent Release 3 -->
-                                <Border Background="Transparent" Margin="0,5,0,5">
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <Image Source="/Images/atcqPlaceHolder.jpg" Width="50" Height="50" Margin="0,0,10,0"/>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBox Text="Record Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                            <TextBox Text="Artist Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Recent Release 4 -->
-                                <Border Background="Transparent" Margin="0,5,0,5">
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <Image Source="/Images/pinkfloydPlaceHolder.jfif" Width="50" Height="50" Margin="0,0,10,0"/>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBox Text="Record Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                            <TextBox Text="Artist Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Background="Transparent" Margin="0,5,0,5">
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <Image Source="/Images/magdalenaPlaceHolder.jpg" Width="50" Height="50" Margin="0,0,10,0"/>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBox Text="Record Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                            <TextBox Text="Artist Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Background="Transparent" Margin="0,5,0,5">
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <Image Source="/Images/magdalenaPlaceHolder.jpg" Width="50" Height="50" Margin="0,0,10,0"/>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBox Text="Record Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                            <TextBox Text="Artist Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Background="Transparent" Margin="0,5,0,5">
-                                    <StackPanel Orientation="Horizontal" Margin="10">
-                                        <Image Source="/Images/atcqPlaceHolder.jpg" Width="50" Height="50" Margin="0,0,10,0"/>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBox Text="Record Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                            <TextBox Text="Artist Name"
-                                                     Foreground="White"
-                                                     Background="Transparent"
-                                                     BorderThickness="0"
-                                                     FontSize="12"
-                                                     Width="120"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-
-
-
-                                <!-- Add more recent releases as needed -->
-                            </StackPanel>
-                        </ScrollViewer>
                     </Border>
-                    <Image Margin="10,12,95,338"
+                    <Button Grid.Column="1"
+                            Margin="370,18,85,17"
+                            Width="15"
+                            Height="15"
+                            Click="btnSearchAlbum_Click"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0"
+                            Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <ContentPresenter/>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <Image Source="/Images/search.png" Stretch="Fill"/>
+                    </Button>
+                    <Image Margin="10,14,100,341"
                            Grid.Row="1" 
-                           Height="25"
-                           Width="25"
-                           Source="/Images/folder.png" 
+                           Height="20"
+                           Width="20"
+                           Source="/Images/SideBarIcons/folder-user.png" 
                            Stretch="Fill"/>
-                    <Image Margin="10,61,95,289"
-                           Source="/Images/headphones.png"
-                           Height="25"
-                           Width="25"
-                           Stretch="Fill" 
-                           Grid.Row="1"/>
-                    <Image Margin="10,110,95,235" 
-                           Height="30"
-                           Width="25"
-                           Source="/Images/list.png"
-                           Stretch="Fill" 
-                           Grid.Row="1"/>
-                    <Image Margin="10,162,95,187" 
-                           Height="25"
-                           Width="25"
-                           Source="/Images/musica.png"
-                           Stretch="Fill"
-                           Grid.Row="1"/>
+                    <Image Margin="10,64,100,291" 
+                           Grid.Row="1" 
+                           Source="/Images/SideBarIcons/radio.png" 
+                           Height="20"
+                           Width="20"
+                           Stretch="Fill"/>
+                    <Image Margin="10,113,100,242"
+                           Grid.Row="1" 
+                           Source="/Images/SideBarIcons/rows-plus-top.png" 
+                           Width="20"
+                           Height="20"
+                           Stretch="Fill"/>
+                    <Image Margin="10,164,100,191" 
+                           Grid.Row="1" 
+                           Height="20"
+                           Width="20"
+                           Source="/Images/SideBarIcons/question.png" 
+                           Stretch="Fill"/>
+                    <Image Margin="10,214,100,141"
+                           Grid.Row="1" 
+                           Source="/Images/SideBarIcons/gear.png" 
+                           Height="20"
+                           Width="20"
+                           Stretch="Fill"/>
+                    <Image Margin="10,265,100,90" 
+                           Grid.Row="1" 
+                           Height="20"
+                           Width="20"
+                           Source="/Images/SideBarIcons/link.png"
+                           Stretch="Fill"/>
+                    <Image Margin="10,14,100,341"
+                        Grid.Row="1" 
+                        Source="/Images/SideBarIcons/folder-user.png"
+                        Height="20"
+                        Width="20"
+                        Stretch="Fill"/>
                 </Grid>
             </Border>
         </Border>
     </Viewbox>
 </Window>
+<!--====================-->

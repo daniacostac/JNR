@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\danie\source\repos\JNR\obj\Debug\net8.0-windows\
+C:\Users\DanielAcosta\Desktop\JNR\JNR-master\obj\Debug\net8.0-windows\
 JNR
 none
 false
-TRACE;DEBUG;NET;NET8_0;NETCOREAPP
-C:\Users\danie\source\repos\JNR\App.xaml
-10518369817
-2-667880254
-12-268216046
-1981839832580
-MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\Overview.xaml;Views\SignUp\SignUp.xaml;
+TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
+C:\Users\DanielAcosta\Desktop\JNR\JNR-master\App.xaml
+111602179374
+91234040475
+15-1522091031
+198-537775612
+MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\My Albums\MyAlbums.xaml;Views\Overview.xaml;Views\SignUp\SignUp.xaml;
 
 False
 

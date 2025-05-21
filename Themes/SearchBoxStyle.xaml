@@ -4,6 +4,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Foreground" Value="White"/>
+        <!-- Color for the actual typed text -->
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Padding" Value="10, 5"/>
@@ -13,11 +14,38 @@
                     <Border Background="{TemplateBinding Background}"
                             CornerRadius="10"
                             Padding="{TemplateBinding Padding}">
-                        <ScrollViewer x:Name="PART_ContentHost"/>
+                     
+                        <Grid>
+                        
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False" />
+                        
+                            <TextBlock x:Name="PlaceholderText"
+                                       Text="{TemplateBinding Tag}" 
+                                       Foreground="Gray"
+                                       VerticalAlignment="Center" 
+                                       HorizontalAlignment="Left" 
+                                       IsHitTestVisible="False" 
+                                       Visibility="Collapsed"/>
+                        </Grid>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Show placeholder if Text is empty AND TextBox is not focused -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Text" Value=""/>
+                                <Condition Property="IsKeyboardFocused" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible"/>
+                        </MultiTrigger>
+                        <!-- Optional: If you want placeholder to disappear immediately on focus even if empty -->
+                        <!--
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        -->
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-
 </ResourceDictionary>

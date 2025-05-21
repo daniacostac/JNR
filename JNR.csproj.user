@@ -22,6 +22,9 @@
     <Compile Update="ViewModels\SignUp\SignUp.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="ViewModels\My Albums\MyAlbums.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Overview.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

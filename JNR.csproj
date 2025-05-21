@@ -14,7 +14,6 @@
     <None Remove="Images\bg.jpg" />
     <None Remove="Images\email-icon.png" />
     <None Remove="Images\email.png" />
-    <None Remove="Images\folder.png" />
     <None Remove="Images\globe_icon.png" />
     <None Remove="Images\headphones.png" />
     <None Remove="Images\key-icon.png" />
@@ -24,12 +23,45 @@
     <None Remove="Images\musica.png" />
     <None Remove="Images\pinkfloydPlaceHolder.jfif" />
     <None Remove="Images\pinkfloyd_animals.jpg" />
+    <None Remove="Images\search.png" />
+    <None Remove="Images\SideBarIcons\folder-user.png" />
+    <None Remove="Images\SideBarIcons\gear.png" />
+    <None Remove="Images\SideBarIcons\link.png" />
+    <None Remove="Images\SideBarIcons\question.png" />
+    <None Remove="Images\SideBarIcons\radio.png" />
+    <None Remove="Images\SideBarIcons\rows-plus-top.png" />
     <None Remove="Images\user-icon.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Images\globe_icon.png" />
+    <Content Include="Images\SideBarIcons\folder-user.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\SideBarIcons\rows-plus-top.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\globe_icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Images\list.png" />
+    <Content Include="Images\search.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\SideBarIcons\gear.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\SideBarIcons\link.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\SideBarIcons\question.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\SideBarIcons\radio.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Resource Include="Images\pinkfloyd_animals.jpg" />
   </ItemGroup>
 
@@ -37,9 +69,6 @@
     <Resource Include="Images\add_circle.png" />
     <Resource Include="Images\atcqPlaceHolder.jpg" />
     <Resource Include="Images\email-icon.png" />
-    <Resource Include="Images\folder.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Images\headphones.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
