@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JNR.Views"
+        xmlns:converters="clr-namespace:JNR.Converters" 
         mc:Ignorable="d"
         Title="Album Overview - JNR"
         WindowStyle="None"
@@ -16,6 +17,9 @@
         Width="1050" Height="768">
 
     <Window.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
         <FontFamily x:Key="DefaultFont">Segoe UI</FontFamily>
         <FontFamily x:Key="TitleFont">/Fonts/#Dosis</FontFamily>
         <SolidColorBrush x:Key="LightTextColor" Color="#E0E0E0"/>
@@ -76,8 +80,6 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-
-
                     <TextBlock Text="Overview"
                                Grid.Column="0"
                                Grid.Row="0"
@@ -106,12 +108,11 @@
                                      BorderThickness="0"
                                      Foreground="{StaticResource LightTextColor}"
                                      FontSize="12"
-                                     VerticalAlignment="Top"
+                                     VerticalAlignment="Top" 
                                      Padding="10,5,10,5"
                                      Tag="Search..." 
-                                Text=""
-                                
-                                Style="{StaticResource SearchTextBoxStyle}">
+                                     Text=""
+                                     Style="{StaticResource SearchTextBoxStyle}">
                                 <TextBox.Resources>
                                     <Style TargetType="{x:Type Border}">
                                         <Setter Property="CornerRadius" Value="15"/>
@@ -141,14 +142,20 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
+                                <!-- Album Details + Similar -->
                                 <RowDefinition Height="Auto"/>
+                                <!-- Reviews -->
                             </Grid.RowDefinitions>
 
                             <Grid Grid.Row="0">
+                                <!-- Album Details + Similar -->
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
+                                    <!-- Cover + Tracklist -->
                                     <ColumnDefinition Width="*"/>
+                                    <!-- Info + Actions + Similar -->
                                     <ColumnDefinition Width="250"/>
+                                    <!-- Description Panel -->
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,20,0">
@@ -178,6 +185,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Margin="0,0,20,0">
+                                    <!-- Info + Actions + Similar -->
                                     <TextBlock Text="{Binding AlbumTitleAndArtist, TargetNullValue='Album Title - Artist'}"
                                                FontSize="28" FontWeight="Bold" FontFamily="{StaticResource TitleFont}"
                                                Foreground="{StaticResource LightTextColor}" Margin="0,0,0,20" TextWrapping="Wrap"/>
@@ -217,53 +225,48 @@
                                         <TextBlock Style="{StaticResource ActionButtonTextStyle}"><Run Text="Add to Favorites "/><Run Text="⊕" FontSize="14"/></TextBlock>
                                     </StackPanel>
 
-                                    <TextBlock Text="Similar" 
-                                               FontSize="16" 
-                                               FontWeight="SemiBold"
+                                    <!-- MODIFIED "Similar" Section to "Discography Navigator" -->
+                                    <TextBlock Text="Discography Navigator" 
+                                               FontSize="16" FontWeight="SemiBold"
                                                Foreground="{StaticResource LightTextColor}" 
                                                Margin="0,10,0,10"/>
-                                    <StackPanel Orientation="Horizontal" 
-                                                Margin="0,0,0,0">
-                                        <StackPanel Margin="0,0,15,0" 
-                                                    HorizontalAlignment="Center">
-                                            <Image Source="/Images/magdalenaPlaceHolder.jpg" 
-                                                   Width="80" 
-                                                   Height="80" 
-                                                   Stretch="Uniform"/>
-                                            <TextBlock Text="Previous"
-                                                       Foreground="{StaticResource MediumTextColor}"
-                                                       FontSize="11"
-                                                       HorizontalAlignment="Center"
-                                                       Margin="0,2,0,0"/>
-                                            <TextBlock Text="««" 
-                                                       Foreground="{StaticResource MediumTextColor}"
-                                                       FontSize="14" 
-                                                       HorizontalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                                        <!-- Previous Album -->
+                                        <StackPanel Margin="0,0,15,0" HorizontalAlignment="Center"
+                                                    Visibility="{Binding PreviousAlbum, Converter={StaticResource NullToVisibilityConverter}}"
+                                                    Cursor="Hand" MouseLeftButtonUp="PreviousAlbum_Click">
+                                            <Image Source="{Binding PreviousAlbum.Thumb, FallbackValue='/Images/placeholder_album.png'}" 
+                                                   Width="80" Height="80" Stretch="Uniform"/>
+                                            <TextBlock Text="Previous" Foreground="{StaticResource MediumTextColor}"
+                                                       FontSize="11" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                            <TextBlock Text="{Binding PreviousAlbum.DisplayAlbumName, TargetNullValue='Album'}" 
+                                                       Foreground="{StaticResource LightTextColor}" FontSize="10" HorizontalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" MaxWidth="75" TextAlignment="Center"/>
+                                            <TextBlock Text="{Binding PreviousAlbum.DisplayYear, TargetNullValue='Year'}" 
+                                                       Foreground="{StaticResource DarkTextColor}" FontSize="9" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="««" Foreground="{StaticResource MediumTextColor}"
+                                                       FontSize="14" HorizontalAlignment="Center"/>
                                         </StackPanel>
 
-                                        <StackPanel Margin="0,0,15,0"
-                                                    HorizontalAlignment="Center">
-                                            <Image Source="/Images/atcqPlaceHolder.jpg"
-                                                   Width="80" 
-                                                   Height="80" 
-                                                   Stretch="Uniform"/>
-
-                                            <TextBlock Text="Next"
-                                                       Foreground="{StaticResource MediumTextColor}"
-                                                       FontSize="11"
-                                                       HorizontalAlignment="Center"
-                                                       Margin="0,2,0,0"/>
-                                            <TextBlock Text="»»" 
-                                                       Foreground="{StaticResource MediumTextColor}"
-                                                       FontSize="14"
-                                                       HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,0,0,0" HorizontalAlignment="Center">
-                                            <Image Source="/Images/pinkFloydPlaceHolder.jfif" Width="80" Height="80" Stretch="Uniform"/>
-                                            <TextBlock Text="Most Popular" Foreground="{StaticResource MediumTextColor}" FontSize="11" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                        <!-- Next Album -->
+                                        <StackPanel Margin="0,0,15,0" HorizontalAlignment="Center"
+                                                    Visibility="{Binding NextAlbum, Converter={StaticResource NullToVisibilityConverter}}"
+                                                    Cursor="Hand" MouseLeftButtonUp="NextAlbum_Click">
+                                            <Image Source="{Binding NextAlbum.Thumb, FallbackValue='/Images/placeholder_album.png'}"
+                                                   Width="80" Height="80" Stretch="Uniform"/>
+                                            <TextBlock Text="Next" Foreground="{StaticResource MediumTextColor}"
+                                                       FontSize="11" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                            <TextBlock Text="{Binding NextAlbum.DisplayAlbumName, TargetNullValue='Album'}" 
+                                                       Foreground="{StaticResource LightTextColor}" FontSize="10" HorizontalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" MaxWidth="75" TextAlignment="Center"/>
+                                            <TextBlock Text="{Binding NextAlbum.DisplayYear, TargetNullValue='Year'}" 
+                                                       Foreground="{StaticResource DarkTextColor}" FontSize="9" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="»»" Foreground="{StaticResource MediumTextColor}"
+                                                       FontSize="14" HorizontalAlignment="Center"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
+                                <!-- End of Info + Actions + Similar -->
 
                                 <Border Grid.Column="2" Background="{StaticResource PanelBackgroundColor}" CornerRadius="8" Padding="15" Height="450">
                                     <StackPanel>
@@ -277,6 +280,7 @@
                                     </StackPanel>
                                 </Border>
                             </Grid>
+                            <!-- End of Album Details + Similar Grid -->
 
                             <StackPanel Grid.Row="1" Margin="0,30,0,0">
                                 <TextBlock Text="Users' Reviews" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource LightTextColor}" Margin="0,0,0,10"/>
@@ -347,7 +351,7 @@
                         Grid.Row="1" 
                         Height="20"
                         Width="20"
-                        Source="/Images/SideBarIcons/dresser.png" 
+                        Source="/Images/SideBarIcons/folder-user.png" 
                         Stretch="Fill"/>
                     <Image Margin="10,84,100,614" 
                         Grid.Row="1" 

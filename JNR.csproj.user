@@ -25,6 +25,9 @@
     <Compile Update="ViewModels\My Albums\MyAlbums.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Genres\Genres.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Overview.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -46,6 +49,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Controls\starRatingSampler.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Genres\Genres.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Login\LoginView.xaml">

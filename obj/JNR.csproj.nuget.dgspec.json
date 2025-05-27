@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\DanielAcosta\\Documents\\GitHub\\JNR\\JNR.csproj": {}
+    "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\JNR.csproj": {}
   },
   "projects": {
-    "C:\\Users\\DanielAcosta\\Documents\\GitHub\\JNR\\JNR.csproj": {
+    "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\JNR.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\DanielAcosta\\Documents\\GitHub\\JNR\\JNR.csproj",
+        "projectUniqueName": "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\JNR.csproj",
         "projectName": "JNR",
-        "projectPath": "C:\\Users\\DanielAcosta\\Documents\\GitHub\\JNR\\JNR.csproj",
-        "packagesPath": "C:\\Users\\DanielAcosta\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\DanielAcosta\\Documents\\GitHub\\JNR\\obj\\",
+        "projectPath": "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\JNR.csproj",
+        "packagesPath": "C:\\Users\\danie\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\DanielAcosta\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\danie\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -43,12 +39,17 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.300"
+        }
       },
       "frameworks": {
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
+          "dependencies": {
+            "LiveChartsCore.SkiaSharpView.WPF": {
+              "target": "Package",
+              "version": "[2.0.0-rc5.4, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -68,7 +69,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
