@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "L1whtptsDk8=",
+  "dgSpecHash": "8Wa7uJJKltM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\JNR.csproj",
+  "projectFilePath": "C:\\Users\\danie\\Desktop\\JNR\\JNR.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\danie\\.nuget\\packages\\harfbuzzsharp\\8.3.0.1\\harfbuzzsharp.8.3.0.1.nupkg.sha512",
     "C:\\Users\\danie\\.nuget\\packages\\harfbuzzsharp.nativeassets.macos\\8.3.0.1\\harfbuzzsharp.nativeassets.macos.8.3.0.1.nupkg.sha512",

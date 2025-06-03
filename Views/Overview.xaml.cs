@@ -1,5 +1,4 @@
 ﻿// File: Views/Overview.xaml.cs
-//====================
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,92 +9,19 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+// Removed: System.Text.Json.Serialization; // JsonPropertyName is on models
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using JNR.Models.DiscogModels;
+using JNR.Models.LastFmModels; // For shared Last.fm models (LastFmImage, LastFmDetailedAlbum, etc.)
+using JNR.Models; // For TrackItem
 
 namespace JNR.Views
 {
-    // ... (Local TrackItem and LastFm Models remain the same) ...
-    public class TrackItem
-    {
-        public string Number { get; set; }
-        public string Title { get; set; }
-        public string Duration { get; set; }
-    }
-
-    public class LastFmImage
-    {
-        [JsonPropertyName("#text")]
-        public string Text { get; set; }
-        public string size { get; set; }
-    }
-
-    public class LastFmTrackAttr
-    {
-        public int rank { get; set; }
-    }
-
-    public class LastFmTrack
-    {
-        public string name { get; set; }
-        public string url { get; set; }
-        public int? duration { get; set; }
-        [JsonPropertyName("@attr")]
-        public LastFmTrackAttr Attr { get; set; }
-    }
-
-    public class LastFmTrackList
-    {
-        public List<LastFmTrack> track { get; set; }
-    }
-
-    public class LastFmTag
-    {
-        public string name { get; set; }
-        public string url { get; set; }
-    }
-
-    public class LastFmTagList
-    {
-        public List<LastFmTag> tag { get; set; }
-    }
-
-    public class LastFmWiki
-    {
-        public string published { get; set; }
-        public string summary { get; set; }
-        public string content { get; set; }
-    }
-
-    public class LastFmDetailedAlbum
-    {
-        public string name { get; set; }
-        public string artist { get; set; }
-        public string mbid { get; set; }
-        public string url { get; set; }
-        public List<LastFmImage> image { get; set; }
-        public LastFmTagList tags { get; set; }
-        public LastFmWiki wiki { get; set; }
-        public LastFmTrackList tracks { get; set; }
-        public string listeners { get; set; }
-        public string playcount { get; set; }
-    }
-
-    public class LastFmAlbumInfoResponse
-    {
-        public LastFmDetailedAlbum album { get; set; }
-        public string message { get; set; }
-        public int? error { get; set; }
-    }
-
-
     public partial class Overview : Window, INotifyPropertyChanged
     {
-        // ... (INotifyPropertyChanged, Backing fields, Properties, Constructor, LoadDiscogsDataAsync etc. up to LoadArtistDiscographyAsync remain the same) ...
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -113,7 +39,7 @@ namespace JNR.Views
         private string _languageInfo = "English (Default)";
         private string _ratingDisplay = "★★★★☆ (Sample)";
 
-        public ObservableCollection<TrackItem> AlbumTracks { get; set; }
+        public ObservableCollection<TrackItem> AlbumTracks { get; set; } // Uses JNR.Models.TrackItem
 
         public string DetailedAlbumName
         {
@@ -190,13 +116,12 @@ namespace JNR.Views
         private const string LastFmApiKey = "d8831cc3c1d4eb53011a7b268a95d028";
 
         private const string DiscogsApiBaseUrl = "https://api.discogs.com";
-        private const string DiscogsApiToken = "TMMBVQQgfXKTCEmgHqukhGLvhyCKJuLKlSqfrJCn";
+        private const string DiscogsApiToken = "TMMBVQQgfXKTCEmgHqukhGLvhyCKJuLKlSqfrJCn"; // Replace with your actual token
 
         private int? _currentArtistId;
         private int? _currentDiscogsMasterId;
         private int? _currentDiscogsReleaseId;
         private DiscogsSearchResultItem _currentDiscogsBestMatch;
-
 
         public Overview(string albumName, string artistName, string mbid, string coverArtUrl)
         {
@@ -216,15 +141,15 @@ namespace JNR.Views
             DescriptionText = "Loading album description...";
             ListenersCount = "Loading...";
             PlayCount = "Loading...";
-            LanguageInfo = "English (Default)";
-            RatingDisplay = "★★★★☆ (Sample)";
+            LanguageInfo = "English (Default)"; // Or determine from data
+            RatingDisplay = "★★★★☆ (Sample)"; // Or from actual data
 
             AlbumTracks = new ObservableCollection<TrackItem>();
             AlbumTracks.Add(new TrackItem { Number = " ", Title = "Loading tracks...", Duration = "" });
 
             if (client.DefaultRequestHeaders.UserAgent.Count == 0)
             {
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("JamandRateApp/1.0");
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("JamandRateApp/1.0"); // Replace with your app name
             }
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Discogs", $"token={DiscogsApiToken}");
 
@@ -239,7 +164,7 @@ namespace JNR.Views
         private async Task LoadAllAlbumDetailsAsync()
         {
             bool discogsSuccess = await LoadDiscogsDataAsync();
-            await LoadLastFmDataAsync(discogsSuccess);
+            await LoadLastFmDataAsync(discogsSuccess); // Pass Discogs success to Last.fm load
         }
 
         private async Task<bool> LoadDiscogsDataAsync()
@@ -249,7 +174,6 @@ namespace JNR.Views
                 Debug.WriteLine("Discogs: Artist or Album name is missing for search.");
                 return false;
             }
-
             if (string.IsNullOrWhiteSpace(DiscogsApiToken))
             {
                 Debug.WriteLine("Discogs API Token is not configured. Skipping Discogs data load.");
@@ -286,11 +210,12 @@ namespace JNR.Views
                 if (bestMatch == null)
                 {
                     bestMatch = discogsSearchResponse.Results
-                        .OrderByDescending(r => r.MasterId.HasValue && r.MasterId > 0)
-                        .ThenByDescending(r => r.Community?.Have ?? 0)
-                        .FirstOrDefault(r => (r.MasterId.HasValue || r.Id > 0));
+                       .OrderByDescending(r => r.MasterId.HasValue && r.MasterId > 0)
+                       .ThenByDescending(r => r.Community?.Have ?? 0)
+                       .FirstOrDefault(r => (r.MasterId.HasValue || r.Id > 0));
                 }
                 _currentDiscogsBestMatch = bestMatch;
+
 
                 if (bestMatch == null)
                 {
@@ -310,7 +235,6 @@ namespace JNR.Views
                 Debug.WriteLine($"Discogs Details URL: {detailsUrl}");
 
                 HttpResponseMessage detailsResponseMsg = await client.GetAsync(detailsUrl);
-
                 if (!detailsResponseMsg.IsSuccessStatusCode)
                 {
                     Debug.WriteLine($"Discogs details API Error: {detailsResponseMsg.StatusCode} - {await detailsResponseMsg.Content.ReadAsStringAsync()}");
@@ -330,11 +254,17 @@ namespace JNR.Views
                 DetailedAlbumName = discogsReleaseData.Title ?? _albumNameParam;
                 DetailedArtistName = discogsReleaseData.PrimaryArtistName ?? _artistNameParam;
 
+                if (!string.IsNullOrWhiteSpace(discogsReleaseData.PrimaryImageUrl))
+                {
+                    DetailedCoverArtUrl = discogsReleaseData.PrimaryImageUrl;
+                }
+
+
                 if (!string.IsNullOrWhiteSpace(discogsReleaseData.ReleasedFormatted))
                 {
                     ReleaseInfo = discogsReleaseData.ReleasedFormatted;
                 }
-                else if (discogsReleaseData.Year > 0) // discogsReleaseData.Year is int here
+                else if (discogsReleaseData.Year > 0)
                 {
                     ReleaseInfo = discogsReleaseData.Year.ToString();
                 }
@@ -361,29 +291,42 @@ namespace JNR.Views
                     }
                 }
 
+                if (!string.IsNullOrWhiteSpace(discogsReleaseData.Notes))
+                {
+                    DescriptionText = Regex.Replace(discogsReleaseData.Notes, @"\[([a-z])=(.+?)\]", "$2", RegexOptions.IgnoreCase); // Basic [type=value] to value
+                    DescriptionText = Regex.Replace(DescriptionText, @"\[/?([a-z]+)\]", "", RegexOptions.IgnoreCase); // Remove remaining [tag] or [/tag]
+                    DescriptionText = DescriptionText.Trim();
+                    if (string.IsNullOrWhiteSpace(DescriptionText)) DescriptionText = "No description available from Discogs.";
+
+                }
+
+
                 _currentArtistId = discogsReleaseData.Artists?.FirstOrDefault()?.Id;
+
                 if (detailsUrl.Contains("/masters/"))
                 {
-                    _currentDiscogsMasterId = discogsReleaseData.Id;
-                    _currentDiscogsReleaseId = discogsReleaseData.MainRelease;
+                    _currentDiscogsMasterId = discogsReleaseData.Id; // Master ID is the ID of the master record itself
+                    _currentDiscogsReleaseId = discogsReleaseData.MainRelease; // Main release ID associated with this master
                 }
                 else
-                {
-                    _currentDiscogsReleaseId = discogsReleaseData.Id;
-                    _currentDiscogsMasterId = discogsReleaseData.MasterId;
+                { // It's a release URL
+                    _currentDiscogsReleaseId = discogsReleaseData.Id; // Release ID is the ID of the release record
+                    _currentDiscogsMasterId = discogsReleaseData.MasterId; // Master ID if this release is part of one
                     if (!_currentDiscogsMasterId.HasValue && _currentDiscogsBestMatch != null)
                     {
                         _currentDiscogsMasterId = _currentDiscogsBestMatch.MasterId;
                     }
                 }
 
+
                 if (_currentArtistId.HasValue)
                 {
                     await LoadArtistDiscographyAsync(_currentArtistId.Value);
                 }
 
-                Debug.WriteLine("Successfully loaded and mapped data from Discogs (excluding cover & description).");
+                Debug.WriteLine("Successfully loaded and mapped data from Discogs.");
                 return true;
+
             }
             catch (HttpRequestException httpEx)
             {
@@ -406,7 +349,7 @@ namespace JNR.Views
         {
             try
             {
-                string artistReleasesUrl = $"{DiscogsApiBaseUrl}/artists/{artistId}/releases?sort=year&sort_order=asc&per_page=100";
+                string artistReleasesUrl = $"{DiscogsApiBaseUrl}/artists/{artistId}/releases?sort=year&sort_order=asc&per_page=100"; // Get more items
                 Debug.WriteLine($"Discogs Artist Releases URL: {artistReleasesUrl}");
 
                 HttpResponseMessage responseMsg = await client.GetAsync(artistReleasesUrl);
@@ -426,69 +369,70 @@ namespace JNR.Views
                     return;
                 }
 
-                // Filter for main albums/masters and sort them
-                // Using ParsedYear from the model for filtering and sorting
                 List<DiscogsArtistReleaseItem> artistMainAlbums = artistReleasesResponse.Releases
                     .Where(r => (r.Type?.Equals("master", StringComparison.OrdinalIgnoreCase) == true ||
                                  r.Type?.Equals("release", StringComparison.OrdinalIgnoreCase) == true) &&
                                  r.Role?.Equals("Main", StringComparison.OrdinalIgnoreCase) == true &&
                                  !string.IsNullOrWhiteSpace(r.Title) &&
-                                 r.ParsedYear > 0) // Ensure year is a parseable, positive number
+                                 r.ParsedYear > 0)
                     .OrderBy(r => r.ParsedYear)
-                    .ThenBy(r => r.Title)
+                    .ThenBy(r => r.Title) // Secondary sort by title for same year
                     .ToList();
 
                 if (!artistMainAlbums.Any())
-                {
-                    // Fallback if "Main" role yields nothing or positive year filter is too strict
+                { // Fallback if "Main" role yields nothing or positive year filter is too strict
                     artistMainAlbums = artistReleasesResponse.Releases
                         .Where(r => (r.Type?.Equals("master", StringComparison.OrdinalIgnoreCase) == true ||
                                      r.Type?.Equals("release", StringComparison.OrdinalIgnoreCase) == true) &&
                                      !string.IsNullOrWhiteSpace(r.Title) &&
-                                     r.ParsedYear >= 0) // Allow year 0 if that's how Discogs represents some "unknowns" numerically
-                        .OrderBy(r => r.ParsedYear) // Will sort 0s (unknowns) first
+                                     r.ParsedYear >= 0) // Allow year 0 for unknowns
+                        .OrderBy(r => r.ParsedYear == 0 ? int.MaxValue : r.ParsedYear) // Sort unknowns last if preferred, or just r.ParsedYear
                         .ThenBy(r => r.Title)
                         .ToList();
                 }
 
 
-                // Find the index of the current album
                 int currentIndex = -1;
+
+                // Try matching by Master ID first, as it's more definitive for an "album" concept
                 if (_currentDiscogsMasterId.HasValue && _currentDiscogsMasterId.Value > 0)
                 {
                     currentIndex = artistMainAlbums.FindIndex(a =>
-                        a.MasterId == _currentDiscogsMasterId ||
-                        (a.Type == "master" && a.Id == _currentDiscogsMasterId));
+                        a.MasterId == _currentDiscogsMasterId || // If the item in list has MasterId set
+                        (a.Type == "master" && a.Id == _currentDiscogsMasterId)); // If item itself is a master
                 }
 
+                // If not found by Master ID, or if current album is a specific release not tied to a known master
                 if (currentIndex == -1 && _currentDiscogsReleaseId.HasValue)
                 {
-                    // Match by ReleaseId only if type is "release"
+                    // Match by ReleaseId only if type is "release" to avoid master IDs clashing with release IDs
                     currentIndex = artistMainAlbums.FindIndex(a => a.Id == _currentDiscogsReleaseId && a.Type == "release");
                 }
 
+                // If still not found by ID, try a more lenient title and year match (last resort)
                 if (currentIndex == -1)
                 {
-                    // Last resort: Lenient title match if IDs failed.
-                    // This is tricky because DetailedAlbumName might be "Artist - Album" or just "Album".
-                    // And Discogs release titles might vary.
                     string currentAlbumTitlePart = DetailedAlbumName;
                     if (DetailedAlbumName.Contains(" - ") && DetailedAlbumName.Split(new[] { " - " }, 2, StringSplitOptions.None).Length > 1)
                     {
                         currentAlbumTitlePart = DetailedAlbumName.Split(new[] { " - " }, 2, StringSplitOptions.None)[1].Trim();
                     }
 
-                    int currentAlbumYear = 0;
-                    if (!string.IsNullOrWhiteSpace(ReleaseInfo) && ReleaseInfo.Length >= 4)
+                    int currentAlbumYear = 0; // Use the Year from DiscogsRelease (int)
+                    if (int.TryParse(ReleaseInfo?.Split(',').First().Trim(), out int parsedYear))
+                    { // Try to parse from ReleaseInfo (e.g., "1999" or "Jan 1999")
+                        currentAlbumYear = parsedYear;
+                    }
+                    else if (_currentDiscogsBestMatch?.Year != null && int.TryParse(_currentDiscogsBestMatch.Year, out parsedYear))
                     {
-                        int.TryParse(ReleaseInfo.Substring(0, 4), out currentAlbumYear); // Try to get year from main release info
+                        currentAlbumYear = parsedYear; // Fallback to search result year if available
                     }
 
 
                     currentIndex = artistMainAlbums.FindIndex(a =>
                         a.Title.Equals(currentAlbumTitlePart, StringComparison.OrdinalIgnoreCase) ||
                         (a.Title.Contains(currentAlbumTitlePart, StringComparison.OrdinalIgnoreCase) &&
-                         (currentAlbumYear > 0 && a.ParsedYear > 0 && Math.Abs(a.ParsedYear - currentAlbumYear) <= 1)) // Year match within +/- 1
+                         (currentAlbumYear > 0 && a.ParsedYear > 0 && Math.Abs(a.ParsedYear - currentAlbumYear) <= 1))
                     );
                 }
 
@@ -515,7 +459,7 @@ namespace JNR.Views
             }
             catch (JsonException jsonEx)
             {
-                Debug.WriteLine($"Discogs Artist Discography JSON Parsing Error: {jsonEx.ToString()}"); // This is where the original error occurred
+                Debug.WriteLine($"Discogs Artist Discography JSON Parsing Error: {jsonEx.ToString()}");
             }
             catch (Exception ex)
             {
@@ -526,28 +470,29 @@ namespace JNR.Views
         private async Task LoadLastFmDataAsync(bool discogsDataLoadedSuccessfully)
         {
             string apiUrl;
+
+            // Use MBID if available (highest priority)
             if (!string.IsNullOrWhiteSpace(_mbidParam))
             {
                 apiUrl = $"http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key={LastFmApiKey}&mbid={_mbidParam}&format=json";
             }
+            // Fallback to artist and album name from Discogs if successful, or initial params if not
             else if (!string.IsNullOrWhiteSpace(DetailedAlbumName) && !string.IsNullOrWhiteSpace(DetailedArtistName) && DetailedAlbumName != "Album" && DetailedArtistName != "Artist")
             {
                 apiUrl = $"http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key={LastFmApiKey}&artist={Uri.EscapeDataString(DetailedArtistName)}&album={Uri.EscapeDataString(DetailedAlbumName)}&format=json";
             }
-            else
+            // Final fallback to initial parameters if Discogs data wasn't good enough
+            else if (!string.IsNullOrWhiteSpace(_artistNameParam) && !string.IsNullOrWhiteSpace(_albumNameParam))
             {
                 apiUrl = $"http://ws.audioscrobbler.com/2.0/?method=album.getInfo&api_key={LastFmApiKey}&artist={Uri.EscapeDataString(_artistNameParam)}&album={Uri.EscapeDataString(_albumNameParam)}&format=json";
             }
-
-            if (string.IsNullOrWhiteSpace(DetailedAlbumName) || string.IsNullOrWhiteSpace(DetailedArtistName) || DetailedAlbumName == "Album" || DetailedArtistName == "Artist")
+            else
             {
-                if (!discogsDataLoadedSuccessfully)
-                {
-                    DescriptionText = "Not enough information to load album details from Last.fm.";
-                    if (!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = "Error: Insufficient information." }); }
-                    if (ReleaseInfo == "Loading...") ReleaseInfo = "N/A";
-                    if (GenreInfo == "Loading...") GenreInfo = "N/A";
-                }
+                // Not enough info to call Last.fm
+                if (!discogsDataLoadedSuccessfully) DescriptionText = "Not enough information to load album details.";
+                if (!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = "Error: Insufficient information." }); }
+                if (ReleaseInfo == "Loading...") ReleaseInfo = "N/A";
+                if (GenreInfo == "Loading...") GenreInfo = "N/A";
                 ListenersCount = "N/A"; PlayCount = "N/A";
                 return;
             }
@@ -556,10 +501,11 @@ namespace JNR.Views
 
             try
             {
+                // Use a separate HttpClient instance or ensure the shared one is configured correctly for Last.fm if needed
                 var lastFmClient = new HttpClient();
                 if (lastFmClient.DefaultRequestHeaders.UserAgent.Count == 0)
                 {
-                    lastFmClient.DefaultRequestHeaders.UserAgent.ParseAdd("JamandRateApp/1.0");
+                    lastFmClient.DefaultRequestHeaders.UserAgent.ParseAdd("JamandRateApp/1.0"); // Replace with your app name
                 }
 
                 HttpResponseMessage httpResponse = await lastFmClient.GetAsync(apiUrl);
@@ -568,13 +514,11 @@ namespace JNR.Views
                 if (!httpResponse.IsSuccessStatusCode)
                 {
                     Debug.WriteLine($"Last.fm API Error Status: {httpResponse.StatusCode}, Response: {jsonResponse.Substring(0, Math.Min(jsonResponse.Length, 500))}");
-                    if (!discogsDataLoadedSuccessfully)
-                    {
-                        DescriptionText = $"Error loading details from Last.fm: {httpResponse.ReasonPhrase}.";
-                        if (!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = $"Last.fm API Error: {httpResponse.StatusCode}" }); }
-                        if (ReleaseInfo == "Loading...") ReleaseInfo = "Error";
-                        if (GenreInfo == "Loading...") GenreInfo = "Error";
-                    }
+                    // Only overwrite if Discogs didn't provide data
+                    if (!discogsDataLoadedSuccessfully) DescriptionText = $"Error loading details from Last.fm: {httpResponse.ReasonPhrase}.";
+                    if ((!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") && !discogsDataLoadedSuccessfully) { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = $"Last.fm API Error: {httpResponse.StatusCode}" }); }
+                    if ((ReleaseInfo == "Loading..." || string.IsNullOrWhiteSpace(ReleaseInfo)) && !discogsDataLoadedSuccessfully) ReleaseInfo = "Error";
+                    if ((GenreInfo == "Loading..." || string.IsNullOrWhiteSpace(GenreInfo)) && !discogsDataLoadedSuccessfully) GenreInfo = "Error";
                     ListenersCount = "Error"; PlayCount = "Error";
                     return;
                 }
@@ -585,80 +529,83 @@ namespace JNR.Views
                 if (albumInfoResponse?.error != null)
                 {
                     Debug.WriteLine($"Last.fm API Error {albumInfoResponse.error}: {albumInfoResponse.message}");
-                    if (!discogsDataLoadedSuccessfully)
-                    {
-                        DescriptionText = $"Last.fm API Error: {albumInfoResponse.message}";
-                        if (!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = "Last.fm API Error." }); }
-                        if (ReleaseInfo == "Loading...") ReleaseInfo = "API Error";
-                        if (GenreInfo == "Loading...") GenreInfo = "API Error";
-                    }
+                    if (!discogsDataLoadedSuccessfully) DescriptionText = $"Last.fm API Error: {albumInfoResponse.message}";
+                    if ((!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") && !discogsDataLoadedSuccessfully) { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = "Last.fm API Error." }); }
+                    if ((ReleaseInfo == "Loading..." || string.IsNullOrWhiteSpace(ReleaseInfo)) && !discogsDataLoadedSuccessfully) ReleaseInfo = "API Error";
+                    if ((GenreInfo == "Loading..." || string.IsNullOrWhiteSpace(GenreInfo)) && !discogsDataLoadedSuccessfully) GenreInfo = "API Error";
                     ListenersCount = "API Error"; PlayCount = "API Error";
                     return;
                 }
 
-                if (albumInfoResponse?.album != null)
+                if (albumInfoResponse?.Album != null)
                 {
-                    LastFmDetailedAlbum detailedAlbum = albumInfoResponse.album;
+                    LastFmDetailedAlbum detailedAlbum = albumInfoResponse.Album;
 
-                    string lastFmCover = GetLastFmImageUrl(detailedAlbum.image, "extralarge");
-                    if (!string.IsNullOrWhiteSpace(lastFmCover))
+                    // Prioritize Discogs cover if already set and valid, otherwise use Last.fm
+                    string lastFmCover = GetLastFmImageUrl(detailedAlbum.Image, "extralarge");
+                    if (string.IsNullOrWhiteSpace(DetailedCoverArtUrl) || DetailedCoverArtUrl.EndsWith("placeholder_album.png"))
                     {
-                        DetailedCoverArtUrl = lastFmCover;
+                        if (!string.IsNullOrWhiteSpace(lastFmCover)) DetailedCoverArtUrl = lastFmCover;
                     }
 
-                    if (ReleaseInfo == "Loading..." || ReleaseInfo == "N/A")
+
+                    // Only update if Discogs didn't provide or if placeholder
+                    if (ReleaseInfo == "Loading..." || ReleaseInfo == "N/A" || string.IsNullOrWhiteSpace(ReleaseInfo))
                     {
-                        if (detailedAlbum.wiki != null && !string.IsNullOrWhiteSpace(detailedAlbum.wiki.published))
+                        if (detailedAlbum.Wiki != null && !string.IsNullOrWhiteSpace(detailedAlbum.Wiki.Published))
                         {
-                            var dateParts = detailedAlbum.wiki.published.Split(',');
+                            var dateParts = detailedAlbum.Wiki.Published.Split(','); // e.g., "28 Oct 2003, 00:00"
                             ReleaseInfo = dateParts[0].Trim();
                         }
                         else { ReleaseInfo = "N/A"; }
                     }
 
-                    if (GenreInfo == "Loading..." || GenreInfo == "N/A")
+                    if (GenreInfo == "Loading..." || GenreInfo == "N/A" || string.IsNullOrWhiteSpace(GenreInfo))
                     {
-                        if (detailedAlbum.tags?.tag != null && detailedAlbum.tags.tag.Any())
+                        if (detailedAlbum.Tags?.Tag != null && detailedAlbum.Tags.Tag.Any())
                         {
-                            GenreInfo = string.Join(", ", detailedAlbum.tags.tag.Select(t => t.name).Take(3));
+                            GenreInfo = string.Join(", ", detailedAlbum.Tags.Tag.Select(t => t.Name).Take(3));
                         }
                         else { GenreInfo = "N/A"; }
                     }
 
-                    if (long.TryParse(detailedAlbum.listeners, out long listenersVal)) ListenersCount = $"{listenersVal:N0} listeners";
-                    else ListenersCount = "N/A";
-                    if (long.TryParse(detailedAlbum.playcount, out long playcountVal)) PlayCount = $"{playcountVal:N0} plays";
-                    else PlayCount = "N/A";
-
-                    string summary = detailedAlbum.wiki?.summary;
-                    string content = detailedAlbum.wiki?.content;
-                    string tempDescription = "No description available.";
-                    if (!string.IsNullOrWhiteSpace(content))
+                    // Update description only if Discogs didn't provide a good one
+                    if (DescriptionText == "Loading album description..." || DescriptionText == "No description available from Discogs." || string.IsNullOrWhiteSpace(DescriptionText))
                     {
-                        tempDescription = Regex.Replace(content, "<a href=.*?>Read more on Last.fm</a>\\.?$", "", RegexOptions.IgnoreCase | RegexOptions.Singleline).Trim();
-                        tempDescription = System.Net.WebUtility.HtmlDecode(Regex.Replace(tempDescription, "<.*?>", String.Empty).Trim());
+                        string summary = detailedAlbum.Wiki?.Summary;
+                        string content = detailedAlbum.Wiki?.Content;
+                        string tempDescription = "No description available.";
+                        if (!string.IsNullOrWhiteSpace(content))
+                        {
+                            tempDescription = Regex.Replace(content, "<a href=.*?>Read more on Last.fm</a>\\.?$", "", RegexOptions.IgnoreCase | RegexOptions.Singleline).Trim();
+                            tempDescription = System.Net.WebUtility.HtmlDecode(Regex.Replace(tempDescription, "<.*?>", String.Empty).Trim());
+                        }
+                        else if (!string.IsNullOrWhiteSpace(summary))
+                        {
+                            tempDescription = Regex.Replace(summary, "<a href=.*?>Read more on Last.fm</a>\\.?$", "", RegexOptions.IgnoreCase | RegexOptions.Singleline).Trim();
+                            tempDescription = System.Net.WebUtility.HtmlDecode(Regex.Replace(tempDescription, "<.*?>", String.Empty).Trim());
+                        }
+                        DescriptionText = string.IsNullOrWhiteSpace(tempDescription) ? "No description available." : tempDescription;
                     }
-                    else if (!string.IsNullOrWhiteSpace(summary))
-                    {
-                        tempDescription = Regex.Replace(summary, "<a href=.*?>Read more on Last.fm</a>\\.?$", "", RegexOptions.IgnoreCase | RegexOptions.Singleline).Trim();
-                        tempDescription = System.Net.WebUtility.HtmlDecode(Regex.Replace(tempDescription, "<.*?>", String.Empty).Trim());
-                    }
-                    DescriptionText = string.IsNullOrWhiteSpace(tempDescription) ? "No description available." : tempDescription;
 
 
-                    if (!AlbumTracks.Any() || (AlbumTracks.Count == 1 && AlbumTracks.First().Title == "Loading tracks..."))
+                    if (long.TryParse(detailedAlbum.Listeners, out long listenersVal)) ListenersCount = $"{listenersVal:N0} listeners"; else ListenersCount = "N/A";
+                    if (long.TryParse(detailedAlbum.Playcount, out long playcountVal)) PlayCount = $"{playcountVal:N0} plays"; else PlayCount = "N/A";
+
+                    // Only populate tracks from Last.fm if Discogs didn't provide them
+                    if (!AlbumTracks.Any() || (AlbumTracks.Count == 1 && (AlbumTracks.First().Title == "Loading tracks..." || AlbumTracks.First().Title == "Error: Insufficient information.")))
                     {
                         AlbumTracks.Clear();
-                        if (detailedAlbum.tracks?.track != null && detailedAlbum.tracks.track.Any())
+                        if (detailedAlbum.Tracks?.Track != null && detailedAlbum.Tracks.Track.Any())
                         {
                             int trackNumber = 1;
-                            foreach (var track in detailedAlbum.tracks.track.OrderBy(t => t.Attr?.rank ?? int.MaxValue))
+                            foreach (var track in detailedAlbum.Tracks.Track.OrderBy(t => t.Attr?.Rank ?? int.MaxValue))
                             {
                                 AlbumTracks.Add(new TrackItem
                                 {
-                                    Number = (track.Attr?.rank > 0 ? track.Attr.rank.ToString() : trackNumber.ToString()) + ".",
-                                    Title = track.name,
-                                    Duration = FormatTrackDuration(track.duration)
+                                    Number = (track.Attr?.Rank > 0 ? track.Attr.Rank.ToString() : trackNumber.ToString()) + ".",
+                                    Title = track.Name,
+                                    Duration = FormatTrackDuration(track.Duration)
                                 });
                                 trackNumber++;
                             }
@@ -666,76 +613,61 @@ namespace JNR.Views
                         else { AlbumTracks.Add(new TrackItem { Title = "No track information available." }); }
                     }
                 }
-                else
+                else // albumInfoResponse.Album is null
                 {
-                    if (!discogsDataLoadedSuccessfully)
-                    {
-                        DescriptionText = "Album details not found in Last.fm API response.";
-                        if (!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = "Details not found (Last.fm)." }); }
-                        if (ReleaseInfo == "Loading...") ReleaseInfo = "N/A";
-                        if (GenreInfo == "Loading...") GenreInfo = "N/A";
-                    }
+                    if (!discogsDataLoadedSuccessfully) DescriptionText = "Album details not found in Last.fm API response.";
+                    if ((!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") && !discogsDataLoadedSuccessfully) { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = "Details not found (Last.fm)." }); }
+                    if ((ReleaseInfo == "Loading..." || string.IsNullOrWhiteSpace(ReleaseInfo)) && !discogsDataLoadedSuccessfully) ReleaseInfo = "N/A";
+                    if ((GenreInfo == "Loading..." || string.IsNullOrWhiteSpace(GenreInfo)) && !discogsDataLoadedSuccessfully) GenreInfo = "N/A";
                     ListenersCount = "N/A"; PlayCount = "N/A";
                 }
             }
             catch (HttpRequestException httpEx)
             {
                 Debug.WriteLine($"Last.fm HTTP Request Error: {httpEx.ToString()}");
-                if (!discogsDataLoadedSuccessfully)
-                {
-                    DescriptionText = $"Network error (Last.fm). ({httpEx.Message})";
-                    if (!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = "Network Error (Last.fm)." }); }
-                    if (ReleaseInfo == "Loading...") ReleaseInfo = "Network Error";
-                    if (GenreInfo == "Loading...") GenreInfo = "Network Error";
-                }
+                if (!discogsDataLoadedSuccessfully) DescriptionText = $"Network error (Last.fm). ({httpEx.Message})";
+                // ... (similar conditional updates for other fields)
                 ListenersCount = "Network Error"; PlayCount = "Network Error";
             }
             catch (JsonException jsonEx)
             {
                 Debug.WriteLine($"Last.fm JSON Parsing Error: {jsonEx.ToString()}");
-                if (!discogsDataLoadedSuccessfully)
-                {
-                    DescriptionText = "Error parsing data from Last.fm API.";
-                    if (!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = "Data Error (Last.fm)." }); }
-                    if (ReleaseInfo == "Loading...") ReleaseInfo = "Data Error";
-                    if (GenreInfo == "Loading...") GenreInfo = "Data Error";
-                }
+                if (!discogsDataLoadedSuccessfully) DescriptionText = "Error parsing data from Last.fm API.";
+                // ...
                 ListenersCount = "Data Error"; PlayCount = "Data Error";
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Last.fm Generic Error: {ex.ToString()}");
-                if (!discogsDataLoadedSuccessfully)
-                {
-                    DescriptionText = $"An unexpected error occurred (Last.fm): {ex.Message}";
-                    if (!AlbumTracks.Any() || AlbumTracks.First().Title == "Loading tracks...") { AlbumTracks.Clear(); AlbumTracks.Add(new TrackItem { Title = "Unexpected Error (Last.fm)." }); }
-                    if (ReleaseInfo == "Loading...") ReleaseInfo = "Unexpected Error";
-                    if (GenreInfo == "Loading...") GenreInfo = "Unexpected Error";
-                }
+                if (!discogsDataLoadedSuccessfully) DescriptionText = $"An unexpected error occurred (Last.fm): {ex.Message}";
+                // ...
                 ListenersCount = "Unexpected Error"; PlayCount = "Unexpected Error";
             }
         }
 
         private string GetLastFmImageUrl(List<LastFmImage> images, string preferredSize = "extralarge")
         {
-            if (images == null || !images.Any()) return null;
-            var img = images.FirstOrDefault(i => i.size == preferredSize && !string.IsNullOrWhiteSpace(i.Text));
+            if (images == null || !images.Any()) return null; // Return null, caller handles fallback
+
+            var img = images.FirstOrDefault(i => i.Size == preferredSize && !string.IsNullOrWhiteSpace(i.Text));
             if (img != null) return img.Text;
-            string[] fallbackSizes = { "mega", "large", "medium", "small" };
-            foreach (var size in fallbackSizes)
+
+            string[] fallbackSizes = { "mega", "large", "medium", "small" }; // Common Last.fm sizes
+            foreach (var sizeKey in fallbackSizes)
             {
-                img = images.FirstOrDefault(i => i.size == size && !string.IsNullOrWhiteSpace(i.Text));
+                img = images.FirstOrDefault(i => i.Size == sizeKey && !string.IsNullOrWhiteSpace(i.Text));
                 if (img != null) return img.Text;
             }
-            img = images.LastOrDefault(i => !string.IsNullOrWhiteSpace(i.Text));
-            return img?.Text;
+
+            img = images.LastOrDefault(i => !string.IsNullOrWhiteSpace(i.Text)); // Any image with text
+            return img?.Text; // Return null if still not found
         }
 
         private string FormatTrackDuration(int? totalSeconds)
         {
             if (!totalSeconds.HasValue || totalSeconds.Value <= 0)
             {
-                return "";
+                return ""; // Return empty for unknown or zero duration
             }
             TimeSpan time = TimeSpan.FromSeconds(totalSeconds.Value);
             return $"{(int)time.TotalMinutes}:{time.Seconds:D2}";
@@ -751,6 +683,7 @@ namespace JNR.Views
 
         private void btnGoBackOverview_Click(object sender, RoutedEventArgs e)
         {
+            // Consider which page to go back to. If MainPage is the main hub:
             var mainPage = new JNR.Views.MainPage.MainPage();
             mainPage.Show();
             this.Close();
@@ -761,10 +694,10 @@ namespace JNR.Views
             if (PreviousAlbum != null)
             {
                 var overview = new Overview(
-                    PreviousAlbum.DisplayAlbumName,
-                    PreviousAlbum.DisplayArtistName,
-                    null,
-                    PreviousAlbum.Thumb
+                    PreviousAlbum.DisplayAlbumName, // From DiscogsArtistReleaseItem
+                    PreviousAlbum.DisplayArtistName, // From DiscogsArtistReleaseItem
+                    null, // No MBID known for prev/next from this context
+                    PreviousAlbum.Thumb // From DiscogsArtistReleaseItem
                 );
                 overview.Show();
                 this.Close();
@@ -776,10 +709,10 @@ namespace JNR.Views
             if (NextAlbum != null)
             {
                 var overview = new Overview(
-                    NextAlbum.DisplayAlbumName,
-                    NextAlbum.DisplayArtistName,
-                    null,
-                    NextAlbum.Thumb
+                    NextAlbum.DisplayAlbumName, // From DiscogsArtistReleaseItem
+                    NextAlbum.DisplayArtistName, // From DiscogsArtistReleaseItem
+                    null, // No MBID known for prev/next from this context
+                    NextAlbum.Thumb // From DiscogsArtistReleaseItem
                 );
                 overview.Show();
                 this.Close();

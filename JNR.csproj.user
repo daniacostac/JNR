@@ -7,6 +7,9 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\Charts.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Controls\CloseButton.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -25,7 +28,7 @@
     <Compile Update="ViewModels\My Albums\MyAlbums.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\Genres\Genres.xaml.cs">
+    <Compile Update="Views\Genres.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\Overview.xaml.cs">
@@ -42,6 +45,9 @@
     <Page Update="Themes\SearchBoxStyle.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\Charts.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Controls\CloseButton.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -51,7 +57,7 @@
     <Page Update="Views\Controls\starRatingSampler.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\Genres\Genres.xaml">
+    <Page Update="Views\Genres.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Login\LoginView.xaml">
