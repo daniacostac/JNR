@@ -7,6 +7,9 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\About.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Charts.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -91,7 +91,7 @@
                     <TextBlock Text="Charts"
                                Grid.Column="0" Grid.Row="0"
                                VerticalAlignment="Center" FontWeight="Light" FontSize="22"
-                               HorizontalAlignment="Right" Foreground="{StaticResource LightTextColor}"
+                               HorizontalAlignment="Center" Foreground="{StaticResource LightTextColor}"
                                FontFamily="{StaticResource TitleFont}"/>
 
                     <!-- Custom Title Bar Buttons (Minimize/Close) -->
@@ -167,7 +167,7 @@
                                  Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverse}">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal" ItemWidth="300"/>
+                                    <UniformGrid Columns="3"/>
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
                             <ListBox.ItemTemplate>
@@ -192,8 +192,45 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </Grid>
+                    <Image Margin="10,84,100,614" 
+                        Grid.Row="1" 
+                        Source="/Images/SideBarIcons/radio.png" 
+                        Height="20"
+                        Width="20"
+                        Stretch="Fill"/>
+                    <Image Margin="10,133,100,565"
+                        Grid.Row="1" 
+                        Source="/Images/SideBarIcons/rows-plus-top.png" 
+                        Width="20"
+                        Height="20"
+                        Stretch="Fill"/>
+                    <Image Margin="10,184,100,514" 
+                        Grid.Row="1" 
+                        Height="20"
+                        Width="20"
+                        Source="/Images/SideBarIcons/question.png" 
+                        Stretch="Fill"/>
+                    <Image Margin="10,234,100,464"
+                        Grid.Row="1" 
+                        Source="/Images/SideBarIcons/gear.png" 
+                        Height="20"
+                        Width="20"
+                        Stretch="Fill"/>
+                    <Image Margin="10,285,100,413" 
+                        Grid.Row="1" 
+                        Height="20"
+                        Width="20"
+                        Source="/Images/SideBarIcons/link.png"
+                        Stretch="Fill"/>
+                    <Image Margin="10,34,100,664"
+                        Grid.Row="1" 
+                        Source="/Images/SideBarIcons/folder-user.png"
+                        Height="20"
+                        Width="20"
+                        Stretch="Fill"/>
                 </Grid>
             </Viewbox>
         </Border>
     </Border>
 </Window>
+<!--====================-->

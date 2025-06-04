@@ -123,6 +123,8 @@ namespace JNR.Views.MainPage
             }
         }
 
+
+
         private async Task ExecuteSearchAsync()
         {
             if (string.IsNullOrWhiteSpace(SearchQuery))
@@ -242,11 +244,16 @@ namespace JNR.Views.MainPage
             if (sender is RadioButton rb) rb.IsChecked = false;
         }
 
-  
+
 
         private void AboutRadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("About page not yet implemented.", "Coming Soon");
+            var aboutWindow = new JNR.Views.About();
+            aboutWindow.Owner = this;
+            aboutWindow.Show();
+            // Optionally close or hide MainPage, or uncheck the radio button
+            // For now, let current MainPage behavior of opening new windows persist.
+            if (sender is RadioButton rb) rb.IsChecked = false; // Uncheck so it can be re-clicked if About is closed
         }
 
         private void SettingsRadioButton_Checked(object sender, RoutedEventArgs e)

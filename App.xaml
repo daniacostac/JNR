@@ -9,6 +9,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Themes/MainButtonTheme.xaml"/>
                 <ResourceDictionary Source="/Themes/SearchBoxStyle.xaml"/>
+                
             </ResourceDictionary.MergedDictionaries>
             <!-- Added BooleanToVisibilityConverter here for global access -->
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>

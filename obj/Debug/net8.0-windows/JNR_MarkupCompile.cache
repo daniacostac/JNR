@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\danie\Desktop\JNR\obj\Debug\net8.0-windows\
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\
 JNR
 none
 false
-TRACE;DEBUG;NET;NET8_0;NETCOREAPP
-C:\Users\danie\Desktop\JNR\App.xaml
-13246827691
+TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
+C:\Users\DanielAcosta\Documents\GitHub\JNR\App.xaml
+14-1226922867
 91234040475
-191699497829
-2081407659664
-MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\Charts.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Genres.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\My Albums\MyAlbums.xaml;Views\Overview.xaml;Views\SignUp\SignUp.xaml;
+20805730945
+208440417628
+MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\About.xaml;Views\Charts.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Genres.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\My Albums\MyAlbums.xaml;Views\Overview.xaml;Views\SignUp\SignUp.xaml;
 
 False
 
