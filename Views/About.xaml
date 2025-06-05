@@ -146,7 +146,7 @@
 
                             <Image Source="/Images/logo.png" Width="70" Height="70" HorizontalAlignment="Center" Margin="0,0,0,10" RenderOptions.BitmapScalingMode="Fant"/>
                             <TextBlock Text="JamNRate" FontSize="26" FontWeight="Bold" FontFamily="{StaticResource TitleFont}" HorizontalAlignment="Center" Foreground="{StaticResource LightTextColor}"/>
-                            <TextBlock x:Name="VersionTextBlock" Text="Version [Fetching...]" FontSize="13" HorizontalAlignment="Center" Foreground="{StaticResource MediumTextColor}" Margin="0,0,0,5"/>
+                            <TextBlock x:Name="VersionTextBlock" Text="Version 1.0.0" FontSize="13" HorizontalAlignment="Center" Foreground="{StaticResource MediumTextColor}" Margin="0,0,0,5"/>
                             <TextBlock Text="Your personal companion for discovering, rating, and tracking music albums." 
                                        FontSize="12" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" 
                                        Foreground="{StaticResource MediumTextColor}" Margin="0,0,0,15" MaxWidth="450"/>
@@ -154,7 +154,7 @@
                             <Separator/>
 
                             <TextBlock FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource LightTextColor}" Margin="0,0,0,3">Developed By</TextBlock>
-                            <TextBlock Text="[Your Name/Alias Here - Update This!]" FontSize="13" Foreground="{StaticResource MediumTextColor}" Margin="0,0,0,15"/>
+                            <TextBlock Text="Daniel Acosta Castilla" FontSize="13" Foreground="{StaticResource MediumTextColor}" Margin="0,0,0,15"/>
 
                             <Separator/>
 
@@ -183,7 +183,7 @@
 
                             <TextBlock FontSize="13" Foreground="{StaticResource MediumTextColor}" Margin="0,5,0,5" HorizontalAlignment="Center" TextWrapping="Wrap">
                                 <Run Text="For feedback or support, please contact: "/>
-                                <Hyperlink NavigateUri="mailto:your.email@example.com?subject=JNR Feedback" RequestNavigate="Hyperlink_RequestNavigate">your.email@example.com</Hyperlink>
+                                <Hyperlink NavigateUri="danielacostac03@gmail.com" RequestNavigate="Hyperlink_RequestNavigate">your.email@example.com</Hyperlink>
                             </TextBlock>
                         </StackPanel>
                     </ScrollViewer>
