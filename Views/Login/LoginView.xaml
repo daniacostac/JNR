@@ -151,7 +151,8 @@
                             FontFamily="/Fonts/#Dosis"
                             Cursor="Hand"
                             Grid.Column="2"
-                            Margin="0, 50, 0, 0">
+                            Margin="0, 50, 0, 0"
+                            Click="LoginButton_Click">
 
                         <Button.Style>
                             <Style TargetType="Button">

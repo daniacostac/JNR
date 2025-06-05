@@ -23,6 +23,7 @@
     <None Remove="Images\musica.png" />
     <None Remove="Images\pinkfloydPlaceHolder.jfif" />
     <None Remove="Images\pinkfloyd_animals.jpg" />
+    <None Remove="Images\rewind.png" />
     <None Remove="Images\search.png" />
     <None Remove="Images\SideBarIcons\folder-user.png" />
     <None Remove="Images\SideBarIcons\gear.png" />
@@ -31,6 +32,12 @@
     <None Remove="Images\SideBarIcons\radio.png" />
     <None Remove="Images\SideBarIcons\rows-plus-top.png" />
     <None Remove="Images\user-icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\rewind.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -94,6 +101,17 @@
 
   <ItemGroup>
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc5.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
   </ItemGroup>
 
 </Project>

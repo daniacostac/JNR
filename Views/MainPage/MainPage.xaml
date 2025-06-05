@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JNR.Views.MainPage"
-        xmlns:controls="clr-namespace:JNR.Views.Controls"
         mc:Ignorable="d"
         WindowStyle="None"
         ResizeMode="CanResize"
@@ -12,7 +11,8 @@
         AllowsTransparency="True"
         Title="MainPage"
         WindowStartupLocation="CenterScreen"
-        WindowState="Normal">
+        WindowState="Normal"
+        MouseDown="Window_MouseDown">
 
     <Window.Resources>
         <Style TargetType="ListBoxItem" x:Key="NoHighlightListBoxItem">
@@ -44,8 +44,51 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Styles for Window Control Buttons (Minimize/Close) -->
+        <Style TargetType="Button" x:Key="WindowControlButtonBase" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Width" Value="25"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="2">
+                            <TextBlock Text="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button" x:Key="MinimizeButtonStyle" BasedOn="{StaticResource WindowControlButtonBase}">
+            <Setter Property="Content" Value=""/>
+            <!-- Minimize icon -->
+            <Setter Property="Background" Value="#FF4E72B8"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF6889CA"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Button" x:Key="CloseButtonStyle" BasedOn="{StaticResource WindowControlButtonBase}">
+            <Setter Property="Content" Value=""/>
+            <!-- Close icon -->
+            <Setter Property="Background" Value="IndianRed"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightCoral"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
     </Window.Resources>
-    
+
 
     <Viewbox Stretch="Uniform">
         <Border CornerRadius="10" Background="Transparent">
@@ -66,35 +109,36 @@
                         <GradientStop Color="#141228" Offset="1"/>
                     </LinearGradientBrush>
                 </Border.Background>
-                
-                
+
+
 
                 <Grid Width="800" Height="450">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130"/>
+                        <!-- Col 0: Sidebar area -->
                         <ColumnDefinition Width="470"/>
-
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition/>
+                        <!-- Col 1: Main Content Area (Search box, Results List) -->
+                        <ColumnDefinition Width="*"/>
+                        <!-- Col 2: Remaining space, used for window controls -->
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"/>
-                        <RowDefinition Height="375"/>
+                        <!-- Top Bar area -->
+                        <RowDefinition Height="*"/>
+                        <!-- Content below top bar -->
                     </Grid.RowDefinitions>
 
 
-                    <DockPanel Grid.Column="1" Margin="5,0,76,0" VerticalAlignment="Center" LastChildFill="True">
-
+                    <DockPanel Grid.Column="1" Grid.Row="0" Margin="5,0,10,0" VerticalAlignment="Center" LastChildFill="True">
                         <Border CornerRadius="15" Background="#21212F" VerticalAlignment="Center" Height="30">
                             <TextBox x:Name="txtSearchAlbum"
                                      Tag="Enter album or artist name..."
                                      Text=""
-                            
-                                Background="Transparent"
+                                     Background="Transparent"
                                      BorderThickness="0"
                                      Foreground="White"
-                                     FontSize="8"
+                                     FontSize="8" 
                                      VerticalAlignment="Center"
                                      Padding="10,5"
                                      Style="{StaticResource SearchTextBoxStyle}">
@@ -106,6 +150,13 @@
                             </TextBox>
                         </Border>
                     </DockPanel>
+
+                    <!-- Window Control Buttons -->
+                    <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" 
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <Button Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" Margin="0,0,5,0"/>
+                        <Button Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click"/>
+                    </StackPanel>
 
 
                     <TextBlock Grid.Column="0" Grid.Row="0" Text="Welcome"
@@ -119,7 +170,6 @@
 
 
                     <StackPanel Grid.Column="0" Grid.Row="1">
-                        <!-- MODIFIED LINE: Added Checked="MyAlbumsRadioButton_Checked" -->
                         <RadioButton Content="My Albums" Height="50" Tag="/Images/folder.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Checked="MyAlbumsRadioButton_Checked"/>
                         <RadioButton Content="Genres" Height="50" Tag="/Images/headphones.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Checked="GenresRadioButton_Checked"/>
                         <RadioButton Content="Charts" Height="50" Tag="/Images/list.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Checked="ChartsRadioButton_Checked"/>
@@ -129,19 +179,16 @@
                     </StackPanel>
 
 
-                    <Border Grid.Column="1" Grid.Row="1" Background="Transparent" Margin="0,0,0,-25">
-
-                        <Grid Margin="10,0,10,0">
+                    <Border Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Background="Transparent" Margin="0,0,10,0">
+                        <Grid Margin="10,0,0,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-
                                 <RowDefinition Height="*"/>
-
                             </Grid.RowDefinitions>
 
                             <TextBlock x:Name="lblResultsTitle"
+                                       Text="{Binding MainContentTitle}"
                                        Grid.Row="0"
-                                       Text="Search for anything!"
                                        Foreground="AliceBlue"
                                        FontSize="13"
                                        FontFamily="/Fonts/#Dosis"
@@ -176,8 +223,7 @@
                                     </ControlTemplate>
                                 </ListBox.Template>
                                 <ListBox.ItemTemplate>
-                                    <DataTemplate>
-
+                                    <DataTemplate DataType="{x:Type local:MainPageSearchResultItem}">
                                         <StackPanel Orientation="Horizontal" Margin="5" Background="Transparent"
                                                     MouseLeftButtonUp="AlbumSearchResult_Click" Cursor="Hand">
                                             <Image Source="{Binding CoverArtUrl, FallbackValue='/Images/placeholder_album.png'}" 
@@ -200,7 +246,10 @@
                                                            TextTrimming="CharacterEllipsis"
                                                            MaxWidth="350"
                                                            Margin="0,2,0,0">
-
+                                                     <Run Text="Year: "/>
+                                                     <Run Text="{Binding ReleaseYear, TargetNullValue='N/A'}"/>
+                                                     <Run Text=", Genre: "/>
+                                                     <Run Text="{Binding PrimaryGenre, TargetNullValue='N/A'}"/>
                                                 </TextBlock>
                                             </StackPanel>
                                         </StackPanel>
@@ -210,17 +259,9 @@
                         </Grid>
                     </Border>
 
-
-
-
-                    <Border Grid.Column="2" Grid.Row="1"
-                            Background="Transparent"
-                            Margin="0 ,0 ,0 , -25"
-                            VerticalAlignment="Bottom"
-                            Height="340">
-                    </Border>
-                    <Button Grid.Column="1"
-                            Margin="370,18,85,17"
+                    <Button Grid.Column="1" Grid.Row="0"
+                            Margin="0,0,15,0" 
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
                             Width="15"
                             Height="15"
                             Click="btnSearchAlbum_Click"
@@ -235,51 +276,21 @@
                         </Button.Template>
                         <Image Source="/Images/search.png" Stretch="Fill"/>
                     </Button>
-                    <Image Margin="10,14,100,341"
-                           Grid.Row="1" 
-                           Height="20"
-                           Width="20"
-                           Source="/Images/SideBarIcons/folder-user.png" 
-                           Stretch="Fill"/>
-                    <Image Margin="10,64,100,291" 
-                           Grid.Row="1" 
-                           Source="/Images/SideBarIcons/radio.png" 
-                           Height="20"
-                           Width="20"
-                           Stretch="Fill"/>
-                    <Image Margin="10,113,100,242"
-                           Grid.Row="1" 
-                           Source="/Images/SideBarIcons/rows-plus-top.png" 
-                           Width="20"
-                           Height="20"
-                           Stretch="Fill"/>
-                    <Image Margin="10,164,100,191" 
-                           Grid.Row="1" 
-                           Height="20"
-                           Width="20"
-                           Source="/Images/SideBarIcons/question.png" 
-                           Stretch="Fill"/>
-                    <Image Margin="10,214,100,141"
-                           Grid.Row="1" 
-                           Source="/Images/SideBarIcons/gear.png" 
-                           Height="20"
-                           Width="20"
-                           Stretch="Fill"/>
-                    <Image Margin="10,265,100,90" 
-                           Grid.Row="1" 
-                           Height="20"
-                           Width="20"
-                           Source="/Images/SideBarIcons/link.png"
-                           Stretch="Fill"/>
-                    <Image Margin="10,14,100,341"
-                        Grid.Row="1" 
-                        Source="/Images/SideBarIcons/folder-user.png"
-                        Height="20"
-                        Width="20"
-                        Stretch="Fill"/>
+
+                    <Image Margin="10,14,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                           Height="20" Width="20" Source="/Images/SideBarIcons/folder-user.png" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,64,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                           Source="/Images/SideBarIcons/radio.png" Height="20" Width="20" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,113,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                           Source="/Images/SideBarIcons/rows-plus-top.png" Width="20" Height="20" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,164,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                           Height="20" Width="20" Source="/Images/SideBarIcons/question.png" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,214,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                           Source="/Images/SideBarIcons/gear.png" Height="20" Width="20" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,265,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                           Height="20" Width="20" Source="/Images/SideBarIcons/link.png" Stretch="Fill" IsHitTestVisible="False"/>
                 </Grid>
             </Border>
         </Border>
     </Viewbox>
 </Window>
-<!--====================-->

@@ -541,7 +541,20 @@ namespace JNR.Views
             catch (Exception ex) { Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] Error in FindChartsRadioButtonAndCheck: {ex.Message}"); }
         }
 
-
+        private void btnGoBackCharts_Click(object sender, RoutedEventArgs e)
+        {
+            var mainPage = Application.Current.Windows.OfType<JNR.Views.MainPage.MainPage>().FirstOrDefault();
+            if (mainPage == null)
+            {
+                mainPage = new JNR.Views.MainPage.MainPage();
+                mainPage.Show();
+            }
+            else
+            {
+                mainPage.Activate();
+            }
+            this.Close();
+        }
         private void GoToSearch_Click(object sender, RoutedEventArgs e)
         {
             var mainPage = new JNR.Views.MainPage.MainPage();

@@ -17,6 +17,7 @@
 
     <Window.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        
 
         <Style TargetType="ListBoxItem" x:Key="NoHighlightListBoxItem">
             <Setter Property="Background" Value="Transparent"/>
@@ -64,6 +65,8 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
+        
 
         <Style TargetType="Button" x:Key="MinimizeButtonStyle" BasedOn="{StaticResource WindowControlButtonBase}">
             <Setter Property="Content" Value=""/>
@@ -305,6 +308,8 @@
             </Setter>
         </Style>
     </Window.Resources>
+    
+    
 
     <Viewbox Stretch="Uniform">
         <Border CornerRadius="10" Background="Transparent">

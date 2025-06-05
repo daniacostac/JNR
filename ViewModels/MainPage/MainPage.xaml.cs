@@ -84,7 +84,7 @@ namespace JNR.Views.MainPage
         public MainPage()
         {
             InitializeComponent();
-            this.DataContext = this; // This is CRITICAL for all bindings in MainPage.xaml to work
+            this.DataContext = this;
             SearchResults = new ObservableCollection<MainPageSearchResultItem>();
 
             if (discogsClient.DefaultRequestHeaders.UserAgent.Count == 0)
@@ -94,23 +94,34 @@ namespace JNR.Views.MainPage
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Discogs", $"token={DiscogsApiToken}");
             }
             Debug.WriteLine("MainPage Initialized. DataContext set. HttpClient configured.");
-            // txtSearchAlbum is the x:Name of your TextBox in MainPage.xaml
-            // This ensures that as you type, the SearchQuery property is updated.
             BindingOperations.SetBinding(txtSearchAlbum, TextBox.TextProperty, new Binding("SearchQuery") { Source = this, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
             Debug.WriteLine("Binding for txtSearchAlbum.Text to SearchQuery programmatically set.");
         }
 
-        // This is the event handler wired up in MainPage.xaml for the search button
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            //Application.Current.Shutdown(); // Or this.Close(); if MainPage isn't the absolute root
+            this.Close(); // More common for a sub-main window. If it's the entry point, Shutdown is fine.
+        }
+
         private async void btnSearchAlbum_Click(object sender, RoutedEventArgs e)
         {
-            // The SearchQuery property should now be reliably updated by the programmatic binding
-            // or by the XAML binding if UpdateSourceTrigger=PropertyChanged is working correctly there.
             Debug.WriteLine($"btnSearchAlbum_Click: Current SearchQuery value from property is '{SearchQuery}'");
-            // For absolute certainty, you can also check the TextBox text directly:
-            // Debug.WriteLine($"btnSearchAlbum_Click: Text directly from txtSearchAlbum.Text is '{txtSearchAlbum.Text}'");
 
-
-            if (!string.IsNullOrWhiteSpace(SearchQuery)) // Using the property which should be up-to-date
+            if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
                 Debug.WriteLine($"btnSearchAlbum_Click: SearchQuery is valid ('{SearchQuery}'). Calling ExecuteSearchAsync.");
                 await ExecuteSearchAsync();
@@ -122,8 +133,6 @@ namespace JNR.Views.MainPage
                 SearchResults.Clear();
             }
         }
-
-
 
         private async Task ExecuteSearchAsync()
         {
@@ -208,11 +217,14 @@ namespace JNR.Views.MainPage
                 var overview = new JNR.Views.Overview(
                     selectedItem.AlbumName,
                     selectedItem.ArtistName,
-                    selectedItem.Mbid,
+                    selectedItem.Mbid, // This could be null if from Discogs
                     selectedItem.CoverArtUrl
+                // Pass DiscogsId if Overview needs it directly and mbid is null
                 );
-                overview.Owner = this;
+                overview.Owner = this; // Set owner for better window management
                 overview.Show();
+                // Consider if MainPage should be hidden or closed
+                // this.Hide(); 
             }
         }
 
@@ -222,6 +234,7 @@ namespace JNR.Views.MainPage
             var myAlbumsWindow = new JNR.Views.My_Albums.MyAlbums();
             myAlbumsWindow.Owner = this;
             myAlbumsWindow.Show();
+            if (sender is RadioButton rb) rb.IsChecked = false;
         }
 
         private void GenresRadioButton_Checked(object sender, RoutedEventArgs e)
@@ -229,46 +242,38 @@ namespace JNR.Views.MainPage
             var genresWindow = new JNR.Views.Genres.Genres();
             genresWindow.Owner = this;
             genresWindow.Show();
+            if (sender is RadioButton rb) rb.IsChecked = false;
         }
 
         private void ChartsRadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            // Open the separate Charts window
-            var chartsWindow = new JNR.Views.Charts(); // Ensure correct namespace
-            chartsWindow.Owner = this; // Optional
+            var chartsWindow = new JNR.Views.Charts();
+            chartsWindow.Owner = this;
             chartsWindow.Show();
-            // this.Close(); // Or Hide(), depending on desired app flow
-            // If MainPage is the main hub, you might not want to close it.
-            // For now, let current MainPage behavior of opening new windows persist.
-            // Uncheck the radio button on MainPage so it can be re-clicked if Charts is closed
             if (sender is RadioButton rb) rb.IsChecked = false;
         }
-
-
 
         private void AboutRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             var aboutWindow = new JNR.Views.About();
             aboutWindow.Owner = this;
             aboutWindow.Show();
-            // Optionally close or hide MainPage, or uncheck the radio button
-            // For now, let current MainPage behavior of opening new windows persist.
-            if (sender is RadioButton rb) rb.IsChecked = false; // Uncheck so it can be re-clicked if About is closed
+            if (sender is RadioButton rb) rb.IsChecked = false;
         }
 
         private void SettingsRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Settings page not yet implemented.", "Coming Soon");
+            if (sender is RadioButton rb) rb.IsChecked = false;
         }
 
         private void LinksRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Links page not yet implemented.", "Coming Soon");
+            if (sender is RadioButton rb) rb.IsChecked = false;
         }
     }
 
-    // RelayCommand can be in a separate file or here if only used by MainPage.
-    // It's not directly used by the btnSearchAlbum_Click in this version but kept for completeness.
     public class RelayCommand : ICommand
     {
         private readonly Action<object> _execute;

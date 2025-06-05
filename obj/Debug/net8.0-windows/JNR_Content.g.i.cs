@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/rewind.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/sidebaricons/folder-user.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/sidebaricons/rows-plus-top.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/globe_icon.png")]
