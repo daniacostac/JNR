@@ -1,4 +1,4 @@
-﻿// File: Views/Genres.xaml.cs
+﻿// File: Views/Genres/Genres.xaml.cs
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,27 +8,23 @@ using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-// System.Text.Json.Serialization is not directly used here, but on models
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using JNR.Models.LastFmModels;
-using JNR.Views; // For Overview class
-// For navigation
-using JNR.Views.MainPage;
-using JNR.Views.My_Albums;
-// NO using JNR.Commands; needed if defined in this file
+using JNR.Views;
+using JNR;
 
 namespace JNR.Views.Genres
 {
-    // UI Display Models (specific to this Genres window)
     public class GenreAlbumItemUI
     {
         public string AlbumName { get; set; }
         public string ArtistName { get; set; }
         public string CoverArtUrl { get; set; }
-        public string AlbumId { get; set; } // MBID from Last.fm
+        public string AlbumId { get; set; }
         public string ReleaseYear { get; set; }
     }
 
@@ -38,14 +34,10 @@ namespace JNR.Views.Genres
         public int Count { get; set; }
     }
 
-    // Local Last.fm API Response Models
     public class LocalLfmTag { [System.Text.Json.Serialization.JsonPropertyName("name")] public string Name { get; set; } [System.Text.Json.Serialization.JsonPropertyName("count")] public int Count { get; set; } [System.Text.Json.Serialization.JsonPropertyName("url")] public string Url { get; set; } }
     public class LocalLfmTopTagsContainer { [System.Text.Json.Serialization.JsonPropertyName("tag")] public List<LocalLfmTag> Tags { get; set; } }
     public class LocalLfmTopTagsResponse { [System.Text.Json.Serialization.JsonPropertyName("toptags")] public LocalLfmTopTagsContainer TopTags { get; set; } }
-
-    // MODIFIED LocalLfmRankAttr: Rank is now string
     public class LocalLfmRankAttr { [System.Text.Json.Serialization.JsonPropertyName("rank")] public string Rank { get; set; } }
-
     public class LocalLfmAlbumForTagRanked { [System.Text.Json.Serialization.JsonPropertyName("name")] public string Name { get; set; } [System.Text.Json.Serialization.JsonPropertyName("mbid")] public string Mbid { get; set; } [System.Text.Json.Serialization.JsonPropertyName("url")] public string Url { get; set; } [System.Text.Json.Serialization.JsonPropertyName("artist")] public LastFmArtistBrief Artist { get; set; } [System.Text.Json.Serialization.JsonPropertyName("image")] public List<LastFmImage> Image { get; set; } [System.Text.Json.Serialization.JsonPropertyName("@attr")] public LocalLfmRankAttr Attr { get; set; } }
     public class LocalLfmTopAlbumsForTagContainer { [System.Text.Json.Serialization.JsonPropertyName("album")] public List<LocalLfmAlbumForTagRanked> Album { get; set; } }
     public class LocalLfmTopAlbumsByTagResponse { [System.Text.Json.Serialization.JsonPropertyName("albums")] public LocalLfmTopAlbumsForTagContainer Albums { get; set; } }
@@ -107,14 +99,15 @@ namespace JNR.Views.Genres
         }
 
         private static readonly HttpClient client = new HttpClient();
-        private const string LastFmApiKey = "d8831cc3c1d4eb53011a7b268a95d028"; // Your Last.fm API Key
-
+        private const string LastFmApiKey = "d8831cc3c1d4eb53011a7b268a95d028";
         public ICommand SearchAlbumsByGenreCommand { get; }
 
         public Genres()
         {
             InitializeComponent();
             this.DataContext = this;
+            this.Closed += (s, args) => App.WindowClosed(this);
+
             GenreList = new ObservableCollection<GenreListItemUI>();
             AlbumsForSelectedGenre = new ObservableCollection<GenreAlbumItemUI>();
             IsGenreSelectedAndSearched = false;
@@ -128,9 +121,32 @@ namespace JNR.Views.Genres
 
             if (client.DefaultRequestHeaders.UserAgent.Count == 0)
             {
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("JNR_WPF_App/1.0"); // Your App Name/Version
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("JNR_WPF_App/1.0");
             }
             LoadTopGenresAsync();
+        }
+
+        public void EnsureCorrectRadioButtonIsChecked()
+        {
+            StackPanel sidebarPanel = null;
+            if (this.Content is Viewbox viewbox && viewbox.Child is Border outerBorder && outerBorder.Child is Border innerBorder && innerBorder.Child is Grid mainGrid)
+            {
+                sidebarPanel = mainGrid.Children.OfType<StackPanel>()
+                                      .FirstOrDefault(p => Grid.GetColumn(p) == 0 && Grid.GetRow(p) == 1);
+            }
+
+
+            if (sidebarPanel != null)
+            {
+                var genresRadioButton = sidebarPanel.Children.OfType<RadioButton>()
+                                              .FirstOrDefault(r => r.Content?.ToString() == "Genres");
+                if (genresRadioButton != null)
+                {
+                    genresRadioButton.IsChecked = true;
+                }
+                else { Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] Genres RadioButton not found in sidebar panel for Genres view."); }
+            }
+            else { Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] Sidebar panel not found for re-checking Genres button in Genres view."); }
         }
 
         private async Task ExecuteSearchAlbumsByGenreAsync()
@@ -171,17 +187,14 @@ namespace JNR.Views.Genres
             catch (Exception ex)
             {
                 Debug.WriteLine($"LoadTopGenres Error: {ex.Message}");
-                MessageBox.Show($"Error loading genres: {ex.Message}", "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private async Task LoadAlbumsForGenreAsync(string genreName)
         {
             if (string.IsNullOrWhiteSpace(genreName)) return;
-
             IsLoadingAlbums = true;
             AlbumsForSelectedGenre.Clear();
-
             string apiUrl = $"http://ws.audioscrobbler.com/2.0/?method=tag.getTopAlbums&tag={Uri.EscapeDataString(genreName)}&api_key={LastFmApiKey}&format=json&limit=50";
             try
             {
@@ -189,14 +202,12 @@ namespace JNR.Views.Genres
                 response.EnsureSuccessStatusCode();
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var apiResponse = JsonSerializer.Deserialize<LocalLfmTopAlbumsByTagResponse>(jsonResponse, options); // This is where the error occurs
+                var apiResponse = JsonSerializer.Deserialize<LocalLfmTopAlbumsByTagResponse>(jsonResponse, options);
 
                 if (apiResponse?.Albums?.Album != null && apiResponse.Albums.Album.Any())
                 {
                     foreach (var fmAlbum in apiResponse.Albums.Album)
                     {
-                        // The fmAlbum.Attr.Rank is now a string and doesn't directly affect GenreAlbumItemUI population
-                        // unless you were trying to parse it here.
                         AlbumsForSelectedGenre.Add(new GenreAlbumItemUI
                         {
                             AlbumName = fmAlbum.Name,
@@ -207,27 +218,19 @@ namespace JNR.Views.Genres
                         });
                     }
                 }
-                else
-                {
-                    SelectedGenreNameForDisplay = $"No albums found for: {genreName}";
-                }
+                else SelectedGenreNameForDisplay = $"No albums found for: {genreName}";
             }
-            catch (JsonException jsonEx) // Catch specific JsonException
+            catch (JsonException jsonEx)
             {
-                Debug.WriteLine($"LoadAlbumsForGenre JSON Error ({genreName}): {jsonEx.ToString()}"); // Log full exception
+                Debug.WriteLine($"LoadAlbumsForGenre JSON Error ({genreName}): {jsonEx.Message}\nPath: {jsonEx.Path}, Line: {jsonEx.LineNumber}, Pos: {jsonEx.BytePositionInLine}");
                 SelectedGenreNameForDisplay = $"Error parsing album data for: {genreName}.";
-                MessageBox.Show($"Error parsing album data for {genreName}: {jsonEx.Message}\nPath: {jsonEx.Path}\nLine: {jsonEx.LineNumber}, Pos: {jsonEx.BytePositionInLine}", "JSON Deserialization Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"LoadAlbumsForGenre Error ({genreName}): {ex.Message}");
                 SelectedGenreNameForDisplay = $"Error loading albums for: {genreName}";
-                MessageBox.Show($"Error loading albums for {genreName}: {ex.Message}", "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            finally
-            {
-                IsLoadingAlbums = false;
-            }
+            finally { IsLoadingAlbums = false; }
         }
 
         private string GetLastFmImageUrl(List<LastFmImage> images, string preferredSize = "extralarge")
@@ -246,60 +249,46 @@ namespace JNR.Views.Genres
 
         private void AlbumInGenre_Click(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 1)
+            if (e.ClickCount == 1 && sender is FrameworkElement fe && fe.DataContext is GenreAlbumItemUI selectedAlbum)
             {
-                if (sender is FrameworkElement fe && fe.DataContext is GenreAlbumItemUI selectedAlbum)
-                {
-                    var overview = new Overview(
-                        selectedAlbum.AlbumName,
-                        selectedAlbum.ArtistName,
-                        selectedAlbum.AlbumId,
-                        selectedAlbum.CoverArtUrl
-                    );
-                    overview.Owner = Window.GetWindow(this);
-                    overview.Show();
-                }
+                App.NavigateToOverview(this,
+                    selectedAlbum.AlbumName,
+                    selectedAlbum.ArtistName,
+                    selectedAlbum.AlbumId,
+                    selectedAlbum.CoverArtUrl);
             }
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) => this.Close();
         private void MinimizeButton_Click(object sender, RoutedEventArgs e) => this.WindowState = WindowState.Minimized;
 
-        private void MyAlbumsRadioButton_Click(object sender, RoutedEventArgs e)
+        // NEW: Handler for the Back Button
+        private void btnGoBackGenres_Click(object sender, RoutedEventArgs e)
         {
-            var myAlbumsWindow = new MyAlbums();
-            myAlbumsWindow.Owner = this.Owner;
-            myAlbumsWindow.Show();
-            this.Close();
+            App.NavigateToMainPage(this);
         }
 
-        private void ChartsRadioButton_Click(object sender, RoutedEventArgs e)
+        private void SidebarNavigation_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Charts page not yet implemented.", "Coming Soon");
-            EnsureGenresRadioButtonIsChecked();
-        }
+            if (sender is RadioButton rb && rb.CommandParameter is string viewName)
+            {
+                if (viewName == "Genres")
+                {
+                    rb.IsChecked = true;
+                    return;
+                }
 
-        private void AboutRadioButton_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("About page not yet implemented.", "Coming Soon");
-            EnsureGenresRadioButtonIsChecked();
-        }
-
-        private void SettingsRadioButton_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Settings page not yet implemented.", "Coming Soon");
-            EnsureGenresRadioButtonIsChecked();
-        }
-
-        private void LinksRadioButton_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Links page not yet implemented.", "Coming Soon");
-            EnsureGenresRadioButtonIsChecked();
-        }
-
-        private void EnsureGenresRadioButtonIsChecked()
-        {
-            // Logic to ensure the "Genres" radio button remains checked if necessary
+                switch (viewName)
+                {
+                    case "MyAlbums": App.NavigateTo<JNR.Views.My_Albums.MyAlbums>(this); break;
+                    case "Charts": App.NavigateTo<JNR.Views.Charts>(this); break;
+                    case "About": App.NavigateTo<JNR.Views.About>(this); break;
+                    case "Settings":
+                    case "Links":
+                        App.HandlePlaceholderNavigation(this, rb, viewName);
+                        return;
+                }
+            }
         }
     }
 
@@ -307,30 +296,11 @@ namespace JNR.Views.Genres
     {
         private readonly Action<object> _execute;
         private readonly Func<object, bool> _canExecute;
-
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
-
-        public RelayCommandImplementation(Action<object> execute, Func<object, bool> canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
-
-        public RelayCommandImplementation(Action execute, Func<bool> canExecute = null)
-            : this(o => execute(), canExecute == null ? (Func<object, bool>)null : o => canExecute())
-        { }
-
-
+        public event EventHandler CanExecuteChanged { add { CommandManager.RequerySuggested += value; } remove { CommandManager.RequerySuggested -= value; } }
+        public RelayCommandImplementation(Action<object> execute, Func<object, bool> canExecute = null) { _execute = execute ?? throw new ArgumentNullException(nameof(execute)); _canExecute = canExecute; }
+        public RelayCommandImplementation(Action execute, Func<bool> canExecute = null) : this(o => execute(), canExecute == null ? (Func<object, bool>)null : o => canExecute()) { }
         public bool CanExecute(object parameter) => _canExecute == null || _canExecute(parameter);
         public void Execute(object parameter) => _execute(parameter);
-
-        public void RaiseCanExecuteChanged()
-        {
-            CommandManager.InvalidateRequerySuggested();
-        }
+        public void RaiseCanExecuteChanged() => CommandManager.InvalidateRequerySuggested();
     }
 }

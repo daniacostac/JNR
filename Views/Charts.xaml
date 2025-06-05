@@ -139,7 +139,6 @@
                         <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="About"/>
                         <RadioButton Content="Settings" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Settings"/>
                         <RadioButton Content="Links" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Links"/>
-                        <Button Content="Back to Search" Height="40" Margin="10,20,10,0" Background="#303040" Foreground="White" Click="GoToSearch_Click"/>
                     </StackPanel>
 
                     <!-- Main Content Area for Charts -->

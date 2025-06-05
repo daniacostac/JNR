@@ -1,4 +1,5 @@
-﻿<Window x:Class="JNR.Views.My_Albums.MyAlbums"
+﻿<!-- File: Views\My Albums\MyAlbums.xaml -->
+<Window x:Class="JNR.Views.My_Albums.MyAlbums"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -128,6 +129,7 @@
                         <Button Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click"/>
                     </StackPanel>
 
+                    <!-- IMPORTANT: Added x:Name="SidebarContentPanel" -->
                     <StackPanel x:Name="SidebarContentPanel" Grid.Column="0" Grid.Row="1">
                         <RadioButton Content="My Albums" IsChecked="True" Height="50" Tag="/Images/SideBarIcons/folder-user.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="MyAlbums"/>
                         <RadioButton Content="Genres" Height="50" Tag="/Images/SideBarIcons/radio.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Genres"/>
@@ -135,7 +137,11 @@
                         <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="About"/>
                         <RadioButton Content="Settings" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Settings"/>
                         <RadioButton Content="Links" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Links"/>
+                        <!-- Consider adding a "Back to Search" button here if desired for all views -->
+                        <!-- <Button Content="Back to Search" Height="40" Margin="10,20,10,0" Background="#303040" Foreground="White" Click="GoToSearch_Click"/> -->
                     </StackPanel>
+
+                    <!-- These images are purely visual cues for the RadioButton Tags -->
                     <Image Source="/Images/SideBarIcons/folder-user.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,14,0,0" IsHitTestVisible="False"/>
                     <Image Source="/Images/SideBarIcons/radio.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,64,0,0" IsHitTestVisible="False"/>
                     <Image Source="/Images/SideBarIcons/rows-plus-top.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,114,0,0" IsHitTestVisible="False"/>
@@ -145,18 +151,19 @@
 
 
                     <Grid Grid.Column="1" Grid.Row="1" Margin="15,10,15,10">
+                        <!-- Status Message for Loading or No Albums -->
                         <TextBlock Text="{Binding StatusMessage, FallbackValue='Loading...'}" 
                                    Foreground="{StaticResource MediumTextColor}" FontSize="14"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Visibility="{Binding UserAlbums.Count, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverseIfZero}" 
+                                   Visibility="{Binding Path=UserAlbums.Count, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverseIfZero}" 
                                    TextWrapping="Wrap"/>
-                        <!-- The inverseIfZero converter parameter needs to be implemented or a custom converter for IsEmpty -->
-                        <!-- For now, simpler visibility: -->
+                        <!-- Fallback for simpler visibility if inverseIfZero is not yet working/implemented -->
                         <TextBlock Text="{Binding StatusMessage, FallbackValue='Loading...'}" 
                                    Foreground="{StaticResource MediumTextColor}" FontSize="14"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                    Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                    TextWrapping="Wrap"/>
+
 
                         <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                       Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverse}">
@@ -191,6 +198,7 @@
                             </ListBox>
                         </ScrollViewer>
                     </Grid>
+
                     <Button Name="btnGoBackImage"
                             Click="btnGoBackMyAlbums_Click" 
                             Grid.Column="0"

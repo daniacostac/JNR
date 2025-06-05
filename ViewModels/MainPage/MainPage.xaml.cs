@@ -1,4 +1,4 @@
-﻿// File: Views/MainPage/MainPage.xaml.cs
+﻿// File: ViewModels/MainPage/MainPage.xaml.cs
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,34 +10,48 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data; // Required for BindingOperations
+using System.Windows.Data;
 using System.Windows.Input;
 using JNR.Models.DiscogModels;
 using JNR.Models.LastFmModels;
+using JNR.Models.NewsApiModels;
 
 namespace JNR.Views.MainPage
 {
-    public class MainPageSearchResultItem : INotifyPropertyChanged
+    public class MainPageSearchResultItem : INotifyPropertyChanged // Unchanged
     {
         private string _albumName;
         public string AlbumName { get => _albumName; set { _albumName = value; OnPropertyChanged(); } }
-
         private string _artistName;
         public string ArtistName { get => _artistName; set { _artistName = value; OnPropertyChanged(); } }
-
         private string _coverArtUrl;
         public string CoverArtUrl { get => _coverArtUrl; set { _coverArtUrl = value; OnPropertyChanged(); } }
-
         private string _releaseYear;
         public string ReleaseYear { get => _releaseYear; set { _releaseYear = value; OnPropertyChanged(); } }
-
         private string _primaryGenre;
         public string PrimaryGenre { get => _primaryGenre; set { _primaryGenre = value; OnPropertyChanged(); } }
-
         public string Mbid { get; set; }
         public int? DiscogsId { get; set; }
         public string SourceApi { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
 
+    public class NewsItemUI : INotifyPropertyChanged // Unchanged
+    {
+        private string _title;
+        public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
+        private string _sourceName;
+        public string SourceName { get => _sourceName; set { _sourceName = value; OnPropertyChanged(); } }
+        private string _url;
+        public string Url { get => _url; set { _url = value; OnPropertyChanged(); } }
+        private string _imageUrl;
+        public string ImageUrl { get => _imageUrl; set { _imageUrl = value; OnPropertyChanged(); } }
+        private string _publishedAtDisplay;
+        public string PublishedAtDisplay { get => _publishedAtDisplay; set { _publishedAtDisplay = value; OnPropertyChanged(); } }
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -68,67 +82,122 @@ namespace JNR.Views.MainPage
             }
         }
 
-        private string _mainContentTitle = "Search for anything!";
+        private string _mainContentTitle = "Search for anything!"; // Initial value
         public string MainContentTitle
         {
             get => _mainContentTitle;
             set { _mainContentTitle = value; OnPropertyChanged(); }
         }
 
+        // NEW Property for placeholder visibility
+        private bool _showInitialPlaceholder = true;
+        public bool ShowInitialPlaceholder
+        {
+            get => _showInitialPlaceholder;
+            set
+            {
+                if (_showInitialPlaceholder != value)
+                {
+                    _showInitialPlaceholder = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public ObservableCollection<MainPageSearchResultItem> SearchResults { get; set; }
+        public ObservableCollection<NewsItemUI> MusicNewsItems { get; set; }
 
         private static readonly HttpClient discogsClient = new HttpClient();
         private const string DiscogsApiToken = "TMMBVQQgfXKTCEmgHqukhGLvhyCKJuLKlSqfrJCn";
         private const string DiscogsApiBaseUrl = "https://api.discogs.com";
+
+        private static readonly HttpClient newsApiClient = new HttpClient();
+        private const string NewsApiKey = "335eb9be8c7449f482c52362b10ab961";
 
         public MainPage()
         {
             InitializeComponent();
             this.DataContext = this;
             SearchResults = new ObservableCollection<MainPageSearchResultItem>();
+            MusicNewsItems = new ObservableCollection<NewsItemUI>();
+
+            ShowInitialPlaceholder = true; // Explicitly set initial state
 
             if (discogsClient.DefaultRequestHeaders.UserAgent.Count == 0)
             {
-                discogsClient.DefaultRequestHeaders.UserAgent.ParseAdd("JNR_WPF_App/1.0");
+                discogsClient.DefaultRequestHeaders.UserAgent.ParseAdd("JNR_WPF_App/1.0 (your.email@example.com)");
                 discogsClient.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Discogs", $"token={DiscogsApiToken}");
             }
-            Debug.WriteLine("MainPage Initialized. DataContext set. HttpClient configured.");
-            BindingOperations.SetBinding(txtSearchAlbum, TextBox.TextProperty, new Binding("SearchQuery") { Source = this, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-            Debug.WriteLine("Binding for txtSearchAlbum.Text to SearchQuery programmatically set.");
-        }
-
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (newsApiClient.DefaultRequestHeaders.UserAgent.Count == 0)
             {
-                DragMove();
+                newsApiClient.DefaultRequestHeaders.UserAgent.ParseAdd("JNR_WPF_App/1.0 (your.email@example.com)");
+                newsApiClient.DefaultRequestHeaders.Add("X-Api-Key", NewsApiKey);
             }
+
+            BindingOperations.SetBinding(txtSearchAlbum, TextBox.TextProperty, new Binding("SearchQuery") { Source = this, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            this.Loaded += async (s, e) => await LoadMusicNewsAsync();
         }
 
-        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        private async Task LoadMusicNewsAsync() // Unchanged
         {
-            this.WindowState = WindowState.Minimized;
+            Debug.WriteLine("LoadMusicNewsAsync: Fetching music news...");
+            MusicNewsItems.Clear();
+            string newsApiUrl = $"https://newsapi.org/v2/top-headlines?country=us&category=entertainment&q=music&pageSize=7";
+            try
+            {
+                HttpResponseMessage response = await newsApiClient.GetAsync(newsApiUrl);
+                Debug.WriteLine($"LoadMusicNewsAsync: NewsAPI call returned. Status: {response.StatusCode}");
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                    var newsApiResponse = JsonSerializer.Deserialize<NewsApiResponse>(jsonResponse, options);
+                    if (newsApiResponse?.Status == "ok" && newsApiResponse.Articles != null && newsApiResponse.Articles.Any())
+                    {
+                        Debug.WriteLine($"LoadMusicNewsAsync: Found {newsApiResponse.Articles.Count} news articles.");
+                        foreach (var article in newsApiResponse.Articles)
+                        {
+                            MusicNewsItems.Add(new NewsItemUI
+                            {
+                                Title = article.Title,
+                                SourceName = article.Source?.Name ?? "Unknown Source",
+                                Url = article.Url,
+                                ImageUrl = article.UrlToImage,
+                                PublishedAtDisplay = article.PublishedAt.ToLocalTime().ToString("g")
+                            });
+                        }
+                    }
+                    else if (newsApiResponse?.Status == "error")
+                    {
+                        Debug.WriteLine($"LoadMusicNewsAsync: NewsAPI returned error: {newsApiResponse.Code} - {newsApiResponse.Message}"); MusicNewsItems.Add(new NewsItemUI { Title = $"News Error: {newsApiResponse.Message}", SourceName = "NewsAPI" });
+                    }
+                    else { Debug.WriteLine("LoadMusicNewsAsync: NewsAPI success, but no articles or unexpected status."); MusicNewsItems.Add(new NewsItemUI { Title = "No music news found.", SourceName = "NewsFeed" }); }
+                }
+                else { string errorContent = await response.Content.ReadAsStringAsync(); Debug.WriteLine($"LoadMusicNewsAsync: NewsAPI HTTP Error: {response.StatusCode} - {response.ReasonPhrase}. Details: {errorContent}"); MusicNewsItems.Add(new NewsItemUI { Title = $"Error fetching news: {response.ReasonPhrase}", SourceName = "NewsFeed" }); }
+            }
+            catch (HttpRequestException httpEx) { Debug.WriteLine($"LoadMusicNewsAsync: HttpRequestException: {httpEx.Message}"); MusicNewsItems.Add(new NewsItemUI { Title = "Network error fetching news.", SourceName = "NewsFeed" }); }
+            catch (JsonException jsonEx) { Debug.WriteLine($"LoadMusicNewsAsync: JsonException: {jsonEx.Message}"); MusicNewsItems.Add(new NewsItemUI { Title = "Error parsing news data.", SourceName = "NewsFeed" }); }
+            catch (Exception ex) { Debug.WriteLine($"LoadMusicNewsAsync: Generic Exception: {ex.Message}"); MusicNewsItems.Add(new NewsItemUI { Title = "Unexpected error fetching news.", SourceName = "NewsFeed" }); }
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e) // Unchanged
         {
-            //Application.Current.Shutdown(); // Or this.Close(); if MainPage isn't the absolute root
-            this.Close(); // More common for a sub-main window. If it's the entry point, Shutdown is fine.
+            if (e.LeftButton == MouseButtonState.Pressed) DragMove();
         }
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e) => this.WindowState = WindowState.Minimized; // Unchanged
+        private void CloseButton_Click(object sender, RoutedEventArgs e) => this.Close(); // Unchanged
 
         private async void btnSearchAlbum_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine($"btnSearchAlbum_Click: Current SearchQuery value from property is '{SearchQuery}'");
-
             if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
-                Debug.WriteLine($"btnSearchAlbum_Click: SearchQuery is valid ('{SearchQuery}'). Calling ExecuteSearchAsync.");
+                ShowInitialPlaceholder = false; // Hide placeholder when a search is initiated
                 await ExecuteSearchAsync();
             }
             else
             {
-                Debug.WriteLine("btnSearchAlbum_Click: SearchQuery is empty or whitespace. Search will not proceed.");
+                ShowInitialPlaceholder = true; // Show placeholder if search query is empty
                 MainContentTitle = "Please enter an album or artist name to search.";
                 SearchResults.Clear();
             }
@@ -138,22 +207,22 @@ namespace JNR.Views.MainPage
         {
             if (string.IsNullOrWhiteSpace(SearchQuery))
             {
-                Debug.WriteLine("ExecuteSearchAsync: Called with empty SearchQuery. Aborting.");
+                // This case should ideally be handled by btnSearchAlbum_Click setting ShowInitialPlaceholder = true
+                // But as a safeguard:
+                ShowInitialPlaceholder = true;
+                MainContentTitle = "Please enter an album or artist name to search.";
+                SearchResults.Clear();
                 return;
             }
 
+            ShowInitialPlaceholder = false; // Ensure placeholder is hidden
             MainContentTitle = $"Searching for '{SearchQuery}'...";
             SearchResults.Clear();
-            Debug.WriteLine($"ExecuteSearchAsync: Searching for '{SearchQuery}'. Cleared results. UI updated.");
 
             try
             {
                 string searchUrl = $"{DiscogsApiBaseUrl}/database/search?q={Uri.EscapeDataString(SearchQuery)}&type=master,release&per_page=20";
-                Debug.WriteLine($"ExecuteSearchAsync: API URL: {searchUrl}");
-
                 HttpResponseMessage response = await discogsClient.GetAsync(searchUrl);
-                Debug.WriteLine($"ExecuteSearchAsync: API call returned. Status: {response.StatusCode}");
-
                 if (response.IsSuccessStatusCode)
                 {
                     string jsonResponse = await response.Content.ReadAsStringAsync();
@@ -163,7 +232,6 @@ namespace JNR.Views.MainPage
                     if (discogsSearchResponse?.Results != null && discogsSearchResponse.Results.Any())
                     {
                         MainContentTitle = $"Results for '{SearchQuery}':";
-                        Debug.WriteLine($"ExecuteSearchAsync: Found {discogsSearchResponse.Results.Count} results.");
                         foreach (var item in discogsSearchResponse.Results)
                         {
                             SearchResults.Add(new MainPageSearchResultItem
@@ -177,129 +245,62 @@ namespace JNR.Views.MainPage
                                 SourceApi = "Discogs"
                             });
                         }
-                        Debug.WriteLine($"ExecuteSearchAsync: Added {SearchResults.Count} items to SearchResults collection.");
                     }
                     else
                     {
                         MainContentTitle = $"No results found for '{SearchQuery}'.";
-                        Debug.WriteLine("ExecuteSearchAsync: API success, but no results in the data.");
+                        // SearchResults is already empty
                     }
                 }
                 else
                 {
-                    string errorContent = await response.Content.ReadAsStringAsync();
                     MainContentTitle = $"Error searching Discogs: {response.ReasonPhrase}";
-                    Debug.WriteLine($"ExecuteSearchAsync: Discogs API Error: {response.StatusCode} - {response.ReasonPhrase}. Details: {errorContent}");
                 }
             }
-            catch (HttpRequestException httpEx)
-            {
-                MainContentTitle = "Network error occurred during search.";
-                Debug.WriteLine($"ExecuteSearchAsync: HttpRequestException: {httpEx.Message}");
-            }
-            catch (JsonException jsonEx)
-            {
-                MainContentTitle = "Error parsing search results data.";
-                Debug.WriteLine($"ExecuteSearchAsync: JsonException: {jsonEx.Message}");
-            }
-            catch (Exception ex)
-            {
-                MainContentTitle = "An unexpected error occurred during search.";
-                Debug.WriteLine($"ExecuteSearchAsync: Generic Exception: {ex.Message}");
-            }
+            catch (HttpRequestException) { MainContentTitle = "Network error occurred during search."; }
+            catch (JsonException) { MainContentTitle = "Error parsing search results data."; }
+            catch (Exception) { MainContentTitle = "An unexpected error occurred during search."; }
         }
 
-        private void AlbumSearchResult_Click(object sender, MouseButtonEventArgs e)
+        private void AlbumSearchResult_Click(object sender, MouseButtonEventArgs e) // Unchanged
         {
             if (sender is FrameworkElement fe && fe.DataContext is MainPageSearchResultItem selectedItem)
             {
-                Debug.WriteLine($"AlbumSearchResult_Click: Navigating to Overview for {selectedItem.AlbumName}");
-                var overview = new JNR.Views.Overview(
-                    selectedItem.AlbumName,
-                    selectedItem.ArtistName,
-                    selectedItem.Mbid, // This could be null if from Discogs
-                    selectedItem.CoverArtUrl
-                // Pass DiscogsId if Overview needs it directly and mbid is null
-                );
-                overview.Owner = this; // Set owner for better window management
-                overview.Show();
-                // Consider if MainPage should be hidden or closed
-                // this.Hide(); 
+                var overview = new JNR.Views.Overview(selectedItem.AlbumName, selectedItem.ArtistName, selectedItem.Mbid, selectedItem.CoverArtUrl);
+                overview.Owner = this; overview.Show();
             }
         }
 
-        // --- Sidebar Navigation Event Handlers ---
-        private void MyAlbumsRadioButton_Checked(object sender, RoutedEventArgs e)
+        private void NewsItem_Click(object sender, MouseButtonEventArgs e) // Unchanged
         {
-            var myAlbumsWindow = new JNR.Views.My_Albums.MyAlbums();
-            myAlbumsWindow.Owner = this;
-            myAlbumsWindow.Show();
-            if (sender is RadioButton rb) rb.IsChecked = false;
+            if (sender is FrameworkElement fe && fe.DataContext is NewsItemUI selectedNewsItem)
+            {
+                if (!string.IsNullOrWhiteSpace(selectedNewsItem.Url))
+                {
+                    try { Process.Start(new ProcessStartInfo(selectedNewsItem.Url) { UseShellExecute = true }); }
+                    catch (Exception ex) { Debug.WriteLine($"Error opening news link: {ex.Message}"); MessageBox.Show("Could not open the link.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+                }
+            }
         }
 
-        private void GenresRadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            var genresWindow = new JNR.Views.Genres.Genres();
-            genresWindow.Owner = this;
-            genresWindow.Show();
-            if (sender is RadioButton rb) rb.IsChecked = false;
-        }
-
-        private void ChartsRadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            var chartsWindow = new JNR.Views.Charts();
-            chartsWindow.Owner = this;
-            chartsWindow.Show();
-            if (sender is RadioButton rb) rb.IsChecked = false;
-        }
-
-        private void AboutRadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            var aboutWindow = new JNR.Views.About();
-            aboutWindow.Owner = this;
-            aboutWindow.Show();
-            if (sender is RadioButton rb) rb.IsChecked = false;
-        }
-
-        private void SettingsRadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Settings page not yet implemented.", "Coming Soon");
-            if (sender is RadioButton rb) rb.IsChecked = false;
-        }
-
-        private void LinksRadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Links page not yet implemented.", "Coming Soon");
-            if (sender is RadioButton rb) rb.IsChecked = false;
-        }
+        // Sidebar Navigation Event Handlers (Unchanged)
+        private void MyAlbumsRadioButton_Checked(object sender, RoutedEventArgs e) { var myAlbumsWindow = new JNR.Views.My_Albums.MyAlbums(); myAlbumsWindow.Owner = this; myAlbumsWindow.Show(); if (sender is RadioButton rb) rb.IsChecked = false; }
+        private void GenresRadioButton_Checked(object sender, RoutedEventArgs e) { var genresWindow = new JNR.Views.Genres.Genres(); genresWindow.Owner = this; genresWindow.Show(); if (sender is RadioButton rb) rb.IsChecked = false; }
+        private void ChartsRadioButton_Checked(object sender, RoutedEventArgs e) { var chartsWindow = new JNR.Views.Charts(); chartsWindow.Owner = this; chartsWindow.Show(); if (sender is RadioButton rb) rb.IsChecked = false; }
+        private void AboutRadioButton_Checked(object sender, RoutedEventArgs e) { var aboutWindow = new JNR.Views.About(); aboutWindow.Owner = this; aboutWindow.Show(); if (sender is RadioButton rb) rb.IsChecked = false; }
+        private void SettingsRadioButton_Checked(object sender, RoutedEventArgs e) { MessageBox.Show("Settings page not yet implemented.", "Coming Soon"); if (sender is RadioButton rb) rb.IsChecked = false; }
+        private void LinksRadioButton_Checked(object sender, RoutedEventArgs e) { MessageBox.Show("Links page not yet implemented.", "Coming Soon"); if (sender is RadioButton rb) rb.IsChecked = false; }
     }
 
-    public class RelayCommand : ICommand
+    public class RelayCommand : ICommand // Unchanged
     {
         private readonly Action<object> _execute;
         private readonly Func<object, bool> _canExecute;
-
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
-
-        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
-        public RelayCommand(Action execute, Func<bool> canExecute = null)
-            : this(o => execute(), canExecute == null ? (Func<object, bool>)null : o => canExecute())
-        { }
-
+        public event EventHandler CanExecuteChanged { add { CommandManager.RequerySuggested += value; } remove { CommandManager.RequerySuggested -= value; } }
+        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null) { _execute = execute ?? throw new ArgumentNullException(nameof(execute)); _canExecute = canExecute; }
+        public RelayCommand(Action execute, Func<bool> canExecute = null) : this(o => execute(), canExecute == null ? (Func<object, bool>)null : o => canExecute()) { }
         public bool CanExecute(object parameter) => _canExecute == null || _canExecute(parameter);
         public void Execute(object parameter) => _execute(parameter);
-
-        public void RaiseCanExecuteChanged()
-        {
-            CommandManager.InvalidateRequerySuggested();
-        }
+        public void RaiseCanExecuteChanged() { CommandManager.InvalidateRequerySuggested(); }
     }
 }

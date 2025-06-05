@@ -13,6 +13,7 @@
             </ResourceDictionary.MergedDictionaries>
             <!-- Added BooleanToVisibilityConverter here for global access -->
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
 
             <!-- Moved NoHighlightListBoxItem style here for global access -->
             <Style TargetType="ListBoxItem" x:Key="NoHighlightListBoxItem">

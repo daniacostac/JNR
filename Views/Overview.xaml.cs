@@ -385,15 +385,7 @@ namespace JNR.Views
                         displayItem.RatingDisplay = $"Rated: {review.Rating}/10";
                         displayItem.HasNumericRating = true;
                     }
-                    else if (review.Rating == -1 && string.IsNullOrWhiteSpace(review.ReviewText))
-                    {
-                        // This case (only favorited, no review, no numeric rating) might be filtered out by the WHERE clause
-                        // or you might decide not to show it in "reviews" unless it has text or a score.
-                        // For now, the WHERE clause `(!string.IsNullOrEmpty(uar.ReviewText) || (uar.Rating >=0 && uar.Rating <=10))` handles this.
-                        // If you want to show "In Collection" for -1 ratings even without text, adjust logic.
-                        displayItem.RatingDisplay = "In Collection";
-                        displayItem.HasNumericRating = false;
-                    }
+
                     else
                     {
                         displayItem.RatingDisplay = ""; // No numeric rating to display explicitly

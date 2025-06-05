@@ -100,6 +100,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="LiveCharts" Version="0.9.7" />
+    <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc5.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
@@ -111,6 +113,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="NewsAPI" Version="0.7.0" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
   </ItemGroup>
 

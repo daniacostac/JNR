@@ -17,34 +17,21 @@
 
     <Window.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        
-
         <Style TargetType="ListBoxItem" x:Key="NoHighlightListBoxItem">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-                        </Border>
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#22FFFFFF"/>
-                </Trigger>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="Transparent"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
         <Style TargetType="Button" x:Key="WindowControlButtonBase" BasedOn="{StaticResource {x:Type Button}}">
@@ -65,9 +52,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
-        
-
         <Style TargetType="Button" x:Key="MinimizeButtonStyle" BasedOn="{StaticResource WindowControlButtonBase}">
             <Setter Property="Content" Value=""/>
             <Setter Property="Background" Value="#FF4E72B8"/>
@@ -77,7 +61,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
         <Style TargetType="Button" x:Key="CloseButtonStyle" BasedOn="{StaticResource WindowControlButtonBase}">
             <Setter Property="Content" Value=""/>
             <Setter Property="Background" Value="IndianRed"/>
@@ -87,7 +70,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
         <Style TargetType="Button" x:Key="SearchGenreButtonStyle">
             <Setter Property="Background" Value="#FF4A5BAD"/>
             <Setter Property="Foreground" Value="White"/>
@@ -101,14 +83,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="8" 
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -125,8 +101,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!-- Define Brushes FIRST -->
         <SolidColorBrush x:Key="ComboBox.Static.Background" Color="#252A40"/>
         <SolidColorBrush x:Key="ComboBox.Static.Border" Color="#4A5578"/>
         <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="#AAFFFFFF"/>
@@ -142,18 +116,12 @@
         <SolidColorBrush x:Key="ComboBox.Disabled.Foreground" Color="#99FFFFFF"/>
         <SolidColorBrush x:Key="ComboBox.DropDown.Background" Color="#1E2439"/>
         <SolidColorBrush x:Key="ComboBox.DropDown.Border" Color="#4A5578"/>
-
-        <!-- Define ControlTemplates used by the ComboBox Style SECOND -->
         <ControlTemplate x:Key="ComboBoxEditableTextBox" TargetType="{x:Type TextBox}">
             <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
         </ControlTemplate>
-
         <ControlTemplate x:Key="RoundedComboBoxToggleButtonTemplate" TargetType="ToggleButton">
             <Grid>
-                <Border x:Name="templateRoot"
-                        Background="{DynamicResource ComboBox.Static.Background}" 
-                        BorderBrush="{DynamicResource ComboBox.Static.Border}"
-                        BorderThickness="1" CornerRadius="6" SnapsToDevicePixels="true">
+                <Border x:Name="templateRoot" Background="{DynamicResource ComboBox.Static.Background}" BorderBrush="{DynamicResource ComboBox.Static.Border}" BorderThickness="1" CornerRadius="6" SnapsToDevicePixels="true">
                     <Border x:Name="splitBorder" BorderBrush="Transparent" BorderThickness="0" HorizontalAlignment="Right" Margin="0,0,5,0" Width="Auto">
                         <Path x:Name="arrow" Data="F1 M 0,0 L 4,4 L 8,0 Z" Fill="{DynamicResource ComboBox.Static.Glyph}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="8" Height="4"/>
                     </Border>
@@ -182,8 +150,6 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
-
-        <!-- Define the ComboBox Style THIRD (after its dependent templates) -->
         <Style TargetType="ComboBox" x:Key="StyledComboBox">
             <Setter Property="SnapsToDevicePixels" Value="true"/>
             <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -201,51 +167,12 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBox}">
                         <Grid>
-                            <ToggleButton 
-                                Name="ToggleButton" 
-                                Template="{StaticResource RoundedComboBoxToggleButtonTemplate}" 
-                                Focusable="false"
-                                IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                ClickMode="Press"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"/>
-                            <ContentPresenter Name="ContentSite" 
-                                              IsHitTestVisible="False"  
-                                              Content="{TemplateBinding SelectionBoxItem}"
-                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                              Margin="{TemplateBinding Padding}"
-                                              VerticalAlignment="Center"
-                                              HorizontalAlignment="Left" />
-                            <TextBox x:Name="PART_EditableTextBox"
-                                     Style="{x:Null}" 
-                                     Template="{StaticResource ComboBoxEditableTextBox}" 
-                                     HorizontalAlignment="Left" 
-                                     VerticalAlignment="Center" 
-                                     Margin="{TemplateBinding Padding}"
-                                     Focusable="True" 
-                                     Background="Transparent" 
-                                     Foreground="{TemplateBinding Foreground}"
-                                     Visibility="Hidden"
-                                     IsReadOnly="{TemplateBinding IsReadOnly}"/>
-                            <Popup 
-                                Name="Popup"
-                                Placement="Bottom"
-                                IsOpen="{TemplateBinding IsDropDownOpen}"
-                                AllowsTransparency="True" 
-                                Focusable="False"
-                                PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-                                <Grid Name="DropDown"
-                                      SnapsToDevicePixels="True"
-                                      MinWidth="{TemplateBinding ActualWidth}"
-                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                    <Border 
-                                        x:Name="DropDownBorder"
-                                        Background="{DynamicResource ComboBox.DropDown.Background}"
-                                        BorderThickness="1"
-                                        BorderBrush="{DynamicResource ComboBox.DropDown.Border}"
-                                        CornerRadius="4"/>
+                            <ToggleButton Name="ToggleButton" Template="{StaticResource RoundedComboBoxToggleButtonTemplate}" Focusable="false" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
+                            <ContentPresenter Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                            <TextBox x:Name="PART_EditableTextBox" Style="{x:Null}" Template="{StaticResource ComboBoxEditableTextBox}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}" Focusable="True" Background="Transparent" Foreground="{TemplateBinding Foreground}" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                            <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+                                <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" Background="{DynamicResource ComboBox.DropDown.Background}" BorderThickness="1" BorderBrush="{DynamicResource ComboBox.DropDown.Border}" CornerRadius="4"/>
                                     <ScrollViewer Margin="1" SnapsToDevicePixels="True">
                                         <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
                                     </ScrollViewer>
@@ -272,8 +199,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!-- Define ComboBoxItem Style FOURTH -->
         <Style TargetType="ComboBoxItem" x:Key="StyledComboBoxItem">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
@@ -285,10 +210,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBoxItem">
-                        <Border Name="Bd"
-                                Padding="{TemplateBinding Padding}"
-                                Background="{TemplateBinding Background}"
-                                SnapsToDevicePixels="true">
+                        <Border Name="Bd" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
                             <ContentPresenter />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -308,14 +230,10 @@
             </Setter>
         </Style>
     </Window.Resources>
-    
-    
 
     <Viewbox Stretch="Uniform">
         <Border CornerRadius="10" Background="Transparent">
-            <Border CornerRadius="10"
-                    BorderThickness="1"
-                    Opacity="1">
+            <Border CornerRadius="10" BorderThickness="1" Opacity="1">
                 <Border.BorderBrush>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                         <GradientStop Color="#462AD8" Offset="0"/>
@@ -323,7 +241,6 @@
                         <GradientStop Color="#8A16C1" Offset="1"/>
                     </LinearGradientBrush>
                 </Border.BorderBrush>
-
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
                         <GradientStop Color="#100E1E" Offset="0"/>
@@ -341,27 +258,75 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Genres"
-                               VerticalAlignment="Center"
-                               FontWeight="Light"
-                               HorizontalAlignment="Center"
-                               Foreground="White"
-                               FontSize="20"
-                               FontFamily="/Fonts/#Dosis"/>
+                    <!-- MODIFIED: Title area now a Grid to include Back Button -->
+                    <Grid Grid.Column="0" Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Name="btnGoBackGenres"
+                                Click="btnGoBackGenres_Click" 
+                                Grid.Column="0"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left" 
+                                Margin="10,0,0,0"      
+                                Padding="0"
+                                Cursor="Hand">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <ContentPresenter/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="0.8"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Image Source="/Images/rewind.png"
+                                   Stretch="Uniform"
+                                   Width="18" Height="18"/>
+                        </Button>
+
+                        <TextBlock Text="Genres"
+                                   Grid.Column="1"
+                                   VerticalAlignment="Center"
+                                   FontWeight="Light"
+                                   HorizontalAlignment="Center" 
+                                   Foreground="White"
+                                   FontSize="20"
+                                   FontFamily="/Fonts/#Dosis"
+                                   Margin="0,0,10,0"/>
+                        <!-- Adjusted margin for centering with button -->
+                    </Grid>
 
                     <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
                         <Button Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" Margin="0,0,5,0"/>
                         <Button Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="0" Grid.Row="1">
-                        <RadioButton Content="My Albums" Height="50" Tag="/Images/SideBarIcons/folder-user.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="MyAlbumsRadioButton_Click"/>
-                        <RadioButton Content="Genres" IsChecked="True" Height="50" Tag="/Images/SideBarIcons/radio.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}"/>
-                        <RadioButton Content="Charts" Height="50" Tag="/Images/SideBarIcons/rows-plus-top.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="ChartsRadioButton_Click"/>
-                        <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="AboutRadioButton_Click"/>
-                        <RadioButton Content="Settings" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SettingsRadioButton_Click"/>
-                        <RadioButton Content="Links" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="LinksRadioButton_Click"/>
+                    <StackPanel x:Name="SidebarContentPanel" Grid.Column="0" Grid.Row="1">
+                        <RadioButton Content="My Albums" Height="50" Tag="/Images/SideBarIcons/folder-user.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="MyAlbums"/>
+                        <RadioButton Content="Genres" IsChecked="True" Height="50" Tag="/Images/SideBarIcons/radio.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Genres"/>
+                        <RadioButton Content="Charts" Height="50" Tag="/Images/SideBarIcons/rows-plus-top.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Charts"/>
+                        <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="About"/>
+                        <RadioButton Content="Settings" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Settings"/>
+                        <RadioButton Content="Links" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Links"/>
                     </StackPanel>
+                    <Image Margin="10,14,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Source="/Images/SideBarIcons/folder-user.png" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,64,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/SideBarIcons/radio.png" Height="20" Width="20" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,113,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/SideBarIcons/rows-plus-top.png" Width="20" Height="20" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,164,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Source="/Images/SideBarIcons/question.png" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,214,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/SideBarIcons/gear.png" Height="20" Width="20" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,265,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Source="/Images/SideBarIcons/link.png" Stretch="Fill" IsHitTestVisible="False"/>
 
                     <Grid Grid.Column="1" Grid.Row="1" Margin="15,10,15,10">
                         <Grid.RowDefinitions>
@@ -371,88 +336,71 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                            <ComboBox x:Name="GenreComboBox"
-                                      ItemsSource="{Binding GenreList}"
-                                      DisplayMemberPath="Name"
-                                      SelectedValuePath="Name" 
-                                      SelectedItem="{Binding SelectedGenreItem, Mode=TwoWay}"
-                                      Width="250" Margin="0,0,10,0"
-                                      Style="{StaticResource StyledComboBox}"
-                                      ItemContainerStyle="{StaticResource StyledComboBoxItem}"/>
-                            <Button Content="Search Albums"
-                                    Command="{Binding SearchAlbumsByGenreCommand}"
-                                    Style="{StaticResource SearchGenreButtonStyle}"
-                                    Width="Auto"/>
+                            <ComboBox x:Name="GenreComboBox" ItemsSource="{Binding GenreList}" DisplayMemberPath="Name" SelectedValuePath="Name" SelectedItem="{Binding SelectedGenreItem, Mode=TwoWay}" Width="250" Margin="0,0,10,0" Style="{StaticResource StyledComboBox}" ItemContainerStyle="{StaticResource StyledComboBoxItem}"/>
+                            <Button Content="Search Albums" Command="{Binding SearchAlbumsByGenreCommand}" Style="{StaticResource SearchGenreButtonStyle}" Width="Auto"/>
                         </StackPanel>
 
-                        <TextBlock Grid.Row="1"
-                                   Text="{Binding SelectedGenreNameForDisplay, FallbackValue='Select a genre and click Search'}"
-                                   FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="0,5,0,10"
-                                   Visibility="{Binding IsGenreSelectedAndSearched, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <TextBlock Grid.Row="1" Text="{Binding SelectedGenreNameForDisplay, FallbackValue='Select a genre and click Search'}" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="5,5,0,10" Visibility="{Binding IsGenreSelectedAndSearched, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
-                        <Border Grid.Row="2" Background="#161823" CornerRadius="8"
-                                Visibility="{Binding IsGenreSelectedAndSearched, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <ListBox ItemsSource="{Binding AlbumsForSelectedGenre}"
-                                     Background="Transparent" BorderThickness="0"
-                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                     ItemContainerStyle="{StaticResource NoHighlightListBoxItem}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" Margin="8" MouseLeftButtonUp="AlbumInGenre_Click" Cursor="Hand">
-                                            <Image Source="{Binding CoverArtUrl, FallbackValue='/Images/placeholder_album.png'}" Width="60" Height="60" Stretch="Uniform"/>
-                                            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding AlbumName}" FontWeight="Bold" Foreground="White" MaxWidth="400" TextTrimming="CharacterEllipsis" FontSize="13"/>
-                                                <TextBlock Text="{Binding ArtistName}" Foreground="LightGray" MaxWidth="400" TextTrimming="CharacterEllipsis" FontSize="11"/>
-                                                <TextBlock Text="{Binding ReleaseYear, TargetNullValue='Year: N/A'}" Foreground="DarkGray" FontSize="10" FontStyle="Italic"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Border>
+                        <Grid Grid.Row="2">
+                            <Border Background="#181A27" CornerRadius="8" Padding="30"
+                                    Visibility="{Binding IsGenreSelectedAndSearched, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverse}">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Path Data="M12,1A9,9 0 0,0 3,10V17A3,3 0 0,0 6,20H9V14H5V10A7,7 0 0,1 12,3A7,7 0 0,1 19,10V14H15V20H18A3,3 0 0,0 21,17V10A9,9 0 0,0 12,1Z" 
+                                          Fill="LightSkyBlue" Width="48" Height="48" Stretch="Uniform" Opacity="0.6" Margin="0,0,0,15"/>
+                                    <TextBlock Text="Discover Albums by Genre" FontSize="18" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,10" FontFamily="/Fonts/#Dosis"/>
+                                    <TextBlock Text="Select a genre from the dropdown list above and click 'Search Albums' to explore top albums in that category." 
+                                               Foreground="LightGray" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="400" FontFamily="/Fonts/#Dosis" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
 
-                        <TextBlock Grid.Row="2"
-                                   Text="Loading albums..."
-                                   Foreground="LightSkyBlue" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                   FontFamily="/Fonts/#Dosis"
-                                   Visibility="{Binding IsLoadingAlbums, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            <Grid Visibility="{Binding IsGenreSelectedAndSearched, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="Loading albums..."
+                                           Foreground="LightSkyBlue" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                           FontFamily="/Fonts/#Dosis"
+                                           Visibility="{Binding IsLoadingAlbums, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                <Border Background="#161823" CornerRadius="8"
+                                        Visibility="{Binding IsLoadingAlbums, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverse}">
+                                    <ListBox ItemsSource="{Binding AlbumsForSelectedGenre}"
+                                             Background="Transparent" BorderThickness="0"
+                                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                             ItemContainerStyle="{StaticResource NoHighlightListBoxItem}"
+                                             Padding="5">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="3" HorizontalAlignment="Stretch"/>
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type local:GenreAlbumItemUI}">
+                                                <!-- MODIFIED: Album item height adjustments -->
+                                                <Border Background="#1E2439" CornerRadius="6" Margin="5" Padding="8" MinHeight="85" 
+                                                        MouseLeftButtonUp="AlbumInGenre_Click" Cursor="Hand">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Image Source="{Binding CoverArtUrl, FallbackValue='/Images/placeholder_album.png'}" 
+                                                               Width="65" Height="65" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,10,0"
+                                                               RenderOptions.BitmapScalingMode="Fant"/>
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding AlbumName}" FontWeight="Bold" Foreground="White" TextWrapping="Wrap" FontSize="12" Margin="0,0,0,2"/>
+                                                            <TextBlock Text="{Binding ArtistName}" Foreground="LightGray" TextWrapping="Wrap" FontSize="10" Margin="0,0,0,2"/>
+                                                            <TextBlock Text="{Binding ReleaseYear, TargetNullValue='Year: N/A', FallbackValue='Year: N/A'}" 
+                                                                       Foreground="#888" FontSize="9" FontStyle="Italic"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Border>
+                            </Grid>
+                        </Grid>
                     </Grid>
-                    <Image Margin="10,64,100,316" 
-                        Grid.Row="1" 
-                        Source="/Images/SideBarIcons/radio.png" 
-                        Height="20"
-                        Width="20"
-                        Stretch="Fill"/>
-                    <Image Margin="10,113,100,267"
-                        Grid.Row="1" 
-                        Source="/Images/SideBarIcons/rows-plus-top.png" 
-                        Width="20"
-                        Height="20"
-                        Stretch="Fill"/>
-                    <Image Margin="10,164,100,216" 
-                        Grid.Row="1" 
-                        Height="20"
-                        Width="20"
-                        Source="/Images/SideBarIcons/question.png" 
-                        Stretch="Fill"/>
-                    <Image Margin="10,214,100,166"
-                        Grid.Row="1" 
-                        Source="/Images/SideBarIcons/gear.png" 
-                        Height="20"
-                        Width="20"
-                        Stretch="Fill"/>
-                    <Image Margin="10,265,100,115" 
-                        Grid.Row="1" 
-                        Height="20"
-                        Width="20"
-                        Source="/Images/SideBarIcons/link.png"
-                        Stretch="Fill"/>
-                    <Image Margin="10,14,100,366"
-                        Grid.Row="1" 
-                        Source="/Images/SideBarIcons/folder-user.png"
-                        Height="20"
-                        Width="20"
-                        Stretch="Fill"/>
                 </Grid>
             </Border>
         </Border>

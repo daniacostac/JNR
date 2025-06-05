@@ -394,3 +394,7 @@ C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\zh-Hant\Micr
 C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\MySqlConnector.dll
 C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Pomelo.EntityFrameworkCore.MySql.dll
 C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Images\rewind.png
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\LiveCharts.dll
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\LiveCharts.Wpf.dll
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\NewsAPI.dll
+C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
