@@ -288,7 +288,7 @@ namespace JNR.Views.MainPage
         private void GenresRadioButton_Checked(object sender, RoutedEventArgs e) { var genresWindow = new JNR.Views.Genres.Genres(); genresWindow.Owner = this; genresWindow.Show(); if (sender is RadioButton rb) rb.IsChecked = false; }
         private void ChartsRadioButton_Checked(object sender, RoutedEventArgs e) { var chartsWindow = new JNR.Views.Charts(); chartsWindow.Owner = this; chartsWindow.Show(); if (sender is RadioButton rb) rb.IsChecked = false; }
         private void AboutRadioButton_Checked(object sender, RoutedEventArgs e) { var aboutWindow = new JNR.Views.About(); aboutWindow.Owner = this; aboutWindow.Show(); if (sender is RadioButton rb) rb.IsChecked = false; }
-        private void SettingsRadioButton_Checked(object sender, RoutedEventArgs e) { MessageBox.Show("Settings page not yet implemented.", "Coming Soon"); if (sender is RadioButton rb) rb.IsChecked = false; }
+        private void SettingsRadioButton_Checked(object sender, RoutedEventArgs e) { var settingsWindow = new JNR.Views.Settings.Settings(); settingsWindow.Owner = this; settingsWindow.Show(); if (sender is RadioButton rb) rb.IsChecked = false; }
         private void LinksRadioButton_Checked(object sender, RoutedEventArgs e) { MessageBox.Show("Links page not yet implemented.", "Coming Soon"); if (sender is RadioButton rb) rb.IsChecked = false; }
     }
 

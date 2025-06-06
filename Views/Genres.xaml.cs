@@ -1,5 +1,4 @@
-﻿// File: Views/Genres/Genres.xaml.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -283,7 +282,7 @@ namespace JNR.Views.Genres
                     case "MyAlbums": App.NavigateTo<JNR.Views.My_Albums.MyAlbums>(this); break;
                     case "Charts": App.NavigateTo<JNR.Views.Charts>(this); break;
                     case "About": App.NavigateTo<JNR.Views.About>(this); break;
-                    case "Settings":
+                    case "Settings": App.NavigateTo<JNR.Views.Settings.Settings>(this); break;
                     case "Links":
                         App.HandlePlaceholderNavigation(this, rb, viewName);
                         return;

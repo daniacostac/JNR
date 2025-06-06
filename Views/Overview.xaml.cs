@@ -1,4 +1,6 @@
-﻿// File: Views/Overview.xaml.cs
+﻿// Archivo: Views\Overview.xaml.cs
+//====================
+// File: Views/Overview.xaml.cs
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -73,6 +75,15 @@ namespace JNR.Views
             get => _averageRatingDisplay;
             set { _averageRatingDisplay = value; OnPropertyChanged(); }
         }
+
+        // NEW PROPERTY FOR THE GAUGE
+        private double _averageRatingValue;
+        public double AverageRatingValue
+        {
+            get => _averageRatingValue;
+            set { _averageRatingValue = value; OnPropertyChanged(); }
+        }
+
 
         private bool _isUserLoggedIn;
         public bool IsUserLoggedIn
@@ -204,6 +215,9 @@ namespace JNR.Views
             PlayCount = "Loading...";
             LanguageInfo = "English (Default)";
 
+            // Initialize gauge value
+            AverageRatingValue = 0;
+
             AlbumTracks = new ObservableCollection<TrackItem>();
             AlbumTracks.Add(new TrackItem { Number = " ", Title = "Loading tracks...", Duration = "" });
             AlbumUserReviews = new ObservableCollection<UserReviewDisplayItem>();
@@ -243,6 +257,7 @@ namespace JNR.Views
             if (string.IsNullOrWhiteSpace(externalId) || string.IsNullOrWhiteSpace(DetailedAlbumName) || DetailedAlbumName == "Album")
             {
                 AverageRatingDisplay = "N/A (Album ID unknown)";
+                AverageRatingValue = 0; // MODIFIED: Reset gauge value
                 _currentDbAlbumId = null;
                 UpdateCanPostOrRate();
                 return;
@@ -298,6 +313,7 @@ namespace JNR.Views
             if (!_currentDbAlbumId.HasValue)
             {
                 AverageRatingDisplay = "N/A (Album not in local DB)";
+                AverageRatingValue = 0; // MODIFIED: Reset gauge value
                 if (IsUserLoggedIn) txtUserRating.Text = "";
                 AlbumUserReviews.Clear(); // Clear reviews if album ID is not available
                 return;
@@ -319,10 +335,12 @@ namespace JNR.Views
                 {
                     double avg = validRatings.Average();
                     AverageRatingDisplay = $"Avg: {avg:F1}/10 ({validRatings.Count} votes)";
+                    AverageRatingValue = avg; // MODIFIED: Set gauge value
                 }
                 else
                 {
                     AverageRatingDisplay = "Not Rated Yet";
+                    AverageRatingValue = 0; // MODIFIED: Reset gauge value
                 }
 
                 // Display Current User's Rating 
@@ -1106,24 +1124,28 @@ namespace JNR.Views
         {
             if (sender is RadioButton rb && rb.CommandParameter is string viewName)
             {
-                Window newWindow = null;
                 switch (viewName)
                 {
-                    case "MyAlbums": newWindow = new JNR.Views.My_Albums.MyAlbums(); break;
-                    case "Genres": newWindow = new JNR.Views.Genres.Genres(); break;
-                    case "Charts": newWindow = new JNR.Views.Charts(); break;
-                    case "About": newWindow = new JNR.Views.About(); break;
+                    case "MyAlbums":
+                        App.NavigateTo<JNR.Views.My_Albums.MyAlbums>(this);
+                        break;
+                    case "Genres":
+                        App.NavigateTo<JNR.Views.Genres.Genres>(this);
+                        break;
+                    case "Charts":
+                        App.NavigateTo<JNR.Views.Charts>(this);
+                        break;
+                    case "About":
+                        App.NavigateTo<JNR.Views.About>(this);
+                        break;
                     case "Settings":
+                        App.NavigateTo<JNR.Views.Settings.Settings>(this);
+                        break;
                     case "Links":
-                        MessageBox.Show($"{viewName} page not yet implemented.", "Coming Soon");
-                        return;
-                }
-                if (newWindow != null)
-                {
-                    var mainAppWindow = Application.Current.MainWindow;
-                    if (mainAppWindow != null && mainAppWindow != this) newWindow.Owner = mainAppWindow;
-                    newWindow.Show();
-                    this.Close();
+                        MessageBox.Show($"{viewName} page not yet implemented.", "Coming Soon", MessageBoxButton.OK, MessageBoxImage.Information);
+                        // Because Overview doesn't have a "self" button to re-check, we just un-check the clicked one.
+                        rb.IsChecked = false;
+                        break;
                 }
             }
         }

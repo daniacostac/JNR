@@ -1,0 +1,229 @@
+﻿<!-- File: Views/Settings/Settings.xaml -->
+<Window x:Class="JNR.Views.Settings.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:JNR.Views.Settings"
+        xmlns:converters="clr-namespace:JNR.Converters"
+        mc:Ignorable="d"
+        Title="Settings - JNR"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Normal"
+        MouseDown="Window_MouseDown">
+
+    <Window.Resources>
+        <!-- Using global resources from App.xaml -->
+        <FontFamily x:Key="TitleFont">/Fonts/#Dosis</FontFamily>
+        <SolidColorBrush x:Key="LightTextColor" Color="#E0E0E0"/>
+        <SolidColorBrush x:Key="MediumTextColor" Color="#B0B0B0"/>
+        <SolidColorBrush x:Key="DarkTextColor" Color="#808080"/>
+        <SolidColorBrush x:Key="AccentColorRed" Color="#E53935"/>
+        <SolidColorBrush x:Key="AccentColorBlue" Color="#462AD8"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <!-- Custom Style for the Settings TabControl -->
+        <Style x:Key="SettingsTabControlStyle" TargetType="TabControl">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <!-- Custom Style for TabItems to create a vertical menu -->
+        <Style x:Key="SettingsTabItemStyle" TargetType="TabItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource MediumTextColor}"/>
+            <Setter Property="BorderThickness" Value="3,0,0,0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="FontFamily" Value="{StaticResource TitleFont}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter x:Name="ContentSite"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left"
+                                              ContentSource="Header"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource LightTextColor}"/>
+                    <Setter Property="Background" Value="#1A2035"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentColorBlue}"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Background" Value="#202840"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Simple Style for TextBoxes in settings -->
+        <Style x:Key="SettingsTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="#21212F"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#404050"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="5,4"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Style.Triggers>
+                <Trigger Property="IsReadOnly" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Foreground" Value="{StaticResource MediumTextColor}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Style for PasswordBoxes -->
+        <Style x:Key="SettingsPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="Background" Value="#21212F"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#404050"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="5,4"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <Viewbox Stretch="Uniform">
+        <Border CornerRadius="10" Background="Transparent">
+            <Border CornerRadius="10" BorderThickness="1">
+                <Border.BorderBrush>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#462AD8" Offset="0"/>
+                        <GradientStop Color="#DA34A3" Offset="0.75"/>
+                        <GradientStop Color="#8A16C1" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.BorderBrush>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                        <GradientStop Color="#100E1E" Offset="0"/>
+                        <GradientStop Color="#141228" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Grid Width="800" Height="450">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Top Bar -->
+                    <Grid Grid.Column="0" Grid.Row="0">
+                        <Button Name="btnGoBack" Click="btnGoBack_Click" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0" Cursor="Hand">
+                            <Image Source="/Images/rewind.png" Stretch="Uniform" Width="18" Height="18" Opacity="0.8"/>
+                        </Button>
+                        <TextBlock Text="Settings" VerticalAlignment="Center" FontWeight="Light" HorizontalAlignment="Right" Foreground="{StaticResource LightTextColor}" FontSize="20" FontFamily="{StaticResource TitleFont}" Margin="0,0,15,0"/>
+                    </Grid>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <Button Content="" FontFamily="Segoe MDL2 Assets" Width="25" Height="25" Background="#FF4E72B8" Foreground="White" BorderThickness="0" Margin="0,0,5,0" Click="MinimizeButton_Click"/>
+                        <Button Content="" FontFamily="Segoe MDL2 Assets" Width="25" Height="25" Background="{StaticResource AccentColorRed}" Foreground="White" BorderThickness="0" Click="CloseButton_Click"/>
+                    </StackPanel>
+
+                    <!-- Sidebar -->
+                    <StackPanel x:Name="SidebarContentPanel" Grid.Column="0" Grid.Row="1">
+                        <RadioButton Content="My Albums" Height="50" Tag="/Images/SideBarIcons/folder-user.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="MyAlbums"/>
+                        <RadioButton Content="Genres" Height="50" Tag="/Images/SideBarIcons/radio.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Genres"/>
+                        <RadioButton Content="Charts" Height="50" Tag="/Images/SideBarIcons/rows-plus-top.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Charts"/>
+                        <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="About"/>
+                        <RadioButton Content="Settings" IsChecked="True" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="Links" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Links"/>
+                    </StackPanel>
+                    <!-- Sidebar Icons -->
+                    <Image Source="/Images/SideBarIcons/folder-user.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,14,0,0" IsHitTestVisible="False"/>
+                    <Image Source="/Images/SideBarIcons/radio.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,64,0,0" IsHitTestVisible="False"/>
+                    <Image Source="/Images/SideBarIcons/rows-plus-top.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,114,0,0" IsHitTestVisible="False"/>
+                    <Image Source="/Images/SideBarIcons/question.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,164,0,0" IsHitTestVisible="False"/>
+                    <Image Source="/Images/SideBarIcons/gear.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,214,0,0" IsHitTestVisible="False"/>
+                    <Image Source="/Images/SideBarIcons/link.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,265,0,0" IsHitTestVisible="False"/>
+
+                    <!-- Main Content Area -->
+                    <Grid Grid.Column="1" Grid.Row="1" Margin="15,10,15,15">
+                        <TabControl TabStripPlacement="Left" Style="{StaticResource SettingsTabControlStyle}" ItemContainerStyle="{StaticResource SettingsTabItemStyle}">
+
+                            <!-- Profile Tab -->
+                            <TabItem Header="Profile">
+                                <StackPanel Margin="30,10,20,10">
+                                    <TextBlock Text="Profile Information" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource TitleFont}" Foreground="White" Margin="0,0,0,15"/>
+                                    <TextBlock Text="This is how other users see you. (Editing coming soon)" FontSize="12" Foreground="{StaticResource MediumTextColor}" Margin="0,0,0,25"/>
+
+                                    <TextBlock Text="USERNAME" FontWeight="SemiBold" Foreground="{StaticResource MediumTextColor}" FontSize="11" Margin="0,0,0,5"/>
+                                    <TextBox Text="{Binding Username}" Style="{StaticResource SettingsTextBoxStyle}" IsReadOnly="True" Margin="0,0,0,20"/>
+
+                                    <TextBlock Text="EMAIL ADDRESS" FontWeight="SemiBold" Foreground="{StaticResource MediumTextColor}" FontSize="11" Margin="0,0,0,5"/>
+                                    <TextBox Text="{Binding Email}" Style="{StaticResource SettingsTextBoxStyle}" IsReadOnly="True" Margin="0,0,0,20"/>
+
+                                    <Button Content="Edit Profile" IsEnabled="False" HorizontalAlignment="Left" ToolTip="This feature is not yet available."/>
+                                </StackPanel>
+                            </TabItem>
+
+                            <!-- Security Tab -->
+                            <TabItem Header="Security">
+                                <StackPanel Margin="30,10,20,10">
+                                    <TextBlock Text="Change Password" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource TitleFont}" Foreground="White" Margin="0,0,0,25"/>
+
+                                    <TextBlock Text="CURRENT PASSWORD" FontWeight="SemiBold" Foreground="{StaticResource MediumTextColor}" FontSize="11" Margin="0,10,0,5"/>
+                                    <PasswordBox x:Name="pbCurrentPassword" Style="{StaticResource SettingsPasswordBoxStyle}" Width="300" HorizontalAlignment="Left"/>
+
+                                    <TextBlock Text="NEW PASSWORD" FontWeight="SemiBold" Foreground="{StaticResource MediumTextColor}" FontSize="11" Margin="0,20,0,5"/>
+                                    <PasswordBox x:Name="pbNewPassword" Style="{StaticResource SettingsPasswordBoxStyle}" Width="300" HorizontalAlignment="Left"/>
+
+                                    <TextBlock Text="CONFIRM NEW PASSWORD" FontWeight="SemiBold" Foreground="{StaticResource MediumTextColor}" FontSize="11" Margin="0,10,0,5"/>
+                                    <PasswordBox x:Name="pbConfirmPassword" Style="{StaticResource SettingsPasswordBoxStyle}" Width="300" HorizontalAlignment="Left"/>
+
+                                    <Button x:Name="btnChangePassword" Content="Update Password" Click="ChangePassword_Click" HorizontalAlignment="Left" Margin="0,30,0,0"/>
+                                </StackPanel>
+                            </TabItem>
+
+                            <!-- Account Tab -->
+                            <TabItem Header="Account">
+                                <StackPanel Margin="30,10,20,10">
+                                    <TextBlock Text="Account Actions" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource TitleFont}" Foreground="White" Margin="0,0,0,25"/>
+
+                                    <TextBlock Text="Log Out" FontWeight="SemiBold" Foreground="{StaticResource LightTextColor}" FontSize="14" Margin="0,10,0,5"/>
+                                    <TextBlock Text="Log out from your JamNRate account on this device." Foreground="{StaticResource MediumTextColor}" Margin="0,0,0,10"/>
+                                    <Button x:Name="btnLogout" Content="Log Out" Click="Logout_Click" HorizontalAlignment="Left"/>
+
+                                    <Separator Background="#303040" Margin="0,25,0,25"/>
+
+                                    <Border Background="#4dff0000" BorderBrush="{StaticResource AccentColorRed}" BorderThickness="1" CornerRadius="5" Padding="15" MaxWidth="500">
+                                        <StackPanel>
+                                            <TextBlock Text="Delete Account" FontWeight="Bold" Foreground="{StaticResource AccentColorRed}" FontSize="14" Margin="0,0,0,5"/>
+                                            <TextBlock TextWrapping="Wrap" Foreground="{StaticResource LightTextColor}">
+                                                <Run Text="Permanently delete your account and all associated data, including your ratings and reviews."/>
+                                                <LineBreak/>
+                                                <Run FontWeight="Bold">This action is irreversible and cannot be undone.</Run>
+                                            </TextBlock>
+                                            <Button x:Name="btnDeleteAccount" Content="Delete My Account" Click="DeleteAccount_Click" HorizontalAlignment="Left" Margin="0,15,0,0" Background="{StaticResource AccentColorRed}" Foreground="White"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </TabItem>
+
+                        </TabControl>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Border>
+    </Viewbox>
+</Window>

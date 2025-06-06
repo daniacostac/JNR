@@ -337,7 +337,7 @@
 
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
                             <ComboBox x:Name="GenreComboBox" ItemsSource="{Binding GenreList}" DisplayMemberPath="Name" SelectedValuePath="Name" SelectedItem="{Binding SelectedGenreItem, Mode=TwoWay}" Width="250" Margin="0,0,10,0" Style="{StaticResource StyledComboBox}" ItemContainerStyle="{StaticResource StyledComboBoxItem}"/>
-                            <Button Content="Search Albums" Command="{Binding SearchAlbumsByGenreCommand}" Style="{StaticResource SearchGenreButtonStyle}" Width="Auto"/>
+                            <Button Content="Search" Command="{Binding SearchAlbumsByGenreCommand}" Style="{StaticResource SearchGenreButtonStyle}" Width="Auto"/>
                         </StackPanel>
 
                         <TextBlock Grid.Row="1" Text="{Binding SelectedGenreNameForDisplay, FallbackValue='Select a genre and click Search'}" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="5,5,0,10" Visibility="{Binding IsGenreSelectedAndSearched, Converter={StaticResource BooleanToVisibilityConverter}}"/>

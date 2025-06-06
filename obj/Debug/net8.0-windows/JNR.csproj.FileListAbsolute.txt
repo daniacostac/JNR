@@ -398,3 +398,5 @@ C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\LiveCharts.d
 C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\LiveCharts.Wpf.dll
 C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\NewsAPI.dll
 C:\Users\DanielAcosta\Documents\GitHub\JNR\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Settings\Settings.g.cs
+C:\Users\DanielAcosta\Documents\GitHub\JNR\obj\Debug\net8.0-windows\Views\Settings\Settings.baml

@@ -7,6 +7,7 @@
         xmlns:models="clr-namespace:JNR.Models"
         xmlns:converters="clr-namespace:JNR.Converters" 
         xmlns:controls="clr-namespace:JNR.Views.Controls"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="Album Overview - JNR"
         WindowStyle="None"
@@ -238,38 +239,60 @@
                                 <!-- Album Details + Actions + Discog Nav Panel -->
                                 <StackPanel Grid.Column="1" Margin="0,0,20,0">
                                     <TextBlock Text="{Binding AlbumTitleAndArtist, TargetNullValue='Album Title - Artist'}" FontSize="28" FontWeight="Bold" FontFamily="{StaticResource TitleFont}" Foreground="{StaticResource LightTextColor}" Margin="0,0,0,15" TextWrapping="Wrap"/>
+
+                                    <!-- MODIFIED: New parent Grid for side-by-side layout -->
                                     <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
 
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Genre" Style="{StaticResource LabelTextStyle}"/>
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding GenreInfo, TargetNullValue='N/A'}" Style="{StaticResource ValueTextStyle}" TextWrapping="Wrap"/>
+                                        <!-- Details Grid (Left Column) -->
+                                        <Grid Grid.Column="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Genre" Style="{StaticResource LabelTextStyle}"/>
+                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding GenreInfo, TargetNullValue='N/A'}" Style="{StaticResource ValueTextStyle}" TextWrapping="Wrap"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Released" Style="{StaticResource LabelTextStyle}" Margin="0,5,10,5"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ReleaseInfo, TargetNullValue='N/A'}" Style="{StaticResource ValueTextStyle}" Margin="0,5,0,5"/>
+                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Language" Style="{StaticResource LabelTextStyle}" Margin="0,0,10,5"/>
+                                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LanguageInfo, TargetNullValue='N/A'}" Style="{StaticResource ValueTextStyle}" Margin="0,0,0,5"/>
+                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Listeners" Style="{StaticResource LabelTextStyle}" Margin="0,5,10,5"/>
+                                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ListenersCount, TargetNullValue='N/A'}" Style="{StaticResource ValueTextStyle}" Margin="0,5,0,5"/>
+                                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Playcount" Style="{StaticResource LabelTextStyle}" Margin="0,5,10,5"/>
+                                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PlayCount, TargetNullValue='N/A'}" Style="{StaticResource ValueTextStyle}" Margin="0,5,0,5"/>
+                                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Avg. Rating" Style="{StaticResource LabelTextStyle}" Margin="0,5,10,5"/>
+                                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding AverageRatingDisplay, TargetNullValue='Not Rated'}" 
+                                                       Foreground="{StaticResource AccentColorYellow}" FontSize="16" VerticalAlignment="Center" Margin="0,5,0,5"/>
+                                        </Grid>
 
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Released" Style="{StaticResource LabelTextStyle}" Margin="0,5,10,5"/>
-                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ReleaseInfo, TargetNullValue='N/A'}" Style="{StaticResource ValueTextStyle}" Margin="0,5,0,5"/>
-
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Language" Style="{StaticResource LabelTextStyle}" Margin="0,0,10,5"/>
-                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding LanguageInfo, TargetNullValue='N/A'}" Style="{StaticResource ValueTextStyle}" Margin="0,0,0,5"/>
-
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Listeners" Style="{StaticResource LabelTextStyle}" Margin="0,5,10,5"/>
-                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ListenersCount, TargetNullValue='N/A'}" Style="{StaticResource ValueTextStyle}" Margin="0,5,0,5"/>
-
-                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Playcount" Style="{StaticResource LabelTextStyle}" Margin="0,5,10,5"/>
-                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PlayCount, TargetNullValue='N/A'}" Style="{StaticResource ValueTextStyle}" Margin="0,5,0,5"/>
-
-                                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Avg. Rating" Style="{StaticResource LabelTextStyle}" Margin="0,5,10,5"/>
-                                        <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding AverageRatingDisplay, TargetNullValue='Not Rated'}" 
-                                                   Foreground="{StaticResource AccentColorYellow}" FontSize="16" VerticalAlignment="Center" Margin="0,5,0,5"/>
+                                        <!-- GAUGE CHART (Right Column) -->
+                                        <Grid Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" Height="120" Margin="10,0,0,0">
+                                            <lvc:Gauge Uses360Mode="True"
+                                                       From="0" To="10"
+                                                       Value="{Binding AverageRatingValue}"
+                                                       LabelsVisibility="Collapsed"
+                                                       InnerRadius="50"
+                                                       GaugeBackground="#333956">
+                                                <lvc:Gauge.GaugeActiveFill>
+                                                    <LinearGradientBrush>
+                                                        <GradientStop Color="#462AD8" Offset="0.0" />
+                                                        <GradientStop Color="#DA34A3" Offset="1.0" />
+                                                    </LinearGradientBrush>
+                                                </lvc:Gauge.GaugeActiveFill>
+                                            </lvc:Gauge>
+                                            
+                                        </Grid>
                                     </Grid>
 
                                     <Border BorderBrush="{StaticResource DarkTextColor}" BorderThickness="0,0,0,1" Margin="0,10,0,15"/>
@@ -322,7 +345,7 @@
                                         <Image Source="/Images/SideBarIcons/question.png" Width="32" Height="32" Margin="0,0,0,10" HorizontalAlignment="Center" Opacity="0.7"/>
                                         <TextBlock Text="Description" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource LightTextColor}" HorizontalAlignment="Center" Margin="0,0,0,5"/>
                                         <Border BorderBrush="{StaticResource DarkTextColor}" BorderThickness="0,0,0,1" Margin="0,0,0,10"/>
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="350">
+                                        <ScrollViewer VerticalScrollBarVisibility="Hidden" MaxHeight="350">
                                             <TextBlock Text="{Binding DescriptionText, TargetNullValue=No description available.}" TextWrapping="Wrap" LineHeight="18" Foreground="{StaticResource MediumTextColor}" FontSize="13"/>
                                         </ScrollViewer>
                                     </StackPanel>
@@ -335,7 +358,7 @@
                                 <Border BorderBrush="{StaticResource DarkTextColor}" BorderThickness="0,0,0,1" Margin="0,0,0,15"/>
 
                                 <!-- List of existing reviews -->
-                                <ItemsControl ItemsSource="{Binding AlbumUserReviews}" MaxHeight="300" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding AlbumUserReviews}" MaxHeight="300" ScrollViewer.VerticalScrollBarVisibility="Hidden">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="{x:Type local:UserReviewDisplayItem}">
                                             <Border BorderBrush="{StaticResource DarkTextColor}" BorderThickness="0,0,0,1" Padding="0,10,0,10" Margin="0,0,0,5">

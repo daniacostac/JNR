@@ -1,5 +1,4 @@
-﻿// File: Views/About.xaml.cs
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Reflection; // For Assembly version
 using System.Windows;
@@ -154,8 +153,8 @@ namespace JNR.Views
                     case "MyAlbums": App.NavigateTo<JNR.Views.My_Albums.MyAlbums>(this); break;
                     case "Genres": App.NavigateTo<JNR.Views.Genres.Genres>(this); break;
                     case "Charts": App.NavigateTo<JNR.Views.Charts>(this); break;
+                    case "Settings": App.NavigateTo<JNR.Views.Settings.Settings>(this); break;
                     // No "Search" window directly from About's sidebar usually.
-                    case "Settings":
                     case "Links":
                         App.HandlePlaceholderNavigation(this, rb, viewName);
                         return;

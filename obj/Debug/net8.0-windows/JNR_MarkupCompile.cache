@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 C:\Users\DanielAcosta\Documents\GitHub\JNR\App.xaml
-14-1226922867
+15393227937
 101678231767
-271189361870
+28-2040216669
 226-208261336
-MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\About.xaml;Views\Charts.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Genres.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\My Albums\MyAlbums.xaml;Views\Overview.xaml;Views\SignUp\SignUp.xaml;
+MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\About.xaml;Views\Charts.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Genres.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\My Albums\MyAlbums.xaml;Views\Overview.xaml;Views\Settings\Settings.xaml;Views\SignUp\SignUp.xaml;
 
 False
 

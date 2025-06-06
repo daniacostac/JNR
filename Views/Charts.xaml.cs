@@ -1,5 +1,4 @@
-﻿// File: Views/Charts.xaml.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -375,7 +374,7 @@ namespace JNR.Views
                     selectedAlbum.ArtistName,
                     selectedAlbum.Mbid,
                     selectedAlbum.CoverArtUrl);
-               
+
             }
         }
 
@@ -398,7 +397,7 @@ namespace JNR.Views
                     case "MyAlbums": App.NavigateTo<JNR.Views.My_Albums.MyAlbums>(this); break;
                     case "Genres": App.NavigateTo<JNR.Views.Genres.Genres>(this); break;
                     case "About": App.NavigateTo<JNR.Views.About>(this); break;
-                    case "Settings":
+                    case "Settings": App.NavigateTo<JNR.Views.Settings.Settings>(this); break;
                     case "Links":
                         App.HandlePlaceholderNavigation(this, rb, viewName);
                         return;
