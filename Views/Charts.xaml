@@ -256,6 +256,11 @@
                             </Grid>
                         </Grid>
                     </Grid>
+                    <Image Margin="10,14,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Source="/Images/SideBarIcons/folder-user.png" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,64,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/SideBarIcons/radio.png" Height="20" Width="20" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,113,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/SideBarIcons/rows-plus-top.png" Width="20" Height="20" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,164,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Source="/Images/SideBarIcons/question.png" Stretch="Fill" IsHitTestVisible="False"/>
+                    <Image Margin="10,214,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/SideBarIcons/gear.png" Height="20" Width="20" Stretch="Fill" IsHitTestVisible="False"/>
                 </Grid>
             </Border>
         </Border>

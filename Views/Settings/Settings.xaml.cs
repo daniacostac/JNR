@@ -1,4 +1,11 @@
 ﻿// File: Views/Settings/Settings.xaml.cs
+
+// ========= NEW/REQUIRED USING STATEMENTS =========
+using Microsoft.Win32; // For OpenFileDialog
+using System.IO;       // For Path, File, and Directory operations
+using System.Windows.Media.Imaging; // For BitmapImage and ImageSource
+// ===============================================
+
 using JNR.Helpers;
 using JNR.Models;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +37,6 @@ namespace JNR.Views.Settings
         private string _email;
         public string Email { get => _email; set { _email = value; OnPropertyChanged(); } }
 
-        // --- New properties for editing state ---
         private bool _isEditingProfile;
         public bool IsEditingProfile
         {
@@ -52,6 +58,15 @@ namespace JNR.Views.Settings
 
         private Brush _profileStatusBrush;
         public Brush ProfileStatusBrush { get => _profileStatusBrush; set { _profileStatusBrush = value; OnPropertyChanged(); } }
+
+        // ========= NEW PROPERTY FOR PROFILE PICTURE BINDING =========
+        private ImageSource _profilePictureSource;
+        public ImageSource ProfilePictureSource
+        {
+            get => _profilePictureSource;
+            set { _profilePictureSource = value; OnPropertyChanged(); }
+        }
+        // ============================================================
 
         #endregion
 
@@ -84,6 +99,25 @@ namespace JNR.Views.Settings
                 {
                     Username = user.Username;
                     Email = user.Email;
+
+                    // ========= MODIFIED: LOAD PROFILE PICTURE =========
+                    if (!string.IsNullOrEmpty(user.ProfilePicturePath) && File.Exists(user.ProfilePicturePath))
+                    {
+                        // Use a BitmapImage with OnLoad cache option to prevent locking the file.
+                        // This reads the entire image into memory and closes the file stream.
+                        BitmapImage bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.UriSource = new Uri(user.ProfilePicturePath, UriKind.Absolute);
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                        ProfilePictureSource = bitmap;
+                    }
+                    else
+                    {
+                        // Load a default image from application resources if no picture is set or the file is missing.
+                        ProfilePictureSource = new BitmapImage(new Uri("pack://application:,,,/Images/user-icon.png"));
+                    }
+                    // ================================================
                 }
             }
         }
@@ -102,25 +136,21 @@ namespace JNR.Views.Settings
         {
             IsEditingProfile = false;
             ProfileStatusMessage = string.Empty;
-            // No need to do anything else, the original values are still in 'Username' and 'Email'
         }
 
         private async void SaveProfile_Click(object sender, RoutedEventArgs e)
         {
-            // --- Validation ---
             if (string.IsNullOrWhiteSpace(EditedUsername) || string.IsNullOrWhiteSpace(EditedEmail))
             {
                 SetProfileStatus("Username and Email cannot be empty.", isError: true);
                 return;
             }
-
             if (!IsValidEmail(EditedEmail))
             {
                 SetProfileStatus("Please enter a valid email address.", isError: true);
                 return;
             }
 
-            // --- Database Update ---
             var optionsBuilder = new DbContextOptionsBuilder<JnrContext>();
             string connectionString = "Server=localhost;Port=3306;Database=jnr;Uid=root;Pwd=root;";
             optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
@@ -129,14 +159,11 @@ namespace JNR.Views.Settings
             {
                 var currentUserId = SessionManager.CurrentUserId.Value;
 
-                // Check if new username is taken
                 if (EditedUsername != Username && await dbContext.Users.AnyAsync(u => u.Username == EditedUsername && u.UserId != currentUserId))
                 {
                     SetProfileStatus("That username is already taken. Please choose another.", isError: true);
                     return;
                 }
-
-                // Check if new email is taken
                 if (EditedEmail != Email && await dbContext.Users.AnyAsync(u => u.Email == EditedEmail && u.UserId != currentUserId))
                 {
                     SetProfileStatus("That email is already registered to another account.", isError: true);
@@ -150,7 +177,6 @@ namespace JNR.Views.Settings
                     user.Email = EditedEmail;
                     await dbContext.SaveChangesAsync();
 
-                    // Update local state and session
                     Username = user.Username;
                     Email = user.Email;
                     SessionManager.CurrentUsername = user.Username;
@@ -165,6 +191,69 @@ namespace JNR.Views.Settings
             }
         }
 
+        // ========= NEW METHOD: CHANGE PROFILE PICTURE =========
+        private async void ChangePicture_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "Select a Profile Picture",
+                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    string selectedFilePath = openFileDialog.FileName;
+
+                    // Define the central storage location for profile pictures
+                    string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                    string profilePicsDir = Path.Combine(baseDir, "UserData", "ProfilePictures");
+
+                    // Ensure the directory exists (it should from App.xaml.cs, but this is a safeguard)
+                    Directory.CreateDirectory(profilePicsDir);
+
+                    // Create a unique filename based on the user's ID to prevent conflicts
+                    string extension = Path.GetExtension(selectedFilePath);
+                    string newFileName = $"user_{SessionManager.CurrentUserId.Value}{extension}";
+                    string newFilePath = Path.Combine(profilePicsDir, newFileName);
+
+                    // Copy the user's selected file to our application's managed folder.
+                    // The 'true' argument allows overwriting the file if it already exists.
+                    File.Copy(selectedFilePath, newFilePath, true);
+
+                    // Save the path to the *newly copied file* in the database
+                    var optionsBuilder = new DbContextOptionsBuilder<JnrContext>();
+                    string connectionString = "Server=localhost;Port=3306;Database=jnr;Uid=root;Pwd=root;";
+                    optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                    using (var dbContext = new JnrContext(optionsBuilder.Options))
+                    {
+                        var user = await dbContext.Users.FindAsync(SessionManager.CurrentUserId.Value);
+                        if (user != null)
+                        {
+                            user.ProfilePicturePath = newFilePath;
+                            await dbContext.SaveChangesAsync();
+                        }
+                    }
+
+                    // Update the UI immediately by loading the new image into the ImageSource property
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(newFilePath, UriKind.Absolute);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad; // Crucial to avoid file locking
+                    bitmap.EndInit();
+                    ProfilePictureSource = bitmap;
+
+                    MessageBox.Show("Profile picture updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred while updating your picture: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        // ======================================================
+
         private bool IsValidEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email)) return false;
@@ -177,27 +266,19 @@ namespace JNR.Views.Settings
                     return match.Groups[1].Value + idn.GetAscii(match.Groups[2].Value);
                 }
             }
-            catch (Exception)
-            {
-                return false;
-            }
+            catch { return false; }
 
             try
             {
-                return Regex.IsMatch(email,
-                    @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-                    RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+                return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
             }
-            catch (Exception)
-            {
-                return false;
-            }
+            catch { return false; }
         }
 
         private void SetProfileStatus(string message, bool isError)
         {
             ProfileStatusMessage = message;
-            ProfileStatusBrush = isError ? (Brush)new SolidColorBrush(Color.FromRgb(255, 107, 107)) : (Brush)new SolidColorBrush(Color.FromRgb(107, 255, 135));
+            ProfileStatusBrush = isError ? new SolidColorBrush(Color.FromRgb(255, 107, 107)) : new SolidColorBrush(Color.FromRgb(107, 255, 135));
         }
 
         #endregion
@@ -258,11 +339,8 @@ namespace JNR.Views.Settings
 
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
-            // Clear session
             SessionManager.CurrentUserId = null;
             SessionManager.CurrentUsername = null;
-
-            // Navigate to login screen
             App.NavigateTo<LoginView>(this);
         }
 
@@ -291,7 +369,6 @@ namespace JNR.Views.Settings
                         await dbContext.SaveChangesAsync();
 
                         MessageBox.Show("Your account has been successfully deleted.", "Account Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
-
                         Logout_Click(null, null);
                     }
                 }

@@ -228,14 +228,12 @@
                                 <StackPanel Grid.Column="1" Margin="0,0,20,0">
                                     <TextBlock Text="{Binding AlbumTitleAndArtist, TargetNullValue='Album Title - Artist'}" FontSize="28" FontWeight="Bold" FontFamily="{StaticResource TitleFont}" Foreground="{StaticResource LightTextColor}" Margin="0,0,0,15" TextWrapping="Wrap"/>
 
-                                    <!-- MODIFIED: New parent Grid for side-by-side layout -->
                                     <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <!-- Details Grid (Left Column) -->
                                         <Grid Grid.Column="0">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
@@ -264,7 +262,6 @@
                                                        Foreground="{StaticResource AccentColorYellow}" FontSize="16" VerticalAlignment="Center" Margin="0,5,0,5"/>
                                         </Grid>
 
-                                        <!-- GAUGE CHART (Right Column) -->
                                         <Grid Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" Height="120" Margin="10,0,0,0">
                                             <lvc:Gauge Uses360Mode="True"
                                                        From="0" To="10"
@@ -279,7 +276,7 @@
                                                     </LinearGradientBrush>
                                                 </lvc:Gauge.GaugeActiveFill>
                                             </lvc:Gauge>
-                                            
+
                                         </Grid>
                                     </Grid>
 
@@ -327,7 +324,6 @@
                                     </StackPanel>
                                 </StackPanel>
 
-                                <!-- Description Panel -->
                                 <Border Grid.Column="2" Background="{StaticResource PanelBackgroundColor}" CornerRadius="8" Padding="15" MaxHeight="450">
                                     <StackPanel>
                                         <Image Source="/Images/SideBarIcons/question.png" Width="32" Height="32" Margin="0,0,0,10" HorizontalAlignment="Center" Opacity="0.7"/>
@@ -356,11 +352,15 @@
                                                             <ColumnDefinition Width="Auto"/>
                                                             <ColumnDefinition Width="*"/>
                                                         </Grid.ColumnDefinitions>
-                                                        <Border CornerRadius="16" Width="32" Height="32" Margin="0,0,10,0" VerticalAlignment="Top" Background="{StaticResource MediumTextColor}">
-                                                            <Image Source="/Images/user-icon.png" Width="20" Height="20" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <!-- === MODIFIED: Dynamic Profile Picture === -->
+                                                        <Border CornerRadius="16" Width="32" Height="32" Margin="0,0,10,0" VerticalAlignment="Top">
+                                                            <Border.Background>
+                                                                <ImageBrush ImageSource="{Binding ProfilePictureUrl, FallbackValue='/Images/user-icon.png'}"
+                                                                            Stretch="UniformToFill"/>
+                                                            </Border.Background>
                                                         </Border>
+                                                        <!-- === END MODIFICATION === -->
                                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                            <!-- MODIFIED USERNAME TEXTBLOCK -->
                                                             <TextBlock Text="{Binding Username}" FontWeight="Bold" FontSize="14" Cursor="Hand" MouseLeftButtonUp="Username_Click">
                                                                 <TextBlock.Style>
                                                                     <Style TargetType="TextBlock">
@@ -375,7 +375,6 @@
                                                                     </Style>
                                                                 </TextBlock.Style>
                                                             </TextBlock>
-                                                            <!-- END MODIFICATION -->
                                                             <TextBlock Text="{Binding RatingDisplay}" Foreground="{StaticResource AccentColorYellow}" FontSize="12"
                                        Visibility="{Binding HasNumericRating, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                                             <TextBlock Text="{Binding RatedAtDisplay}" Foreground="{StaticResource DarkTextColor}" FontSize="10" FontStyle="Italic"/>

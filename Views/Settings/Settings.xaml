@@ -253,6 +253,14 @@
                                     <TextBlock Text="Profile Information" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource TitleFont}" Foreground="White" Margin="0,0,0,15"/>
                                     <TextBlock Text="This is how other users see you. Click 'Edit Profile' to make changes." FontSize="12" Foreground="{StaticResource MediumTextColor}" Margin="0,0,0,25" TextWrapping="Wrap"/>
 
+                                    <Border CornerRadius="50" Width="78" Height="77" BorderBrush="{StaticResource AccentColorBlue}" BorderThickness="2" Margin="0,0,0,10" HorizontalAlignment="Center">
+                                        <Border.Background>
+                                            <!-- Bind this to a property in your code-behind -->
+                                            <ImageBrush x:Name="ProfileImageBrush" ImageSource="{Binding ProfilePictureSource, FallbackValue='/Images/user-icon.png'}" Stretch="UniformToFill"/>
+                                        </Border.Background>
+                                    </Border>
+                                    <Button x:Name="btnChangePicture" Content="Change Picture" Style="{StaticResource SecondaryButtonStyle}" Click="ChangePicture_Click" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -271,14 +279,14 @@
                                         <TextBlock Grid.Row="1" Grid.Column="0" Text="EMAIL ADDRESS" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{StaticResource MediumTextColor}" FontSize="11" Margin="0,0,0,5"/>
                                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EditedEmail, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource SettingsTextBoxStyle}" IsReadOnly="{Binding IsNotEditingProfile}" Margin="0,0,0,20"/>
                                     </Grid>
+                                    <Button x:Name="btnEditProfile" FontSize="10" Content="Edit Profile" Style="{StaticResource SettingsButtonStyle}" Click="EditProfile_Click"
+                                            Visibility="{Binding IsNotEditingProfile, Converter={StaticResource BooleanToVisibilityConverter}}" Height="26"/>
 
                                     <!-- Status Message -->
                                     <TextBlock Text="{Binding ProfileStatusMessage}" Foreground="{Binding ProfileStatusBrush}" FontSize="12" Margin="0,0,0,10"
                                                Visibility="{Binding HasProfileStatusMessage, Converter={StaticResource BooleanToVisibilityConverter}}" TextWrapping="Wrap"/>
 
                                     <!-- Action Buttons -->
-                                    <Button x:Name="btnEditProfile" Content="Edit Profile" Style="{StaticResource SettingsButtonStyle}" Click="EditProfile_Click" HorizontalAlignment="Left"
-                                            Visibility="{Binding IsNotEditingProfile, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
                                                 Visibility="{Binding IsEditingProfile, Converter={StaticResource BooleanToVisibilityConverter}}">

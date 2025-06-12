@@ -117,4 +117,8 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UserData\ProfilePictures\" />
+  </ItemGroup>
+
 </Project>

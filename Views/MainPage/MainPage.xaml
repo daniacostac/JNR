@@ -120,10 +120,35 @@
                             </Grid>
                         </Border>
                     </DockPanel>
+                    <!-- === MODIFIED TOP-RIGHT PANEL === -->
                     <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0">
+                        <!-- Profile Section -->
+                        <StackPanel x:Name="ProfileSection"
+                                    Orientation="Horizontal"
+                                    Cursor="Hand"
+                                    MouseDown="ProfileArea_Click"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,15,0">
+                            <Border CornerRadius="14" Width="28" Height="28" BorderBrush="White" BorderThickness="1">
+                                <Ellipse Margin="0,2,0,-2">
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="{Binding CurrentUserProfilePicture, FallbackValue='/Images/user-icon.png'}" Stretch="UniformToFill"/>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                            </Border>
+                            <TextBlock Text="{Binding CurrentUserDisplayName, FallbackValue='Guest'}"
+                                       Foreground="White"
+                                       VerticalAlignment="Center"
+                                       FontFamily="/Fonts/#Dosis"
+                                       FontSize="13"
+                                       Margin="8,0,0,0"/>
+                        </StackPanel>
+
+                        <!-- Window Controls -->
                         <Button Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" Margin="0,0,5,0"/>
                         <Button Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click"/>
                     </StackPanel>
+                    <!-- === END MODIFICATION === -->
 
                     <StackPanel Grid.Column="0" Grid.Row="1">
                         <RadioButton Content="My Albums" Height="50" Tag="/Images/SideBarIcons/folder-user.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Checked="MyAlbumsRadioButton_Checked"/>

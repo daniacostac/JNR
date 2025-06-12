@@ -71,6 +71,7 @@ public partial class JnrContext : DbContext
                 .HasColumnType("timestamp");
             entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.Username).HasMaxLength(100);
+            entity.Property(e => e.ProfilePicturePath).HasMaxLength(1024);
         });
 
         modelBuilder.Entity<Useralbumrating>(entity =>

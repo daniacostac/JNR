@@ -4,6 +4,7 @@ using System.Collections.Generic; // Required for List<T>
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO; // Required for File operations
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
@@ -13,9 +14,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media; // Required for ImageSource
+using System.Windows.Media.Imaging; // Required for BitmapImage
+using JNR; // Required for App navigation
+using JNR.Helpers; // Required for SessionManager
+using JNR.Models; // Required for JnrContext
 using JNR.Models.DiscogModels;
 using JNR.Models.LastFmModels;
 using JNR.Models.NewsApiModels;
+using Microsoft.EntityFrameworkCore; // Required for EF Core
 
 namespace JNR.Views.MainPage
 {
@@ -105,6 +112,23 @@ namespace JNR.Views.MainPage
             }
         }
 
+        // ========= NEW PROPERTIES FOR USER PROFILE DISPLAY =========
+        private string _currentUserDisplayName;
+        public string CurrentUserDisplayName
+        {
+            get => _currentUserDisplayName;
+            set { _currentUserDisplayName = value; OnPropertyChanged(); }
+        }
+
+        private ImageSource _currentUserProfilePicture;
+        public ImageSource CurrentUserProfilePicture
+        {
+            get => _currentUserProfilePicture;
+            set { _currentUserProfilePicture = value; OnPropertyChanged(); }
+        }
+        // ==========================================================
+
+
         public ObservableCollection<MainPageSearchResultItem> SearchResults { get; set; }
         public ObservableCollection<NewsItemUI> MusicNewsItems { get; set; }
 
@@ -137,8 +161,83 @@ namespace JNR.Views.MainPage
             }
 
             BindingOperations.SetBinding(txtSearchAlbum, TextBox.TextProperty, new Binding("SearchQuery") { Source = this, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-            this.Loaded += async (s, e) => await LoadMusicNewsAsync();
+            // MODIFIED: Added LoadCurrentUserProfileAsync call
+            this.Loaded += async (s, e) =>
+            {
+                await LoadMusicNewsAsync();
+                await LoadCurrentUserProfileAsync();
+            };
         }
+
+        // ========= NEW METHOD TO LOAD USER DATA =========
+        private async Task LoadCurrentUserProfileAsync()
+        {
+            if (SessionManager.CurrentUserId.HasValue)
+            {
+                CurrentUserDisplayName = SessionManager.CurrentUsername ?? "User";
+
+                var optionsBuilder = new DbContextOptionsBuilder<JnrContext>();
+                // This connection string should ideally be stored in a configuration file
+                string connectionString = "Server=localhost;Port=3306;Database=jnr;Uid=root;Pwd=root;";
+                optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+
+                string profilePicPath = null;
+                try
+                {
+                    using (var dbContext = new JnrContext(optionsBuilder.Options))
+                    {
+                        var user = await dbContext.Users.FindAsync(SessionManager.CurrentUserId.Value);
+                        if (user != null)
+                        {
+                            profilePicPath = user.ProfilePicturePath;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Failed to load user profile picture path: {ex.Message}");
+                }
+
+                if (!string.IsNullOrEmpty(profilePicPath) && File.Exists(profilePicPath))
+                {
+                    // Use BitmapCacheOption.OnLoad to prevent locking the image file
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(profilePicPath, UriKind.Absolute);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    CurrentUserProfilePicture = bitmap;
+                }
+                else
+                {
+                    // Load default image from resources
+                    CurrentUserProfilePicture = new BitmapImage(new Uri("pack://application:,,,/Images/user-icon.png"));
+                }
+            }
+            else
+            {
+                CurrentUserDisplayName = "Guest";
+                CurrentUserProfilePicture = new BitmapImage(new Uri("pack://application:,,,/Images/user-icon.png"));
+            }
+        }
+        // ================================================
+
+        // ========= NEW EVENT HANDLER FOR PROFILE CLICK =========
+        private void ProfileArea_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (SessionManager.CurrentUserId.HasValue)
+            {
+                // Navigate TO the profile view, closing the current (MainPage) window.
+                App.NavigateToProfile(this, SessionManager.CurrentUserId.Value);
+            }
+            else
+            {
+                // If a guest clicks, navigate them to the login screen, closing the MainPage.
+                App.NavigateTo<LoginView>(this);
+            }
+        }
+        // =======================================================
+
 
         private async Task LoadMusicNewsAsync() // Unchanged
         {

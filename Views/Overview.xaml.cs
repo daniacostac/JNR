@@ -24,9 +24,13 @@ namespace JNR.Views
 {
     public class UserReviewDisplayItem : INotifyPropertyChanged
     {
-        public int UserId { get; set; } // <-- MODIFIED: Added UserId
+        public int UserId { get; set; }
         private string _username;
         public string Username { get => _username; set { _username = value; OnPropertyChanged(); } }
+
+        // --- ADDED PROPERTY ---
+        private string _profilePictureUrl;
+        public string ProfilePictureUrl { get => _profilePictureUrl; set { _profilePictureUrl = value; OnPropertyChanged(); } }
 
         private string _ratingDisplay;
         public string RatingDisplay { get => _ratingDisplay; set { _ratingDisplay = value; OnPropertyChanged(); } }
@@ -52,7 +56,6 @@ namespace JNR.Views
 
     public partial class Overview : Window, INotifyPropertyChanged
     {
-        // ... (no other changes in properties or constructor)
         #region Existing Properties and Constructor
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -229,7 +232,6 @@ namespace JNR.Views
         }
         #endregion
 
-        // ...
         private async Task LoadUserReviewsAsync()
         {
             AlbumUserReviews.Clear();
@@ -252,8 +254,10 @@ namespace JNR.Views
                 {
                     var displayItem = new UserReviewDisplayItem
                     {
-                        UserId = review.UserId, // <-- MODIFIED: Populate UserId
+                        UserId = review.UserId,
                         Username = review.User?.Username ?? "Unknown User",
+                        // --- MODIFIED: Populate the profile picture URL ---
+                        ProfilePictureUrl = review.User?.ProfilePicturePath,
                         ReviewText = review.ReviewText,
                         HasReviewText = !string.IsNullOrWhiteSpace(review.ReviewText),
                         RatedAtDisplay = $"Posted: {review.RatedAt:yyyy-MM-dd HH:mm}"
@@ -273,9 +277,7 @@ namespace JNR.Views
                 }
             }
         }
-        // ... (rest of the file is unchanged)
 
-        // ========= NEW EVENT HANDLER =========
         private void Username_Click(object sender, MouseButtonEventArgs e)
         {
             if (sender is FrameworkElement fe && fe.DataContext is UserReviewDisplayItem selectedReview)
@@ -283,7 +285,6 @@ namespace JNR.Views
                 App.NavigateToProfile(this, selectedReview.UserId);
             }
         }
-        // ========= END NEW EVENT HANDLER =========
         #region Unchanged Methods
         private void UpdateCanPostOrRate()
         {

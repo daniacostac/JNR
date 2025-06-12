@@ -1,6 +1,7 @@
 ﻿// App.xaml.cs
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls; // For RadioButton
@@ -81,24 +82,30 @@ namespace JNR // Ensure this is the root namespace of your project
         {
             Type profileType = typeof(JNR.Views.Profile);
 
-            if (currentWindowToClose != null)
-            {
-                WindowClosed(currentWindowToClose);
-                currentWindowToClose.Close();
-            }
-
-            // To prevent multiple instances of the *same* profile window type from causing issues,
-            // we'll treat it like Overview and always create a new one.
+            // 1. Safeguard: Close any other instance of the Profile window that might be lingering.
+            // This prevents having multiple profile windows open.
             if (openWindows.TryGetValue(profileType, out Window existingProfileWindow))
             {
                 WindowClosed(existingProfileWindow);
                 existingProfileWindow.Close();
             }
 
+            // 2. Create the new Profile window and register it.
             JNR.Views.Profile profileWindow = new JNR.Views.Profile(userId);
-            openWindows[profileType] = profileWindow; // Register the new one
-            profileWindow.Closed += (s, args) => WindowClosed(profileWindow); // Hook closed event
+            openWindows[profileType] = profileWindow;
+            profileWindow.Closed += (s, args) => WindowClosed(profileWindow);
+
+            // 3. SHOW the new window FIRST.
+            // This is the critical step to prevent the application from shutting down.
             profileWindow.Show();
+
+            // 4. THEN, close the old window.
+            // By this point, the new window is already open, so the app won't terminate.
+            if (currentWindowToClose != null)
+            {
+                WindowClosed(currentWindowToClose); // Unregister from our tracking dictionary
+                currentWindowToClose.Close();
+            }
         }
         // ========= END NEW METHOD =========
 
@@ -130,13 +137,22 @@ namespace JNR // Ensure this is the root namespace of your project
             if (openWindows.Count == 0 && Application.Current.Windows.Count == 0)
             {
                 //This condition might be hit if the very last window closes.
-            }
+            }   
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             // this.ShutdownMode = ShutdownMode.OnLastWindowClose;
+
+            // ========= NEW CODE FOR PROFILE PICTURES FOLDER =========
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string profilePicsDir = Path.Combine(baseDir, "UserData", "ProfilePictures");
+            if (!Directory.Exists(profilePicsDir))
+            {
+                Directory.CreateDirectory(profilePicsDir);
+            }
+            // =======================================================
         }
     }
 }

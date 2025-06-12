@@ -1,10 +1,11 @@
 ﻿// File: Views/Profile.xaml.cs
-using JNR.Models; // <-- ADD THIS
+using JNR.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO; // <-- ADDED
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging; // <-- ADDED
 using LiveCharts;
 using LiveCharts.Wpf;
 
@@ -35,6 +37,10 @@ namespace JNR.Views
 
         private string _memberSince;
         public string MemberSince { get => _memberSince; set { _memberSince = value; OnPropertyChanged(); } }
+
+        // --- ADDED PROPERTY for Profile Picture ---
+        private ImageSource _profilePictureSource;
+        public ImageSource ProfilePictureSource { get => _profilePictureSource; set { _profilePictureSource = value; OnPropertyChanged(); } }
 
         private string _totalCollectionCount = "0";
         public string TotalCollectionCount { get => _totalCollectionCount; set { _totalCollectionCount = value; OnPropertyChanged(); } }
@@ -106,6 +112,22 @@ namespace JNR.Views
 
                     ProfileUsername = user.Username;
                     MemberSince = $"Member since {user.CreatedAt:MMMM yyyy}";
+
+                    // --- ADDED: Load profile picture ---
+                    if (!string.IsNullOrEmpty(user.ProfilePicturePath) && File.Exists(user.ProfilePicturePath))
+                    {
+                        BitmapImage bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.UriSource = new Uri(user.ProfilePicturePath, UriKind.Absolute);
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                        ProfilePictureSource = bitmap;
+                    }
+                    else
+                    {
+                        ProfilePictureSource = new BitmapImage(new Uri("pack://application:,,,/Images/user-icon.png"));
+                    }
+                    // --- END ---
 
                     var ratedAlbums = await dbContext.Useralbumratings
                         .Where(uar => uar.UserId == _userId)
@@ -202,7 +224,11 @@ namespace JNR.Views
 
         private void btnGoBack_Click(object sender, RoutedEventArgs e)
         {
+            var mainPage = Application.Current.Windows.OfType<JNR.Views.MainPage.MainPage>().FirstOrDefault();
+            if (mainPage == null) { mainPage = new JNR.Views.MainPage.MainPage(); mainPage.Show(); }
+            else { mainPage.Activate(); }
             this.Close();
+
         }
 
         private void SidebarNavigation_Click(object sender, RoutedEventArgs e)
