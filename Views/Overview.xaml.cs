@@ -1,6 +1,4 @@
-﻿// Archivo: Views\Overview.xaml.cs
-//====================
-// File: Views/Overview.xaml.cs
+﻿// File: Views/Overview.xaml.cs
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,18 +12,19 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls; // Required for RadioButton
+using System.Windows.Controls;
 using System.Windows.Input;
 using JNR.Models.DiscogModels;
 using JNR.Models.LastFmModels;
 using JNR.Models;
-using JNR.Helpers; // For SessionManager
+using JNR.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace JNR.Views
 {
     public class UserReviewDisplayItem : INotifyPropertyChanged
     {
+        public int UserId { get; set; } // <-- MODIFIED: Added UserId
         private string _username;
         public string Username { get => _username; set { _username = value; OnPropertyChanged(); } }
 
@@ -53,6 +52,8 @@ namespace JNR.Views
 
     public partial class Overview : Window, INotifyPropertyChanged
     {
+        // ... (no other changes in properties or constructor)
+        #region Existing Properties and Constructor
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -76,7 +77,6 @@ namespace JNR.Views
             set { _averageRatingDisplay = value; OnPropertyChanged(); }
         }
 
-        // NEW PROPERTY FOR THE GAUGE
         private double _averageRatingValue;
         public double AverageRatingValue
         {
@@ -198,7 +198,6 @@ namespace JNR.Views
             this.DataContext = this;
 
             IsUserLoggedIn = SessionManager.CurrentUserId.HasValue;
-            // CanPostOrRate will be updated after _currentDbAlbumId is known
 
             _albumNameParam = albumName;
             _artistNameParam = artistName;
@@ -215,7 +214,6 @@ namespace JNR.Views
             PlayCount = "Loading...";
             LanguageInfo = "English (Default)";
 
-            // Initialize gauge value
             AverageRatingValue = 0;
 
             AlbumTracks = new ObservableCollection<TrackItem>();
@@ -229,7 +227,64 @@ namespace JNR.Views
 
             this.Loaded += Overview_Loaded;
         }
+        #endregion
 
+        // ...
+        private async Task LoadUserReviewsAsync()
+        {
+            AlbumUserReviews.Clear();
+            if (!_currentDbAlbumId.HasValue) return;
+
+            var optionsBuilder = new DbContextOptionsBuilder<JnrContext>();
+            string connectionString = "Server=localhost;Port=3306;Database=jnr;Uid=root;Pwd=root;";
+            optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+
+            using (var dbContext = new JnrContext(optionsBuilder.Options))
+            {
+                var reviewsFromDb = await dbContext.Useralbumratings
+                    .Include(uar => uar.User)
+                    .Where(uar => uar.AlbumId == _currentDbAlbumId.Value &&
+                                  (!string.IsNullOrEmpty(uar.ReviewText) || (uar.Rating >= 0 && uar.Rating <= 10)))
+                    .OrderByDescending(uar => uar.RatedAt)
+                    .ToListAsync();
+
+                foreach (var review in reviewsFromDb)
+                {
+                    var displayItem = new UserReviewDisplayItem
+                    {
+                        UserId = review.UserId, // <-- MODIFIED: Populate UserId
+                        Username = review.User?.Username ?? "Unknown User",
+                        ReviewText = review.ReviewText,
+                        HasReviewText = !string.IsNullOrWhiteSpace(review.ReviewText),
+                        RatedAtDisplay = $"Posted: {review.RatedAt:yyyy-MM-dd HH:mm}"
+                    };
+
+                    if (review.Rating >= 0 && review.Rating <= 10)
+                    {
+                        displayItem.RatingDisplay = $"Rated: {review.Rating}/10";
+                        displayItem.HasNumericRating = true;
+                    }
+                    else
+                    {
+                        displayItem.RatingDisplay = "";
+                        displayItem.HasNumericRating = false;
+                    }
+                    AlbumUserReviews.Add(displayItem);
+                }
+            }
+        }
+        // ... (rest of the file is unchanged)
+
+        // ========= NEW EVENT HANDLER =========
+        private void Username_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is UserReviewDisplayItem selectedReview)
+            {
+                App.NavigateToProfile(this, selectedReview.UserId);
+            }
+        }
+        // ========= END NEW EVENT HANDLER =========
+        #region Unchanged Methods
         private void UpdateCanPostOrRate()
         {
             CanPostOrRate = IsUserLoggedIn && _currentDbAlbumId.HasValue;
@@ -257,7 +312,7 @@ namespace JNR.Views
             if (string.IsNullOrWhiteSpace(externalId) || string.IsNullOrWhiteSpace(DetailedAlbumName) || DetailedAlbumName == "Album")
             {
                 AverageRatingDisplay = "N/A (Album ID unknown)";
-                AverageRatingValue = 0; // MODIFIED: Reset gauge value
+                AverageRatingValue = 0;
                 _currentDbAlbumId = null;
                 UpdateCanPostOrRate();
                 return;
@@ -313,9 +368,9 @@ namespace JNR.Views
             if (!_currentDbAlbumId.HasValue)
             {
                 AverageRatingDisplay = "N/A (Album not in local DB)";
-                AverageRatingValue = 0; // MODIFIED: Reset gauge value
+                AverageRatingValue = 0;
                 if (IsUserLoggedIn) txtUserRating.Text = "";
-                AlbumUserReviews.Clear(); // Clear reviews if album ID is not available
+                AlbumUserReviews.Clear();
                 return;
             }
 
@@ -325,7 +380,6 @@ namespace JNR.Views
 
             using (var dbContext = new JnrContext(optionsBuilder.Options))
             {
-                // Calculate Average Rating
                 var validRatings = await dbContext.Useralbumratings
                     .Where(r => r.AlbumId == _currentDbAlbumId.Value && r.Rating >= 0 && r.Rating <= 10)
                     .Select(r => (int)r.Rating)
@@ -335,15 +389,14 @@ namespace JNR.Views
                 {
                     double avg = validRatings.Average();
                     AverageRatingDisplay = $"Avg: {avg:F1}/10 ({validRatings.Count} votes)";
-                    AverageRatingValue = avg; // MODIFIED: Set gauge value
+                    AverageRatingValue = avg;
                 }
                 else
                 {
                     AverageRatingDisplay = "Not Rated Yet";
-                    AverageRatingValue = 0; // MODIFIED: Reset gauge value
+                    AverageRatingValue = 0;
                 }
 
-                // Display Current User's Rating 
                 if (SessionManager.CurrentUserId.HasValue)
                 {
                     var currentUserRatingEntry = await dbContext.Useralbumratings
@@ -357,63 +410,14 @@ namespace JNR.Views
                     {
                         txtUserRating.Text = "";
                     }
-                    // txtUserRating IsEnabled is now bound to CanPostOrRate
-                    // btnRateAlbum IsEnabled is now bound to CanPostOrRate
                 }
                 else
                 {
                     txtUserRating.Text = "";
-                    // txtUserRating IsEnabled is now bound to CanPostOrRate
-                    // btnRateAlbum IsEnabled is now bound to CanPostOrRate
                 }
             }
-            await LoadUserReviewsAsync(); // Load/Refresh reviews
+            await LoadUserReviewsAsync();
         }
-
-        private async Task LoadUserReviewsAsync()
-        {
-            AlbumUserReviews.Clear();
-            if (!_currentDbAlbumId.HasValue) return;
-
-            var optionsBuilder = new DbContextOptionsBuilder<JnrContext>();
-            string connectionString = "Server=localhost;Port=3306;Database=jnr;Uid=root;Pwd=root;"; // Consider moving to config
-            optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-
-            using (var dbContext = new JnrContext(optionsBuilder.Options))
-            {
-                var reviewsFromDb = await dbContext.Useralbumratings
-                    .Include(uar => uar.User) // Eager load User to get Username
-                    .Where(uar => uar.AlbumId == _currentDbAlbumId.Value &&
-                                  (!string.IsNullOrEmpty(uar.ReviewText) || (uar.Rating >= 0 && uar.Rating <= 10))) // Show if has review OR a numeric rating
-                    .OrderByDescending(uar => uar.RatedAt)
-                    .ToListAsync();
-
-                foreach (var review in reviewsFromDb)
-                {
-                    var displayItem = new UserReviewDisplayItem
-                    {
-                        Username = review.User?.Username ?? "Unknown User",
-                        ReviewText = review.ReviewText,
-                        HasReviewText = !string.IsNullOrWhiteSpace(review.ReviewText),
-                        RatedAtDisplay = $"Posted: {review.RatedAt:yyyy-MM-dd HH:mm}"
-                    };
-
-                    if (review.Rating >= 0 && review.Rating <= 10)
-                    {
-                        displayItem.RatingDisplay = $"Rated: {review.Rating}/10";
-                        displayItem.HasNumericRating = true;
-                    }
-
-                    else
-                    {
-                        displayItem.RatingDisplay = ""; // No numeric rating to display explicitly
-                        displayItem.HasNumericRating = false;
-                    }
-                    AlbumUserReviews.Add(displayItem);
-                }
-            }
-        }
-
         private async Task LoadAllAlbumDetailsAsync()
         {
             bool discogsSuccess = await LoadDiscogsDataAsync();
@@ -651,8 +655,8 @@ namespace JNR.Views
                         .Where(r => (r.Type?.Equals("master", StringComparison.OrdinalIgnoreCase) == true ||
                                      r.Type?.Equals("release", StringComparison.OrdinalIgnoreCase) == true) &&
                                      !string.IsNullOrWhiteSpace(r.Title) &&
-                                     r.ParsedYear >= 0) // Include year 0 if that's all we have
-                        .OrderBy(r => r.ParsedYear == 0 ? int.MaxValue : r.ParsedYear) // Sort 0 year to end if others exist
+                                     r.ParsedYear >= 0)
+                        .OrderBy(r => r.ParsedYear == 0 ? int.MaxValue : r.ParsedYear)
                         .ThenBy(r => r.Title)
                         .ToList();
                 }
@@ -660,7 +664,6 @@ namespace JNR.Views
 
                 int currentIndex = -1;
 
-                // Try matching by Master ID first (most reliable)
                 if (_currentDiscogsMasterId.HasValue && _currentDiscogsMasterId.Value > 0)
                 {
                     currentIndex = artistMainAlbums.FindIndex(a =>
@@ -668,16 +671,14 @@ namespace JNR.Views
                         (a.Type?.Equals("master", StringComparison.OrdinalIgnoreCase) == true && a.Id == _currentDiscogsMasterId));
                 }
 
-                // If not found by Master ID, try by Release ID
                 if (currentIndex == -1 && _currentDiscogsReleaseId.HasValue)
                 {
                     currentIndex = artistMainAlbums.FindIndex(a => a.Id == _currentDiscogsReleaseId && a.Type?.Equals("release", StringComparison.OrdinalIgnoreCase) == true);
                 }
 
-                // Fallback: if still not found, try by title and year (less reliable)
                 if (currentIndex == -1)
                 {
-                    string currentAlbumTitlePart = DetailedAlbumName; // Use the already determined DetailedAlbumName
+                    string currentAlbumTitlePart = DetailedAlbumName;
                     if (DetailedAlbumName.Contains(" - ") && DetailedAlbumName.Split(new[] { " - " }, 2, StringSplitOptions.None).Length > 1)
                     {
                         currentAlbumTitlePart = DetailedAlbumName.Split(new[] { " - " }, 2, StringSplitOptions.None)[1].Trim();
@@ -698,7 +699,7 @@ namespace JNR.Views
                     currentIndex = artistMainAlbums.FindIndex(a =>
                         a.Title.Equals(currentAlbumTitlePart, StringComparison.OrdinalIgnoreCase) ||
                         (a.Title.Contains(currentAlbumTitlePart, StringComparison.OrdinalIgnoreCase) &&
-                         (currentAlbumYear > 0 && a.ParsedYear > 0 && Math.Abs(a.ParsedYear - currentAlbumYear) <= 1)) // Allow 1 year difference for matches
+                         (currentAlbumYear > 0 && a.ParsedYear > 0 && Math.Abs(a.ParsedYear - currentAlbumYear) <= 1))
                     );
                 }
 
@@ -915,12 +916,11 @@ namespace JNR.Views
 
         private async void AddToFavoritesButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (!CanPostOrRate) // Uses the combined check for login and album ID
+            if (!CanPostOrRate)
             {
                 MessageBox.Show("You need to be logged in and album details must be loaded to add to your collection.", "Action Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            // _currentDbAlbumId is guaranteed to have value if CanPostOrRate is true
 
             var optionsBuilder = new DbContextOptionsBuilder<JnrContext>();
             string connectionString = "Server=localhost;Port=3306;Database=jnr;Uid=root;Pwd=root;";
@@ -999,7 +999,6 @@ namespace JNR.Views
                             AlbumId = _currentDbAlbumId.Value,
                             Rating = (sbyte)ratingValue,
                             RatedAt = DateTime.UtcNow
-                            // ReviewText will be null initially
                         };
                         dbContext.Useralbumratings.Add(userAlbumRating);
                     }
@@ -1044,25 +1043,24 @@ namespace JNR.Views
                     if (userAlbumRating != null)
                     {
                         userAlbumRating.ReviewText = reviewText;
-                        userAlbumRating.RatedAt = DateTime.UtcNow; // Update timestamp for review activity
+                        userAlbumRating.RatedAt = DateTime.UtcNow;
                     }
                     else
                     {
-                        // If no record exists, create one. Implicitly, this album is now "in collection".
                         userAlbumRating = new Useralbumrating
                         {
                             UserId = SessionManager.CurrentUserId.Value,
                             AlbumId = _currentDbAlbumId.Value,
                             ReviewText = reviewText,
-                            Rating = -1, // Default to "in collection, not numerically rated"
+                            Rating = -1,
                             RatedAt = DateTime.UtcNow
                         };
                         dbContext.Useralbumratings.Add(userAlbumRating);
                     }
                     await dbContext.SaveChangesAsync();
                     MessageBox.Show("Your review has been posted!", "Review Posted", MessageBoxButton.OK, MessageBoxImage.Information);
-                    txtUserReviewText.Clear(); // Clear the textbox
-                    await RefreshRatingAndReviewDisplayAsync(); // Refresh reviews and potentially average rating
+                    txtUserReviewText.Clear();
+                    await RefreshRatingAndReviewDisplayAsync();
                 }
                 catch (Exception ex)
                 {
@@ -1071,7 +1069,6 @@ namespace JNR.Views
                 }
             }
         }
-
 
         private void UserRating_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
@@ -1143,11 +1140,11 @@ namespace JNR.Views
                         break;
                     case "Links":
                         MessageBox.Show($"{viewName} page not yet implemented.", "Coming Soon", MessageBoxButton.OK, MessageBoxImage.Information);
-                        // Because Overview doesn't have a "self" button to re-check, we just un-check the clicked one.
                         rb.IsChecked = false;
                         break;
                 }
             }
         }
+        #endregion
     }
 }

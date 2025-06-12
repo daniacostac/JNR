@@ -371,14 +371,29 @@
                                                             <Image Source="/Images/user-icon.png" Width="20" Height="20" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                                         </Border>
                                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                            <TextBlock Text="{Binding Username}" FontWeight="Bold" Foreground="{StaticResource LightTextColor}" FontSize="14"/>
+                                                            <!-- MODIFIED USERNAME TEXTBLOCK -->
+                                                            <TextBlock Text="{Binding Username}" FontWeight="Bold" FontSize="14" Cursor="Hand" MouseLeftButtonUp="Username_Click">
+                                                                <TextBlock.Style>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="Foreground" Value="{StaticResource LightTextColor}"/>
+                                                                        <Setter Property="TextDecorations" Value="None"/>
+                                                                        <Style.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter Property="Foreground" Value="#87CEFA"/>
+                                                                                <Setter Property="TextDecorations" Value="Underline"/>
+                                                                            </Trigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBlock.Style>
+                                                            </TextBlock>
+                                                            <!-- END MODIFICATION -->
                                                             <TextBlock Text="{Binding RatingDisplay}" Foreground="{StaticResource AccentColorYellow}" FontSize="12"
-                                                                       Visibility="{Binding HasNumericRating, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                       Visibility="{Binding HasNumericRating, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                                             <TextBlock Text="{Binding RatedAtDisplay}" Foreground="{StaticResource DarkTextColor}" FontSize="10" FontStyle="Italic"/>
                                                         </StackPanel>
                                                     </Grid>
                                                     <TextBlock Text="{Binding ReviewText}" TextWrapping="Wrap" Foreground="{StaticResource MediumTextColor}" FontSize="13" LineHeight="18" Margin="0,0,0,5"
-                                                               Visibility="{Binding HasReviewText, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                               Visibility="{Binding HasReviewText, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                                 </StackPanel>
                                             </Border>
                                         </DataTemplate>

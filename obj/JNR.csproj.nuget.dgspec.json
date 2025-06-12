@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\danie\\Desktop\\JNR-themesporsiacaso\\JNR.csproj": {}
+    "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\JNR.csproj": {}
   },
   "projects": {
-    "C:\\Users\\danie\\Desktop\\JNR-themesporsiacaso\\JNR.csproj": {
+    "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\JNR.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\danie\\Desktop\\JNR-themesporsiacaso\\JNR.csproj",
+        "projectUniqueName": "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\JNR.csproj",
         "projectName": "JNR",
-        "projectPath": "C:\\Users\\danie\\Desktop\\JNR-themesporsiacaso\\JNR.csproj",
+        "projectPath": "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\JNR.csproj",
         "packagesPath": "C:\\Users\\danie\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\danie\\Desktop\\JNR-themesporsiacaso\\obj\\",
+        "outputPath": "C:\\Users\\danie\\OneDrive\\Documentos\\GitHub\\JNR\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\danie\\AppData\\Roaming\\NuGet\\NuGet.Config",

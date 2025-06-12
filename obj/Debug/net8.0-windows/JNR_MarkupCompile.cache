@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\danie\Desktop\JNR-themesporsiacaso\obj\Debug\net8.0-windows\
+C:\Users\danie\OneDrive\Documentos\GitHub\JNR\obj\Debug\net8.0-windows\
 JNR
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
-C:\Users\danie\Desktop\JNR-themesporsiacaso\App.xaml
-15393227937
+C:\Users\danie\OneDrive\Documentos\GitHub\JNR\App.xaml
+16-1335509721
 101678231767
-28-2040216669
+301909244212
 226757891483
-MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\About.xaml;Views\Charts.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Genres.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\My Albums\MyAlbums.xaml;Views\Overview.xaml;Views\Settings\Settings.xaml;Views\SignUp\SignUp.xaml;
+MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\About.xaml;Views\Charts.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Genres.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\My Albums\MyAlbums.xaml;Views\Overview.xaml;Views\Profile.xaml;Views\Settings\Settings.xaml;Views\SignUp\SignUp.xaml;
 
 False
 

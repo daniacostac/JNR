@@ -76,6 +76,32 @@ namespace JNR // Ensure this is the root namespace of your project
             overviewWindow.Show();
         }
 
+        // ========= NEW METHOD FOR PROFILE NAVIGATION =========
+        public static void NavigateToProfile(Window currentWindowToClose, int userId)
+        {
+            Type profileType = typeof(JNR.Views.Profile);
+
+            if (currentWindowToClose != null)
+            {
+                WindowClosed(currentWindowToClose);
+                currentWindowToClose.Close();
+            }
+
+            // To prevent multiple instances of the *same* profile window type from causing issues,
+            // we'll treat it like Overview and always create a new one.
+            if (openWindows.TryGetValue(profileType, out Window existingProfileWindow))
+            {
+                WindowClosed(existingProfileWindow);
+                existingProfileWindow.Close();
+            }
+
+            JNR.Views.Profile profileWindow = new JNR.Views.Profile(userId);
+            openWindows[profileType] = profileWindow; // Register the new one
+            profileWindow.Closed += (s, args) => WindowClosed(profileWindow); // Hook closed event
+            profileWindow.Show();
+        }
+        // ========= END NEW METHOD =========
+
         public static void HandlePlaceholderNavigation(Window currentWindow, RadioButton placeholderRadioButton, string placeholderContent)
         {
             MessageBox.Show($"{placeholderContent} page not yet implemented.", "Coming Soon", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -91,8 +117,7 @@ namespace JNR // Ensure this is the root namespace of your project
             else if (currentWindow is JNR.Views.Charts chartsWin) chartsWin.EnsureCorrectRadioButtonIsChecked();
             else if (currentWindow is JNR.Views.Genres.Genres genresWin) genresWin.EnsureCorrectRadioButtonIsChecked();
             else if (currentWindow is JNR.Views.My_Albums.MyAlbums myAlbumsWin) myAlbumsWin.EnsureCorrectRadioButtonIsChecked();
-            // Overview typically doesn't have a self-representing RadioButton in a shared sidebar.
-            // MainPage also, its sidebar navigates *away* from it.
+            // Overview and Profile typically don't have a self-representing RadioButton in a shared sidebar.
         }
 
         public static void WindowClosed(Window closedWindow)
@@ -102,24 +127,15 @@ namespace JNR // Ensure this is the root namespace of your project
                 openWindows.Remove(closedWindow.GetType());
             }
 
-            // Special handling for Login/SignUp to prevent premature shutdown
-
-            // If no more windows are registered with our manager,
-            // and the application is set to shutdown on last window close,
-            // WPF should handle it.
-            // If ShutdownMode is OnMainWindowClose, behavior depends on which window is MainWindow.
-            // For this setup, ShutdownMode.OnLastWindowClose is often simpler.
             if (openWindows.Count == 0 && Application.Current.Windows.Count == 0)
             {
                 //This condition might be hit if the very last window closes.
-                //Application.Current.Shutdown(); // Generally not needed if ShutdownMode is set.
             }
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            // Explicitly set ShutdownMode if desired, otherwise it defaults (often to OnLastWindowClose for StartupUri projects)
             // this.ShutdownMode = ShutdownMode.OnLastWindowClose;
         }
     }
