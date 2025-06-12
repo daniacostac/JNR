@@ -939,7 +939,7 @@ namespace JNR.Views
                         {
                             UserId = SessionManager.CurrentUserId.Value,
                             AlbumId = _currentDbAlbumId.Value,
-                            Rating = -1,
+                            Rating = 0,
                             ReviewText = null,
                             RatedAt = DateTime.UtcNow
                         };

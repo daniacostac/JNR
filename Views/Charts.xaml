@@ -138,7 +138,6 @@
                         <RadioButton Content="Charts" IsChecked="True" Tag="/Images/SideBarIcons/rows-plus-top.png" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}"/>
                         <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="About"/>
                         <RadioButton Content="Settings" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Settings"/>
-                        <RadioButton Content="Links" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Links"/>
                     </StackPanel>
 
                     <!-- Main Content Area for Charts -->
@@ -245,12 +244,6 @@
                         Source="/Images/SideBarIcons/gear.png" 
                         Height="20"
                         Width="20"
-                        Stretch="Fill"/>
-                    <Image Margin="10,285,100,413" 
-                        Grid.Row="1" 
-                        Height="20"
-                        Width="20"
-                        Source="/Images/SideBarIcons/link.png"
                         Stretch="Fill"/>
                     <Image Margin="10,34,100,664"
                         Grid.Row="1" 

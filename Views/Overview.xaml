@@ -183,7 +183,7 @@
                         <RadioButton Content="Charts" Tag="/Images/SideBarIcons/rows-plus-top.png" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Charts"/>
                         <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="About"/>
                         <RadioButton Content="Settings" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Settings"/>
-                        <RadioButton Content="Links" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Links"/>
+                        <RadioButton Content="" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Links"/>
                     </StackPanel>
 
                     <Image Source="/Images/SideBarIcons/folder-user.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,35,0,0" IsHitTestVisible="False"/>
@@ -191,7 +191,6 @@
                     <Image Source="/Images/SideBarIcons/rows-plus-top.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,135,0,0" IsHitTestVisible="False"/>
                     <Image Source="/Images/SideBarIcons/question.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,185,0,0" IsHitTestVisible="False"/>
                     <Image Source="/Images/SideBarIcons/gear.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,235,0,0" IsHitTestVisible="False"/>
-                    <Image Source="/Images/SideBarIcons/link.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,285,0,0" IsHitTestVisible="False"/>
 
                     <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" Padding="20" Grid.RowSpan="2">
                         <Grid>

@@ -1,5 +1,6 @@
 ﻿// File: ViewModels/MainPage/MainPage.xaml.cs
 using System;
+using System.Collections.Generic; // Required for List<T>
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -203,64 +204,107 @@ namespace JNR.Views.MainPage
             }
         }
 
+        // ==================== MODIFIED METHOD ====================
         private async Task ExecuteSearchAsync()
         {
             if (string.IsNullOrWhiteSpace(SearchQuery))
             {
-                // This case should ideally be handled by btnSearchAlbum_Click setting ShowInitialPlaceholder = true
-                // But as a safeguard:
                 ShowInitialPlaceholder = true;
                 MainContentTitle = "Please enter an album or artist name to search.";
                 SearchResults.Clear();
                 return;
             }
 
-            ShowInitialPlaceholder = false; // Ensure placeholder is hidden
+            ShowInitialPlaceholder = false;
             MainContentTitle = $"Searching for '{SearchQuery}'...";
             SearchResults.Clear();
 
             try
             {
-                string searchUrl = $"{DiscogsApiBaseUrl}/database/search?q={Uri.EscapeDataString(SearchQuery)}&type=master,release&per_page=20";
-                HttpResponseMessage response = await discogsClient.GetAsync(searchUrl);
-                if (response.IsSuccessStatusCode)
-                {
-                    string jsonResponse = await response.Content.ReadAsStringAsync();
-                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    var discogsSearchResponse = JsonSerializer.Deserialize<DiscogsSearchResponse>(jsonResponse, options);
+                // More specific searches: one for artists, one for album titles.
+                string artistSearchUrl = $"{DiscogsApiBaseUrl}/database/search?artist={Uri.EscapeDataString(SearchQuery)}&type=master,release&per_page=15";
+                string albumSearchUrl = $"{DiscogsApiBaseUrl}/database/search?release_title={Uri.EscapeDataString(SearchQuery)}&type=master,release&per_page=15";
 
-                    if (discogsSearchResponse?.Results != null && discogsSearchResponse.Results.Any())
+                // Run searches in parallel
+                var artistSearchTask = discogsClient.GetAsync(artistSearchUrl);
+                var albumSearchTask = discogsClient.GetAsync(albumSearchUrl);
+
+                await Task.WhenAll(artistSearchTask, albumSearchTask);
+
+                var allResults = new List<DiscogsSearchResultItem>();
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+                // Process artist search results
+                var artistResponse = await artistSearchTask;
+                if (artistResponse.IsSuccessStatusCode)
+                {
+                    string jsonResponse = await artistResponse.Content.ReadAsStringAsync();
+                    var discogsSearchResponse = JsonSerializer.Deserialize<DiscogsSearchResponse>(jsonResponse, options);
+                    if (discogsSearchResponse?.Results != null)
                     {
-                        MainContentTitle = $"Results for '{SearchQuery}':";
-                        foreach (var item in discogsSearchResponse.Results)
-                        {
-                            SearchResults.Add(new MainPageSearchResultItem
-                            {
-                                AlbumName = item.AlbumName,
-                                ArtistName = item.ArtistName,
-                                CoverArtUrl = item.Thumb,
-                                ReleaseYear = item.Year,
-                                PrimaryGenre = item.Genre?.FirstOrDefault(),
-                                DiscogsId = item.MasterId ?? item.Id,
-                                SourceApi = "Discogs"
-                            });
-                        }
-                    }
-                    else
-                    {
-                        MainContentTitle = $"No results found for '{SearchQuery}'.";
-                        // SearchResults is already empty
+                        allResults.AddRange(discogsSearchResponse.Results);
                     }
                 }
                 else
                 {
-                    MainContentTitle = $"Error searching Discogs: {response.ReasonPhrase}";
+                    Debug.WriteLine($"Discogs artist search failed: {artistResponse.ReasonPhrase}");
+                }
+
+                // Process album search results
+                var albumResponse = await albumSearchTask;
+                if (albumResponse.IsSuccessStatusCode)
+                {
+                    string jsonResponse = await albumResponse.Content.ReadAsStringAsync();
+                    var discogsSearchResponse = JsonSerializer.Deserialize<DiscogsSearchResponse>(jsonResponse, options);
+                    if (discogsSearchResponse?.Results != null)
+                    {
+                        allResults.AddRange(discogsSearchResponse.Results);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine($"Discogs album search failed: {albumResponse.ReasonPhrase}");
+                }
+
+                // Deduplicate and order results
+                var uniqueResults = allResults
+                    .GroupBy(r => r.MasterId.HasValue && r.MasterId > 0 ? $"M_{r.MasterId.Value}" : $"R_{r.Id}")
+                    .Select(g => g.First())
+                    .OrderByDescending(r => r.Community?.Have ?? 0) // Prioritize more popular items
+                    .Take(20) // Limit total results to a reasonable number
+                    .ToList();
+
+                if (uniqueResults.Any())
+                {
+                    MainContentTitle = $"Results for '{SearchQuery}':";
+                    foreach (var item in uniqueResults)
+                    {
+                        SearchResults.Add(new MainPageSearchResultItem
+                        {
+                            AlbumName = item.AlbumName,
+                            ArtistName = item.ArtistName,
+                            CoverArtUrl = item.Thumb,
+                            ReleaseYear = item.Year,
+                            PrimaryGenre = item.Genre?.FirstOrDefault(),
+                            DiscogsId = item.MasterId ?? item.Id,
+                            SourceApi = "Discogs"
+                        });
+                    }
+                }
+                else
+                {
+                    MainContentTitle = $"No results found for '{SearchQuery}'.";
                 }
             }
             catch (HttpRequestException) { MainContentTitle = "Network error occurred during search."; }
             catch (JsonException) { MainContentTitle = "Error parsing search results data."; }
-            catch (Exception) { MainContentTitle = "An unexpected error occurred during search."; }
+            catch (Exception ex)
+            {
+                MainContentTitle = "An unexpected error occurred during search.";
+                Debug.WriteLine($"Unexpected search error: {ex.Message}");
+            }
         }
+        // ==================== END OF MODIFIED METHOD ====================
 
         private void AlbumSearchResult_Click(object sender, MouseButtonEventArgs e) // Unchanged
         {

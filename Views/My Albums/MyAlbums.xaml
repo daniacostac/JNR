@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JNR.Views.My_Albums"
         xmlns:converters="clr-namespace:JNR.Converters"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="My Albums - JNR"
         WindowStyle="None"
@@ -44,7 +45,6 @@
 
         <Style TargetType="Button" x:Key="MinimizeButtonStyle" BasedOn="{StaticResource WindowControlButtonBase}">
             <Setter Property="Content" Value=""/>
-            <!-- Minimize icon -->
             <Setter Property="Background" Value="#FF4E72B8"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -55,7 +55,6 @@
 
         <Style TargetType="Button" x:Key="CloseButtonStyle" BasedOn="{StaticResource WindowControlButtonBase}">
             <Setter Property="Content" Value=""/>
-            <!-- Close icon -->
             <Setter Property="Background" Value="IndianRed"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -86,7 +85,6 @@
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#25FFFFFF"/>
-                    <!-- Slight highlight on hover -->
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -128,78 +126,150 @@
                         <Button Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click"/>
                     </StackPanel>
 
-                    <!-- IMPORTANT: Added x:Name="SidebarContentPanel" -->
                     <StackPanel x:Name="SidebarContentPanel" Grid.Column="0" Grid.Row="1">
                         <RadioButton Content="My Albums" IsChecked="True" Height="50" Tag="/Images/SideBarIcons/folder-user.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="MyAlbums"/>
                         <RadioButton Content="Genres" Height="50" Tag="/Images/SideBarIcons/radio.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Genres"/>
                         <RadioButton Content="Charts" Height="50" Tag="/Images/SideBarIcons/rows-plus-top.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Charts"/>
                         <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="About"/>
                         <RadioButton Content="Settings" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Settings"/>
-                        <RadioButton Content="Links" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Links"/>
-                        <!-- Consider adding a "Back to Search" button here if desired for all views -->
-                        <!-- <Button Content="Back to Search" Height="40" Margin="10,20,10,0" Background="#303040" Foreground="White" Click="GoToSearch_Click"/> -->
                     </StackPanel>
 
-                    <!-- These images are purely visual cues for the RadioButton Tags -->
                     <Image Source="/Images/SideBarIcons/folder-user.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,14,0,0" IsHitTestVisible="False"/>
                     <Image Source="/Images/SideBarIcons/radio.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,64,0,0" IsHitTestVisible="False"/>
                     <Image Source="/Images/SideBarIcons/rows-plus-top.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,114,0,0" IsHitTestVisible="False"/>
                     <Image Source="/Images/SideBarIcons/question.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,164,0,0" IsHitTestVisible="False"/>
                     <Image Source="/Images/SideBarIcons/gear.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,214,0,0" IsHitTestVisible="False"/>
-                    <Image Source="/Images/SideBarIcons/link.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,265,0,0" IsHitTestVisible="False"/>
-
 
                     <Grid Grid.Column="1" Grid.Row="1" Margin="15,10,15,10">
-                        <!-- Status Message for Loading or No Albums -->
-                        <TextBlock Text="{Binding StatusMessage, FallbackValue='Loading...'}" 
+                        <TextBlock Text="{Binding StatusMessage}" 
                                    Foreground="{StaticResource MediumTextColor}" FontSize="14"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Visibility="{Binding Path=UserAlbums.Count, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverseIfZero}" 
-                                   TextWrapping="Wrap"/>
-                        <!-- Fallback for simpler visibility if inverseIfZero is not yet working/implemented -->
-                        <TextBlock Text="{Binding StatusMessage, FallbackValue='Loading...'}" 
-                                   Foreground="{StaticResource MediumTextColor}" FontSize="14"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                   Visibility="{Binding ShowStatusMessage, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                    TextWrapping="Wrap"/>
 
-                        <!-- MODIFIED: Removed the explicit ScrollViewer wrapper -->
-                        <!-- The ListBox now controls its own scrolling -->
-                        <ListBox ItemsSource="{Binding UserAlbums}" Background="Transparent" BorderThickness="0"
-                                 ItemContainerStyle="{StaticResource MyAlbumListBoxItemStyle}"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                 ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                 ScrollViewer.CanContentScroll="True"
-                                 Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverse}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="{x:Type local:MyAlbumDisplayItem}">
-                                    <Border Background="#1A2035" CornerRadius="5" Padding="10" Margin="0,0,0,10" Cursor="Hand"
-                                            MouseLeftButtonUp="Album_Click">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Image Source="{Binding CoverArtUrl, FallbackValue='/Images/placeholder_album.png'}" 
-                                                   Width="80" Height="80" Stretch="Uniform" VerticalAlignment="Center"/>
-                                            <StackPanel Grid.Column="1" Margin="15,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding AlbumName}" FontWeight="Bold" Foreground="{StaticResource LightTextColor}" FontSize="16" MaxWidth="450" TextTrimming="CharacterEllipsis"/>
-                                                <TextBlock Text="{Binding ArtistName}" Foreground="{StaticResource MediumTextColor}" FontSize="13" MaxWidth="450" TextTrimming="CharacterEllipsis"/>
-                                                <TextBlock Foreground="{StaticResource DarkTextColor}" FontSize="11" FontStyle="Italic" MaxWidth="450" TextTrimming="CharacterEllipsis">
-                                                    <Run Text="Year: "/>
-                                                    <Run Text="{Binding ReleaseYear, TargetNullValue='N/A'}"/>
-                                                    <Run Text=", Genre: "/>
-                                                    <Run Text="{Binding Genre, TargetNullValue='N/A'}"/>
-                                                </TextBlock>
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <Grid Visibility="{Binding ShowContent, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="1.5*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <ListBox Grid.Column="0" ItemsSource="{Binding UserAlbums}" Background="Transparent" BorderThickness="0"
+                                     ItemContainerStyle="{StaticResource MyAlbumListBoxItemStyle}"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type local:MyAlbumDisplayItem}">
+                                        <Border Background="#1A2035" CornerRadius="5" Padding="10" Margin="0,0,10,10">
+                                            <!-- === MODIFICATION START === -->
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <!-- New column for remove button -->
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Clickable Image -->
+                                                <Image Grid.Column="0" Source="{Binding CoverArtUrl, FallbackValue='/Images/placeholder_album.png'}" 
+                                                       Width="80" Height="80" Stretch="Uniform" VerticalAlignment="Center"
+                                                       Cursor="Hand" MouseLeftButtonUp="Album_Click"/>
+
+                                                <!-- Clickable Text Panel -->
+                                                <StackPanel Grid.Column="1" Margin="15,0,15,0" VerticalAlignment="Center"
+                                                            Cursor="Hand" MouseLeftButtonUp="Album_Click">
+                                                    <TextBlock Text="{Binding AlbumName}" FontWeight="Bold" Foreground="{StaticResource LightTextColor}" FontSize="16" MaxWidth="250" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding ArtistName}" Foreground="{StaticResource MediumTextColor}" FontSize="13" MaxWidth="250" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Foreground="{StaticResource DarkTextColor}" FontSize="11" FontStyle="Italic" MaxWidth="250" TextTrimming="CharacterEllipsis">
+                                                        <Run Text="Year: "/>
+                                                        <Run Text="{Binding ReleaseYear, TargetNullValue='N/A'}"/>
+                                                        <Run Text=", Genre: "/>
+                                                        <Run Text="{Binding Genre, TargetNullValue='N/A'}"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+
+                                                <!-- "Listened To" CheckBox -->
+                                                <CheckBox Grid.Column="2" 
+                                                          IsChecked="{Binding HasListened, Mode=TwoWay}"
+                                                          VerticalAlignment="Center" 
+                                                          HorizontalAlignment="Center"
+                                                          ToolTip="Mark as listened"
+                                                          Margin="0,0,10,0">
+                                                    <CheckBox.LayoutTransform>
+                                                        <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                                                    </CheckBox.LayoutTransform>
+                                                </CheckBox>
+
+                                                <!-- NEW: Remove Button -->
+                                                <Button Grid.Column="3"
+                                                        Content="✕" 
+                                                        Click="RemoveAlbum_Click" 
+                                                        ToolTip="Remove from collection"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Right"
+                                                        Margin="5,0,5,0"
+                                                        Cursor="Hand">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Background" Value="Transparent"/>
+                                                            <Setter Property="Foreground" Value="#A0A0A0"/>
+                                                            <Setter Property="BorderThickness" Value="0"/>
+                                                            <Setter Property="FontWeight" Value="Normal"/>
+                                                            <Setter Property="FontSize" Value="14"/>
+                                                            <Setter Property="Width" Value="25"/>
+                                                            <Setter Property="Height" Value="25"/>
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Border Background="{TemplateBinding Background}" CornerRadius="12.5">
+                                                                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-1,0,0"/>
+                                                                        </Border>
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="#44E53935"/>
+                                                                    <!-- Semi-transparent red -->
+                                                                    <Setter Property="Foreground" Value="White"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                            </Grid>
+                                            <!-- === MODIFICATION END === -->
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0" Visibility="{Binding ShowChart, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="Albums per Artist" FontSize="16" FontFamily="{StaticResource TitleFont}" Foreground="{StaticResource LightTextColor}" Margin="5,0,0,10"/>
+                                <lvc:CartesianChart Series="{Binding UserAlbumsChartSeries}" LegendLocation="None" Height="330" Hoverable="False">
+                                    <lvc:CartesianChart.DataTooltip>
+                                        <lvc:DefaultTooltip BulletSize="10" Background="#2A3045" Foreground="{StaticResource LightTextColor}"/>
+                                    </lvc:CartesianChart.DataTooltip>
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis Labels="{Binding UserAlbumsChartLabels}" Foreground="{StaticResource MediumTextColor}" FontSize="10">
+                                            <lvc:Axis.Separator>
+                                                <lvc:Separator StrokeThickness="0" />
+                                            </lvc:Axis.Separator>
+                                        </lvc:Axis>
+                                    </lvc:CartesianChart.AxisX>
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Title="Count" LabelFormatter="{Binding YFormatter}" MinValue="0" Foreground="{StaticResource MediumTextColor}" ShowLabels="True">
+                                            <lvc:Axis.Separator>
+                                                <lvc:Separator Stroke="{StaticResource DarkTextColor}" StrokeThickness="0.5" Step="1" />
+                                            </lvc:Axis.Separator>
+                                        </lvc:Axis>
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+                            </StackPanel>
+                        </Grid>
                     </Grid>
 
-                    <Button Name="btnGoBackImage"
+                    <Button Name="btnGoBackMyAlbums"
                             Click="btnGoBackMyAlbums_Click" 
                             Grid.Column="0"
                             Background="Transparent"
@@ -234,4 +304,3 @@
         </Border>
     </Viewbox>
 </Window>
-<!--====================-->

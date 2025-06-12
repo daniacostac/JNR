@@ -6,10 +6,12 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace JNR.Views.Settings
 {
@@ -21,19 +23,37 @@ namespace JNR.Views.Settings
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        #region Properties for Data Binding
         private string _username;
-        public string Username
-        {
-            get => _username;
-            set { _username = value; OnPropertyChanged(); }
-        }
+        public string Username { get => _username; set { _username = value; OnPropertyChanged(); } }
 
         private string _email;
-        public string Email
+        public string Email { get => _email; set { _email = value; OnPropertyChanged(); } }
+
+        // --- New properties for editing state ---
+        private bool _isEditingProfile;
+        public bool IsEditingProfile
         {
-            get => _email;
-            set { _email = value; OnPropertyChanged(); }
+            get => _isEditingProfile;
+            set { _isEditingProfile = value; OnPropertyChanged(); OnPropertyChanged(nameof(IsNotEditingProfile)); }
         }
+        public bool IsNotEditingProfile => !IsEditingProfile;
+
+        private string _editedUsername;
+        public string EditedUsername { get => _editedUsername; set { _editedUsername = value; OnPropertyChanged(); } }
+
+        private string _editedEmail;
+        public string EditedEmail { get => _editedEmail; set { _editedEmail = value; OnPropertyChanged(); } }
+
+        private string _profileStatusMessage;
+        public string ProfileStatusMessage { get => _profileStatusMessage; set { _profileStatusMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasProfileStatusMessage)); } }
+
+        public bool HasProfileStatusMessage => !string.IsNullOrEmpty(_profileStatusMessage);
+
+        private Brush _profileStatusBrush;
+        public Brush ProfileStatusBrush { get => _profileStatusBrush; set { _profileStatusBrush = value; OnPropertyChanged(); } }
+
+        #endregion
 
         public Settings()
         {
@@ -41,6 +61,7 @@ namespace JNR.Views.Settings
             this.DataContext = this;
             this.Loaded += async (s, e) => await LoadUserSettingsAsync();
             this.Closed += (s, args) => App.WindowClosed(this);
+            ProfileStatusBrush = Brushes.LightGreen; // Default to success color
         }
 
         private async Task LoadUserSettingsAsync()
@@ -67,6 +88,121 @@ namespace JNR.Views.Settings
             }
         }
 
+        #region Profile Editing Logic
+
+        private void EditProfile_Click(object sender, RoutedEventArgs e)
+        {
+            EditedUsername = Username;
+            EditedEmail = Email;
+            ProfileStatusMessage = string.Empty;
+            IsEditingProfile = true;
+        }
+
+        private void CancelEditProfile_Click(object sender, RoutedEventArgs e)
+        {
+            IsEditingProfile = false;
+            ProfileStatusMessage = string.Empty;
+            // No need to do anything else, the original values are still in 'Username' and 'Email'
+        }
+
+        private async void SaveProfile_Click(object sender, RoutedEventArgs e)
+        {
+            // --- Validation ---
+            if (string.IsNullOrWhiteSpace(EditedUsername) || string.IsNullOrWhiteSpace(EditedEmail))
+            {
+                SetProfileStatus("Username and Email cannot be empty.", isError: true);
+                return;
+            }
+
+            if (!IsValidEmail(EditedEmail))
+            {
+                SetProfileStatus("Please enter a valid email address.", isError: true);
+                return;
+            }
+
+            // --- Database Update ---
+            var optionsBuilder = new DbContextOptionsBuilder<JnrContext>();
+            string connectionString = "Server=localhost;Port=3306;Database=jnr;Uid=root;Pwd=root;";
+            optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+
+            using (var dbContext = new JnrContext(optionsBuilder.Options))
+            {
+                var currentUserId = SessionManager.CurrentUserId.Value;
+
+                // Check if new username is taken
+                if (EditedUsername != Username && await dbContext.Users.AnyAsync(u => u.Username == EditedUsername && u.UserId != currentUserId))
+                {
+                    SetProfileStatus("That username is already taken. Please choose another.", isError: true);
+                    return;
+                }
+
+                // Check if new email is taken
+                if (EditedEmail != Email && await dbContext.Users.AnyAsync(u => u.Email == EditedEmail && u.UserId != currentUserId))
+                {
+                    SetProfileStatus("That email is already registered to another account.", isError: true);
+                    return;
+                }
+
+                var user = await dbContext.Users.FindAsync(currentUserId);
+                if (user != null)
+                {
+                    user.Username = EditedUsername;
+                    user.Email = EditedEmail;
+                    await dbContext.SaveChangesAsync();
+
+                    // Update local state and session
+                    Username = user.Username;
+                    Email = user.Email;
+                    SessionManager.CurrentUsername = user.Username;
+
+                    IsEditingProfile = false;
+                    SetProfileStatus("Profile updated successfully!", isError: false);
+                }
+                else
+                {
+                    SetProfileStatus("Could not find user profile to update.", isError: true);
+                }
+            }
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return false;
+            try
+            {
+                email = Regex.Replace(email, @"(@)(.+)$", DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));
+                string DomainMapper(Match match)
+                {
+                    var idn = new System.Globalization.IdnMapping();
+                    return match.Groups[1].Value + idn.GetAscii(match.Groups[2].Value);
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            try
+            {
+                return Regex.IsMatch(email,
+                    @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+                    RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private void SetProfileStatus(string message, bool isError)
+        {
+            ProfileStatusMessage = message;
+            ProfileStatusBrush = isError ? (Brush)new SolidColorBrush(Color.FromRgb(255, 107, 107)) : (Brush)new SolidColorBrush(Color.FromRgb(107, 255, 135));
+        }
+
+        #endregion
+
+        #region Existing Logic (Unchanged)
         private async void ChangePassword_Click(object sender, RoutedEventArgs e)
         {
             string currentPassword = pbCurrentPassword.Password;
@@ -151,24 +287,19 @@ namespace JNR.Views.Settings
 
                     if (user != null)
                     {
-                        // EF Core will handle deleting dependent entities (Useralbumratings)
                         dbContext.Users.Remove(user);
                         await dbContext.SaveChangesAsync();
 
                         MessageBox.Show("Your account has been successfully deleted.", "Account Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        // Log out and navigate to login
                         Logout_Click(null, null);
                     }
                 }
             }
         }
 
-        // --- Standard Window and Navigation Logic ---
-
         public void EnsureCorrectRadioButtonIsChecked()
         {
-            // This is used by the App's placeholder navigation handler to re-select this view's button
             var settingsRadioButton = SidebarContentPanel.Children.OfType<RadioButton>()
                 .FirstOrDefault(r => r.Content?.ToString() == "Settings");
             if (settingsRadioButton != null)
@@ -188,7 +319,6 @@ namespace JNR.Views.Settings
                     case "Charts": App.NavigateTo<Charts>(this); break;
                     case "About": App.NavigateTo<About>(this); break;
                     case "Links":
-                        // Use the central placeholder handler
                         App.HandlePlaceholderNavigation(this, rb, viewName);
                         break;
                 }
@@ -199,5 +329,6 @@ namespace JNR.Views.Settings
         private void Window_MouseDown(object sender, MouseButtonEventArgs e) { if (e.LeftButton == MouseButtonState.Pressed) DragMove(); }
         private void CloseButton_Click(object sender, RoutedEventArgs e) => this.Close();
         private void MinimizeButton_Click(object sender, RoutedEventArgs e) => this.WindowState = WindowState.Minimized;
+        #endregion
     }
 }

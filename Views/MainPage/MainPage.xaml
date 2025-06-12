@@ -131,14 +131,12 @@
                         <RadioButton Content="Charts" Height="50" Tag="/Images/SideBarIcons/rows-plus-top.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Checked="ChartsRadioButton_Checked"/>
                         <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Checked="AboutRadioButton_Checked"/>
                         <RadioButton Content="Settings" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Checked="SettingsRadioButton_Checked"/>
-                        <RadioButton Content="Links" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Checked="LinksRadioButton_Checked"/>
                     </StackPanel>
                     <Image Margin="10,14,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Source="/Images/SideBarIcons/folder-user.png" Stretch="Fill" IsHitTestVisible="False"/>
                     <Image Margin="10,64,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/SideBarIcons/radio.png" Height="20" Width="20" Stretch="Fill" IsHitTestVisible="False"/>
                     <Image Margin="10,113,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/SideBarIcons/rows-plus-top.png" Width="20" Height="20" Stretch="Fill" IsHitTestVisible="False"/>
                     <Image Margin="10,164,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Source="/Images/SideBarIcons/question.png" Stretch="Fill" IsHitTestVisible="False"/>
                     <Image Margin="10,214,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/SideBarIcons/gear.png" Height="20" Width="20" Stretch="Fill" IsHitTestVisible="False"/>
-                    <Image Margin="10,265,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Source="/Images/SideBarIcons/link.png" Stretch="Fill" IsHitTestVisible="False"/>
 
                     <!-- Main Content Area (Search Results or Placeholder) -->
                     <Grid Grid.Column="1" Grid.Row="1" Margin="5,0,5,0">
