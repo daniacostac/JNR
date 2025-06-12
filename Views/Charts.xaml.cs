@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Views/Charts.xaml.cs
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -113,6 +115,15 @@ namespace JNR.Views
             set { _noResultsMessage = value; OnPropertyChanged(); }
         }
 
+        // ==================== NEW PROPERTY ====================
+        private bool _isChartDataRequested;
+        public bool IsChartDataRequested
+        {
+            get => _isChartDataRequested;
+            set { _isChartDataRequested = value; OnPropertyChanged(); }
+        }
+        // ======================================================
+
         public bool ShowNoResultsMessage => !IsLoading && (DisplayedPopularAlbums == null || !DisplayedPopularAlbums.Any());
         public ICommand SelectDecadeCommand { get; }
 
@@ -128,7 +139,7 @@ namespace JNR.Views
         {
             InitializeComponent();
             this.DataContext = this;
-            this.Closed += (s, args) => App.WindowClosed(this); // Step 1: Register for central tracking
+            this.Closed += (s, args) => App.WindowClosed(this);
 
             DisplayedPopularAlbums = new ObservableCollection<ChartAlbumItemUI>();
             _allTimeMasterList = new List<ChartAlbumItemUI>();
@@ -147,25 +158,18 @@ namespace JNR.Views
                     new AuthenticationHeaderValue("Discogs", $"token={DiscogsApiToken}");
             }
 
-            SelectedDecade = Decades.First(d => d.IsAll);
-            ChartTitle = $"Popular Albums: {SelectedDecade.Name}";
-            NoResultsMessage = "Select a decade to load albums.";
-            OnPropertyChanged(nameof(ShowNoResultsMessage));
+            // Set initial state
+            IsChartDataRequested = false;
         }
 
-        // Step 2: Implement EnsureCorrectRadioButtonIsChecked
         public void EnsureCorrectRadioButtonIsChecked()
         {
-            // Assumes the sidebar StackPanel in Charts.xaml might not have a specific x:Name
-            // or relies on its position.
             StackPanel sidebarPanel = null;
             if (this.Content is Border outerMostBorder && outerMostBorder.Child is Border middleBorder && middleBorder.Child is Viewbox viewbox && viewbox.Child is Grid mainGrid)
             {
                 sidebarPanel = mainGrid.Children.OfType<StackPanel>()
                                       .FirstOrDefault(p => Grid.GetColumn(p) == 0 && Grid.GetRow(p) == 1);
             }
-            // If you add x:Name="SidebarContentPanel" to the StackPanel in Charts.xaml, you can use:
-            // var sidebarPanel = MyAlbums.FindVisualChild<StackPanel>(this, "SidebarContentPanel"); // Using MyAlbums' helper as an example
 
             if (sidebarPanel != null)
             {
@@ -319,6 +323,7 @@ namespace JNR.Views
         {
             if (parameter is DecadeFilter decade)
             {
+                IsChartDataRequested = true; // Show results area
                 SelectedDecade = decade;
                 ChartTitle = $"Popular Albums: {(SelectedDecade.IsAll ? "All Time" : SelectedDecade.Name)}";
                 OnPropertyChanged(nameof(ChartTitle));
@@ -364,7 +369,6 @@ namespace JNR.Views
             return images.LastOrDefault(i => !string.IsNullOrWhiteSpace(i.Text))?.Text;
         }
 
-        // Step 4: Update Album_Click
         private void Album_Click(object sender, MouseButtonEventArgs e)
         {
             if (sender is FrameworkElement fe && fe.DataContext is ChartAlbumItemUI selectedAlbum)
@@ -381,7 +385,6 @@ namespace JNR.Views
         private void CloseButton_Click(object sender, RoutedEventArgs e) => this.Close();
         private void MinimizeButton_Click(object sender, RoutedEventArgs e) => this.WindowState = WindowState.Minimized;
 
-        // Step 3: Update SidebarNavigation_Click
         private void SidebarNavigation_Click(object sender, RoutedEventArgs e)
         {
             if (sender is RadioButton rb && rb.CommandParameter is string viewName)
@@ -405,15 +408,7 @@ namespace JNR.Views
             }
         }
 
-        // Step 5: Remove FindChartsRadioButtonAndCheck (functionality moved to EnsureCorrectRadioButtonIsChecked)
-        // private void FindChartsRadioButtonAndCheck() { /* ... old code ... */ }
-
-        // Step 6: Update btnGoBackCharts_Click and GoToSearch_Click
         private void btnGoBackCharts_Click(object sender, RoutedEventArgs e)
-        {
-            App.NavigateToMainPage(this);
-        }
-        private void GoToSearch_Click(object sender, RoutedEventArgs e)
         {
             App.NavigateToMainPage(this);
         }

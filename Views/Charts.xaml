@@ -8,18 +8,14 @@
         mc:Ignorable="d"
         Title="Charts - JNR"
         WindowStyle="None"
-        ResizeMode="CanResize" 
+        ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         AllowsTransparency="True"
-        WindowState="Normal"
-        Width="1050" Height="768">
+        WindowState="Normal">
 
     <Window.Resources>
         <!-- Using global converters from App.xaml -->
-        <!-- <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/> -->
-        <!-- <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/> -->
-
         <FontFamily x:Key="DefaultFont">Segoe UI</FontFamily>
         <FontFamily x:Key="TitleFont">/Fonts/#Dosis</FontFamily>
         <SolidColorBrush x:Key="LightTextColor" Color="#E0E0E0"/>
@@ -27,16 +23,7 @@
         <SolidColorBrush x:Key="DarkTextColor" Color="#808080"/>
         <SolidColorBrush x:Key="AccentColorBlue" Color="#FF4E72B8"/>
 
-        <Style TargetType="ListBoxItem" x:Key="NoHighlightListBoxItem">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <ContentPresenter/>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
+        <!-- Style for Decade Filter Buttons -->
         <Style TargetType="Button" x:Key="DecadeButtonStyle">
             <Setter Property="Background" Value="#2A3045"/>
             <Setter Property="Foreground" Value="{StaticResource LightTextColor}"/>
@@ -46,38 +33,89 @@
             <Setter Property="Margin" Value="3"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="MinWidth" Value="70"/>
+            <Setter Property="FontFamily" Value="{StaticResource TitleFont}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="15" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#3A4055"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentColorBlue}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource AccentColorBlue}"/>
+                                <!-- *** CORRECTION HERE: Removed TargetName="border" from Foreground setter *** -->
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Styles for Window Control Buttons (Minimize/Close) -->
+        <Style TargetType="Button" x:Key="WindowControlButtonBase" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Width" Value="25"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="2">
+                            <TextBlock Text="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button" x:Key="MinimizeButtonStyle" BasedOn="{StaticResource WindowControlButtonBase}">
+            <Setter Property="Content" Value=""/>
+            <!-- Minimize Icon -->
+            <Setter Property="Background" Value="#FF4E72B8"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#3A4055"/>
-                    <Setter Property="BorderBrush" Value="{StaticResource AccentColorBlue}"/>
+                    <Setter Property="Background" Value="#FF6889CA"/>
                 </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="{StaticResource AccentColorBlue}"/>
-                    <Setter Property="Foreground" Value="White"/>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="Button" x:Key="CloseButtonStyle" BasedOn="{StaticResource WindowControlButtonBase}">
+            <Setter Property="Content" Value=""/>
+            <!-- Close Icon -->
+            <Setter Property="Background" Value="IndianRed"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightCoral"/>
                 </Trigger>
-                <!-- Add a trigger for "IsSelected" if using ToggleButtons or RadioButtons bound to SelectedDecade -->
             </Style.Triggers>
         </Style>
     </Window.Resources>
 
-    <Border CornerRadius="12" Background="Transparent">
-        <Border CornerRadius="10" BorderThickness="1">
-            <Border.BorderBrush>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="#462AD8" Offset="0"/>
-                    <GradientStop Color="#DA34A3" Offset="0.75"/>
-                    <GradientStop Color="#8A16C1" Offset="1"/>
-                </LinearGradientBrush>
-            </Border.BorderBrush>
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-                    <GradientStop Color="#100E1E" Offset="0"/>
-                    <GradientStop Color="#141228" Offset="1"/>
-                </LinearGradientBrush>
-            </Border.Background>
+    <Viewbox Stretch="Uniform">
+        <Border CornerRadius="12" Background="Transparent">
+            <Border CornerRadius="10" BorderThickness="1">
+                <Border.BorderBrush>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#462AD8" Offset="0"/>
+                        <GradientStop Color="#DA34A3" Offset="0.75"/>
+                        <GradientStop Color="#8A16C1" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.BorderBrush>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                        <GradientStop Color="#100E1E" Offset="0"/>
+                        <GradientStop Color="#141228" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
 
-            <Viewbox Stretch="Uniform">
-                <Grid Width="1050" Height="768">
+                <Grid Width="800" Height="450">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="130"/>
                         <ColumnDefinition Width="*"/>
@@ -87,173 +125,139 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Title Area -->
-                    <TextBlock Text="Charts"
-                               Grid.Column="0" Grid.Row="0"
-                               VerticalAlignment="Center" FontWeight="Light" FontSize="22"
-                               HorizontalAlignment="Center" Foreground="{StaticResource LightTextColor}"
-                               FontFamily="{StaticResource TitleFont}"/>
-
-                    <!-- Custom Title Bar Buttons (Minimize/Close) -->
-                    <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0">
-                        <Button Content="_" Width="25" Height="25" Margin="0,0,5,0" Background="#FF4E72B8" Foreground="White" Click="MinimizeButton_Click"/>
-                        <Button Content="X" Width="25" Height="25" Background="IndianRed" Foreground="White" Click="CloseButton_Click"/>
+                    <!-- Top Bar Area -->
+                    <Grid Grid.Column="0" Grid.Row="0">
+                        <Button Name="btnGoBackCharts" Click="btnGoBackCharts_Click" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0" Cursor="Hand">
+                            <Image Source="/Images/rewind.png" Stretch="Uniform" Width="18" Height="18" Opacity="0.8"/>
+                        </Button>
+                        <TextBlock Text="Charts" VerticalAlignment="Center" FontWeight="Light" HorizontalAlignment="Right" Foreground="{StaticResource LightTextColor}" FontSize="20" FontFamily="{StaticResource TitleFont}" Margin="0,0,25,0"/>
+                    </Grid>
+                    <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
+                        <Button Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" Margin="0,0,5,0"/>
+                        <Button Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click"/>
                     </StackPanel>
-                    <Button Name="btnGoBackImage"
-                            Click="btnGoBackCharts_Click" 
-                            Grid.Column="0"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Left" 
-                            Margin="10,0,0,0"      
-                            Padding="0"
-                            Cursor="Hand">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <ContentPresenter/>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Opacity" Value="0.8"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <Image Source="/Images/rewind.png"
-                               Stretch="Uniform"
-                               Width="18" Height="18"/>
-                    </Button>
-
 
                     <!-- Sidebar Navigation -->
-                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,20,0,0">
-                        <RadioButton Content="My Albums" Height="50" Tag="/Images/SideBarIcons/folder-user.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="MyAlbums"/>
-                        <RadioButton Content="Genres" Height="50" Tag="/Images/SideBarIcons/radio.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Genres"/>
-                        <RadioButton Content="Charts" IsChecked="True" Tag="/Images/SideBarIcons/rows-plus-top.png" Height="50" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}"/>
-                        <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="About"/>
-                        <RadioButton Content="Settings" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="14" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Settings"/>
+                    <StackPanel Grid.Row="1" Grid.Column="0">
+                        <RadioButton Content="My Albums" Height="50" Tag="/Images/SideBarIcons/folder-user.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="MyAlbums"/>
+                        <RadioButton Content="Genres" Height="50" Tag="/Images/SideBarIcons/radio.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Genres"/>
+                        <RadioButton Content="Charts" IsChecked="True" Tag="/Images/SideBarIcons/rows-plus-top.png" Height="50" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}"/>
+                        <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="About"/>
+                        <RadioButton Content="Settings" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Settings"/>
                     </StackPanel>
+                    <!-- Sidebar Icons are handled by the RadioButton Style's Tag property -->
 
                     <!-- Main Content Area for Charts -->
-                    <Grid Grid.Row="1" Grid.Column="1" Margin="20">
+                    <Grid Grid.Row="1" Grid.Column="1" Margin="15,10,15,15">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <!-- Decade Filters -->
-                            <RowDefinition Height="Auto"/>
-                            <!-- Title/Status -->
                             <RowDefinition Height="*"/>
-                            <!-- Album List -->
+                            <!-- Placeholder OR Results -->
                         </Grid.RowDefinitions>
 
-                        <!-- Decade Filters -->
-                        <TextBlock Text="Filter by Decade:" Grid.Row="0" Foreground="{StaticResource MediumTextColor}" Margin="0,0,0,5"/>
-                        <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,20,0,10">
-                            <ItemsControl ItemsSource="{Binding Decades}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button Content="{Binding Name}" 
-                                                Style="{StaticResource DecadeButtonStyle}"
-                                                Command="{Binding DataContext.SelectDecadeCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                CommandParameter="{Binding}"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
+                        <!-- Decade Filters (always visible) -->
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Text="Filter by Decade:" Foreground="{StaticResource MediumTextColor}" Margin="5,0,0,5" FontSize="12"/>
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,10">
+                                <ItemsControl ItemsSource="{Binding Decades}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Content="{Binding Name}"
+                                                    Style="{StaticResource DecadeButtonStyle}"
+                                                    Command="{Binding DataContext.SelectDecadeCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </StackPanel>
 
-                        <!-- Title / Status -->
-                        <TextBlock Text="{Binding ChartTitle, FallbackValue='Popular Albums'}"
-                                   Grid.Row="1" FontSize="18" FontWeight="Bold"
-                                   Foreground="{StaticResource LightTextColor}" Margin="0,10,0,10"/>
+                        <!-- Content Area (switches between placeholder and results) -->
+                        <Grid Grid.Row="1">
 
-                        <!-- Loading Indicator -->
-                        <TextBlock Text="Loading popular albums..." Grid.Row="2"
-                                   Foreground="LightSkyBlue" FontSize="16"
-                                   VerticalAlignment="Center" HorizontalAlignment="Center"
-                                   Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            <!-- === NEW PLACEHOLDER TEMPLATE === -->
+                            <Border Background="#181A27" CornerRadius="8"
+                                    Visibility="{Binding IsChartDataRequested, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverse}">
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20">
+                                    <Path Data="M2,2H4V20H2V2M6,10H8V20H6V10M10,6H12V20H10V6M14,14H16V20H14V14M18,2H20V20H18V2Z"
+                                          Fill="LightSkyBlue" Width="60" Height="60" Stretch="Uniform" Opacity="0.6" Margin="0,0,0,20"/>
+                                    <TextBlock Text="Explore Popular Music Charts" FontSize="22" FontWeight="Bold" FontFamily="{StaticResource TitleFont}" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Select a decade from the filters above to discover the most popular and influential albums from that era."
+                                               Foreground="LightGray" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="450" FontSize="13" Margin="0,0,0,25"/>
+                                </StackPanel>
+                            </Border>
 
-                        <!-- No Results Message -->
-                        <TextBlock Text="{Binding NoResultsMessage, FallbackValue='No albums found for this selection.'}" Grid.Row="2"
-                                   Foreground="{StaticResource MediumTextColor}" FontSize="16"
-                                   VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"
-                                   Visibility="{Binding ShowNoResultsMessage, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            <!-- === RESULTS AREA (Visible after a decade is selected) === -->
+                            <Grid Visibility="{Binding IsChartDataRequested, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <!-- Chart Title -->
+                                    <RowDefinition Height="*"/>
+                                    <!-- Content List -->
+                                </Grid.RowDefinitions>
 
-                        <!-- Album List -->
-                        <ListBox Grid.Row="2" ItemsSource="{Binding DisplayedPopularAlbums}"
-                                 Background="Transparent" BorderThickness="0"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 ItemContainerStyle="{StaticResource NoHighlightListBoxItem}"
-                                 Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverse}">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Columns="3"/>
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Background="#1A2035" CornerRadius="5" Padding="10" Margin="5" Width="280" Height="90" Cursor="Hand"
-                                            MouseLeftButtonUp="Album_Click">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Image Source="{Binding CoverArtUrl, FallbackValue='/Images/placeholder_album.png'}"
-                                                   Width="70" Height="70" Stretch="Uniform" VerticalAlignment="Center"/>
-                                            <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding AlbumName}" FontWeight="Bold" Foreground="{StaticResource LightTextColor}" MaxWidth="180" TextTrimming="CharacterEllipsis"/>
-                                                <TextBlock Text="{Binding ArtistName}" Foreground="{StaticResource MediumTextColor}" FontSize="11" MaxWidth="180" TextTrimming="CharacterEllipsis"/>
-                                                <TextBlock Text="{Binding ReleaseYear, TargetNullValue='Year: N/A', FallbackValue='Year: N/A'}" Foreground="{StaticResource DarkTextColor}" FontSize="10" FontStyle="Italic"/>
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                                <TextBlock Text="{Binding ChartTitle, FallbackValue='Popular Albums'}"
+                                           Grid.Row="0" FontSize="18" FontWeight="Bold"
+                                           Foreground="{StaticResource LightTextColor}" Margin="5,0,0,10"/>
+
+                                <Grid Grid.Row="1">
+                                    <!-- Loading Indicator -->
+                                    <TextBlock Text="Loading popular albums..."
+                                               Foreground="LightSkyBlue" FontSize="16" FontFamily="{StaticResource TitleFont}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"
+                                               Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                    <!-- No Results Message -->
+                                    <TextBlock Text="{Binding NoResultsMessage, FallbackValue='No albums found for this selection.'}"
+                                               Foreground="{StaticResource MediumTextColor}" FontSize="14"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
+                                               Visibility="{Binding ShowNoResultsMessage, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                    <!-- Album List -->
+                                    <ListBox ItemsSource="{Binding DisplayedPopularAlbums}"
+                                             Background="Transparent" BorderThickness="0"
+                                             ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                             ItemContainerStyle="{StaticResource NoHighlightListBoxItem}"
+                                             Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverse}">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="3"/>
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#1A2035" CornerRadius="5" Padding="10" Margin="5" Width="200" Height="90" Cursor="Hand"
+                                                        MouseLeftButtonUp="Album_Click">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Image Source="{Binding CoverArtUrl, FallbackValue='/Images/placeholder_album.png'}"
+                                                               Width="70" Height="70" Stretch="Uniform" VerticalAlignment="Center"/>
+                                                        <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding AlbumName}" FontWeight="Bold" Foreground="{StaticResource LightTextColor}" MaxWidth="115" TextTrimming="CharacterEllipsis"/>
+                                                            <TextBlock Text="{Binding ArtistName}" Foreground="{StaticResource MediumTextColor}" FontSize="11" MaxWidth="115" TextTrimming="CharacterEllipsis"/>
+                                                            <TextBlock Text="{Binding ReleaseYear, TargetNullValue='N/A'}" Foreground="{StaticResource DarkTextColor}" FontSize="10" FontStyle="Italic"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Grid>
+                            </Grid>
+                        </Grid>
                     </Grid>
-                    <Image Margin="10,84,100,614" 
-                        Grid.Row="1" 
-                        Source="/Images/SideBarIcons/radio.png" 
-                        Height="20"
-                        Width="20"
-                        Stretch="Fill"/>
-                    <Image Margin="10,133,100,565"
-                        Grid.Row="1" 
-                        Source="/Images/SideBarIcons/rows-plus-top.png" 
-                        Width="20"
-                        Height="20"
-                        Stretch="Fill"/>
-                    <Image Margin="10,184,100,514" 
-                        Grid.Row="1" 
-                        Height="20"
-                        Width="20"
-                        Source="/Images/SideBarIcons/question.png" 
-                        Stretch="Fill"/>
-                    <Image Margin="10,234,100,464"
-                        Grid.Row="1" 
-                        Source="/Images/SideBarIcons/gear.png" 
-                        Height="20"
-                        Width="20"
-                        Stretch="Fill"/>
-                    <Image Margin="10,34,100,664"
-                        Grid.Row="1" 
-                        Source="/Images/SideBarIcons/folder-user.png"
-                        Height="20"
-                        Width="20"
-                        Stretch="Fill"/>
                 </Grid>
-            </Viewbox>
+            </Border>
         </Border>
-    </Border>
+    </Viewbox>
 </Window>
-<!--====================-->

@@ -235,7 +235,6 @@
                         <RadioButton Content="Charts" Height="50" Tag="/Images/SideBarIcons/rows-plus-top.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Charts"/>
                         <RadioButton Content="About" Height="50" Tag="/Images/SideBarIcons/question.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="About"/>
                         <RadioButton Content="Settings" IsChecked="True" Height="50" Tag="/Images/SideBarIcons/gear.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}"/>
-                        <RadioButton Content="Links" Height="50" Tag="/Images/SideBarIcons/link.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Click="SidebarNavigation_Click" CommandParameter="Links"/>
                     </StackPanel>
                     <!-- Sidebar Icons -->
                     <Image Source="/Images/SideBarIcons/folder-user.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,14,0,0" IsHitTestVisible="False"/>
@@ -243,7 +242,6 @@
                     <Image Source="/Images/SideBarIcons/rows-plus-top.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,114,0,0" IsHitTestVisible="False"/>
                     <Image Source="/Images/SideBarIcons/question.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,164,0,0" IsHitTestVisible="False"/>
                     <Image Source="/Images/SideBarIcons/gear.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,214,0,0" IsHitTestVisible="False"/>
-                    <Image Source="/Images/SideBarIcons/link.png" Grid.Row="1" Grid.Column="0" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,265,0,0" IsHitTestVisible="False"/>
 
                     <!-- Main Content Area -->
                     <Grid Grid.Column="1" Grid.Row="1" Margin="15,10,15,15">
