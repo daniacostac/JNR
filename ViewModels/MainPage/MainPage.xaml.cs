@@ -97,7 +97,6 @@ namespace JNR.Views.MainPage
             set { _mainContentTitle = value; OnPropertyChanged(); }
         }
 
-        // NEW Property for placeholder visibility
         private bool _showInitialPlaceholder = true;
         public bool ShowInitialPlaceholder
         {
@@ -112,7 +111,6 @@ namespace JNR.Views.MainPage
             }
         }
 
-        // ========= NEW PROPERTIES FOR USER PROFILE DISPLAY =========
         private string _currentUserDisplayName;
         public string CurrentUserDisplayName
         {
@@ -126,7 +124,6 @@ namespace JNR.Views.MainPage
             get => _currentUserProfilePicture;
             set { _currentUserProfilePicture = value; OnPropertyChanged(); }
         }
-        // ==========================================================
 
 
         public ObservableCollection<MainPageSearchResultItem> SearchResults { get; set; }
@@ -146,7 +143,7 @@ namespace JNR.Views.MainPage
             SearchResults = new ObservableCollection<MainPageSearchResultItem>();
             MusicNewsItems = new ObservableCollection<NewsItemUI>();
 
-            ShowInitialPlaceholder = true; // Explicitly set initial state
+            ShowInitialPlaceholder = true;
 
             if (discogsClient.DefaultRequestHeaders.UserAgent.Count == 0)
             {
@@ -161,7 +158,6 @@ namespace JNR.Views.MainPage
             }
 
             BindingOperations.SetBinding(txtSearchAlbum, TextBox.TextProperty, new Binding("SearchQuery") { Source = this, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-            // MODIFIED: Added LoadCurrentUserProfileAsync call
             this.Loaded += async (s, e) =>
             {
                 await LoadMusicNewsAsync();
@@ -169,7 +165,6 @@ namespace JNR.Views.MainPage
             };
         }
 
-        // ========= NEW METHOD TO LOAD USER DATA =========
         private async Task LoadCurrentUserProfileAsync()
         {
             if (SessionManager.CurrentUserId.HasValue)
@@ -177,7 +172,6 @@ namespace JNR.Views.MainPage
                 CurrentUserDisplayName = SessionManager.CurrentUsername ?? "User";
 
                 var optionsBuilder = new DbContextOptionsBuilder<JnrContext>();
-                // This connection string should ideally be stored in a configuration file
                 string connectionString = "Server=localhost;Port=3306;Database=jnr;Uid=root;Pwd=root;";
                 optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 
@@ -200,7 +194,6 @@ namespace JNR.Views.MainPage
 
                 if (!string.IsNullOrEmpty(profilePicPath) && File.Exists(profilePicPath))
                 {
-                    // Use BitmapCacheOption.OnLoad to prevent locking the image file
                     BitmapImage bitmap = new BitmapImage();
                     bitmap.BeginInit();
                     bitmap.UriSource = new Uri(profilePicPath, UriKind.Absolute);
@@ -210,7 +203,6 @@ namespace JNR.Views.MainPage
                 }
                 else
                 {
-                    // Load default image from resources
                     CurrentUserProfilePicture = new BitmapImage(new Uri("pack://application:,,,/Images/user-icon.png"));
                 }
             }
@@ -220,23 +212,18 @@ namespace JNR.Views.MainPage
                 CurrentUserProfilePicture = new BitmapImage(new Uri("pack://application:,,,/Images/user-icon.png"));
             }
         }
-        // ================================================
 
-        // ========= NEW EVENT HANDLER FOR PROFILE CLICK =========
         private void ProfileArea_Click(object sender, MouseButtonEventArgs e)
         {
             if (SessionManager.CurrentUserId.HasValue)
             {
-                // Navigate TO the profile view, closing the current (MainPage) window.
                 App.NavigateToProfile(this, SessionManager.CurrentUserId.Value);
             }
             else
             {
-                // If a guest clicks, navigate them to the login screen, closing the MainPage.
                 App.NavigateTo<LoginView>(this);
             }
         }
-        // =======================================================
 
 
         private async Task LoadMusicNewsAsync() // Unchanged
@@ -288,22 +275,34 @@ namespace JNR.Views.MainPage
         private void MinimizeButton_Click(object sender, RoutedEventArgs e) => this.WindowState = WindowState.Minimized; // Unchanged
         private void CloseButton_Click(object sender, RoutedEventArgs e) => this.Close(); // Unchanged
 
+        // ========= NEW METHOD FOR THE KEYDOWN EVENT =========
+        private void txtSearchAlbum_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Check if the key pressed was the Enter key.
+            if (e.Key == Key.Enter)
+            {
+                // Call the existing button click handler to trigger the search.
+                // This re-uses the existing logic and is easy to maintain.
+                btnSearchAlbum_Click(sender, new RoutedEventArgs());
+            }
+        }
+        // ======================================================
+
         private async void btnSearchAlbum_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
-                ShowInitialPlaceholder = false; // Hide placeholder when a search is initiated
+                ShowInitialPlaceholder = false;
                 await ExecuteSearchAsync();
             }
             else
             {
-                ShowInitialPlaceholder = true; // Show placeholder if search query is empty
+                ShowInitialPlaceholder = true;
                 MainContentTitle = "Please enter an album or artist name to search.";
                 SearchResults.Clear();
             }
         }
 
-        // ==================== MODIFIED METHOD ====================
         private async Task ExecuteSearchAsync()
         {
             if (string.IsNullOrWhiteSpace(SearchQuery))
@@ -320,57 +319,32 @@ namespace JNR.Views.MainPage
 
             try
             {
-                // More specific searches: one for artists, one for album titles.
-                string artistSearchUrl = $"{DiscogsApiBaseUrl}/database/search?artist={Uri.EscapeDataString(SearchQuery)}&type=master,release&per_page=15";
-                string albumSearchUrl = $"{DiscogsApiBaseUrl}/database/search?release_title={Uri.EscapeDataString(SearchQuery)}&type=master,release&per_page=15";
-
-                // Run searches in parallel
-                var artistSearchTask = discogsClient.GetAsync(artistSearchUrl);
-                var albumSearchTask = discogsClient.GetAsync(albumSearchUrl);
-
-                await Task.WhenAll(artistSearchTask, albumSearchTask);
-
-                var allResults = new List<DiscogsSearchResultItem>();
+                string searchUrl = $"{DiscogsApiBaseUrl}/database/search?q={Uri.EscapeDataString(SearchQuery)}&type=master,release&per_page=30";
+                HttpResponseMessage response = await discogsClient.GetAsync(searchUrl);
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                List<DiscogsSearchResultItem> searchResults = new List<DiscogsSearchResultItem>();
 
-                // Process artist search results
-                var artistResponse = await artistSearchTask;
-                if (artistResponse.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
-                    string jsonResponse = await artistResponse.Content.ReadAsStringAsync();
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
                     var discogsSearchResponse = JsonSerializer.Deserialize<DiscogsSearchResponse>(jsonResponse, options);
                     if (discogsSearchResponse?.Results != null)
                     {
-                        allResults.AddRange(discogsSearchResponse.Results);
+                        searchResults.AddRange(discogsSearchResponse.Results);
                     }
                 }
                 else
                 {
-                    Debug.WriteLine($"Discogs artist search failed: {artistResponse.ReasonPhrase}");
+                    Debug.WriteLine($"Discogs search failed: {response.ReasonPhrase}");
+                    MainContentTitle = "An error occurred during search.";
+                    return;
                 }
 
-                // Process album search results
-                var albumResponse = await albumSearchTask;
-                if (albumResponse.IsSuccessStatusCode)
-                {
-                    string jsonResponse = await albumResponse.Content.ReadAsStringAsync();
-                    var discogsSearchResponse = JsonSerializer.Deserialize<DiscogsSearchResponse>(jsonResponse, options);
-                    if (discogsSearchResponse?.Results != null)
-                    {
-                        allResults.AddRange(discogsSearchResponse.Results);
-                    }
-                }
-                else
-                {
-                    Debug.WriteLine($"Discogs album search failed: {albumResponse.ReasonPhrase}");
-                }
-
-                // Deduplicate and order results
-                var uniqueResults = allResults
+                var uniqueResults = searchResults
                     .GroupBy(r => r.MasterId.HasValue && r.MasterId > 0 ? $"M_{r.MasterId.Value}" : $"R_{r.Id}")
                     .Select(g => g.First())
-                    .OrderByDescending(r => r.Community?.Have ?? 0) // Prioritize more popular items
-                    .Take(20) // Limit total results to a reasonable number
+                    .OrderByDescending(r => (r.Community?.Have ?? 0) + (r.Community?.Want ?? 0))
+                    .Take(20)
                     .ToList();
 
                 if (uniqueResults.Any())
@@ -403,7 +377,6 @@ namespace JNR.Views.MainPage
                 Debug.WriteLine($"Unexpected search error: {ex.Message}");
             }
         }
-        // ==================== END OF MODIFIED METHOD ====================
 
         private void AlbumSearchResult_Click(object sender, MouseButtonEventArgs e) // Unchanged
         {

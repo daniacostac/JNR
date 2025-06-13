@@ -102,7 +102,18 @@
                     <DockPanel Grid.Column="1" Grid.Row="0" Margin="10,0,10,0" VerticalAlignment="Center" LastChildFill="True">
                         <Border CornerRadius="15" Background="#21212F" VerticalAlignment="Center" Height="32">
                             <Grid>
-                                <TextBox x:Name="txtSearchAlbum" Tag="Enter album or artist name..." Background="Transparent" BorderThickness="0" Foreground="White" FontSize="11" VerticalAlignment="Center" Padding="12,5,35,5" Style="{StaticResource SearchTextBoxStyle}" FontFamily="/Fonts/#Dosis">
+                                <!-- === MODIFICATION HERE: Added KeyDown event handler === -->
+                                <TextBox x:Name="txtSearchAlbum" 
+                                         Tag="Enter album or artist name..." 
+                                         Background="Transparent" 
+                                         BorderThickness="0" 
+                                         Foreground="White" 
+                                         FontSize="11" 
+                                         VerticalAlignment="Center" 
+                                         Padding="12,5,35,5" 
+                                         Style="{StaticResource SearchTextBoxStyle}" 
+                                         FontFamily="/Fonts/#Dosis"
+                                         KeyDown="txtSearchAlbum_KeyDown">
                                     <TextBox.Resources>
                                         <Style TargetType="{x:Type Border}">
                                             <Setter Property="CornerRadius" Value="15"/>
@@ -120,9 +131,7 @@
                             </Grid>
                         </Border>
                     </DockPanel>
-                    <!-- === MODIFIED TOP-RIGHT PANEL === -->
                     <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0">
-                        <!-- Profile Section -->
                         <StackPanel x:Name="ProfileSection"
                                     Orientation="Horizontal"
                                     Cursor="Hand"
@@ -144,11 +153,9 @@
                                        Margin="8,0,0,0"/>
                         </StackPanel>
 
-                        <!-- Window Controls -->
                         <Button Style="{StaticResource MinimizeButtonStyle}" Click="MinimizeButton_Click" Margin="0,0,5,0"/>
                         <Button Style="{StaticResource CloseButtonStyle}" Click="CloseButton_Click"/>
                     </StackPanel>
-                    <!-- === END MODIFICATION === -->
 
                     <StackPanel Grid.Column="0" Grid.Row="1">
                         <RadioButton Content="My Albums" Height="50" Tag="/Images/SideBarIcons/folder-user.png" Foreground="White" FontSize="12" Style="{StaticResource MainButtonTheme}" Checked="MyAlbumsRadioButton_Checked"/>
@@ -163,9 +170,7 @@
                     <Image Margin="10,164,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Source="/Images/SideBarIcons/question.png" Stretch="Fill" IsHitTestVisible="False"/>
                     <Image Margin="10,214,0,0" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="/Images/SideBarIcons/gear.png" Height="20" Width="20" Stretch="Fill" IsHitTestVisible="False"/>
 
-                    <!-- Main Content Area (Search Results or Placeholder) -->
                     <Grid Grid.Column="1" Grid.Row="1" Margin="5,0,5,0">
-                        <!-- Initial Placeholder Area -->
                         <Border Background="#181A27" CornerRadius="8" Padding="30" Margin="5,0,0,0"
                                 Visibility="{Binding ShowInitialPlaceholder, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -177,7 +182,6 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- Search Results Area -->
                         <Grid Margin="5,0,0,0"
                               Visibility="{Binding ShowInitialPlaceholder, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=inverse}">
                             <Grid.RowDefinitions>
@@ -228,7 +232,6 @@
                         </Grid>
                     </Grid>
 
-                    <!-- News Area (Remains the same) -->
                     <Grid Grid.Column="2" Grid.Row="1" Margin="5,0,10,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>

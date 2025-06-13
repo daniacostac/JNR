@@ -160,35 +160,43 @@
                                 <ListBox.ItemTemplate>
                                     <DataTemplate DataType="{x:Type local:MyAlbumDisplayItem}">
                                         <Border Background="#1A2035" CornerRadius="5" Padding="10" Margin="0,0,10,10">
-                                            <!-- === MODIFICATION START === -->
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="Auto"/>
-                                                    <!-- New column for remove button -->
                                                 </Grid.ColumnDefinitions>
 
-                                                <!-- Clickable Image -->
                                                 <Image Grid.Column="0" Source="{Binding CoverArtUrl, FallbackValue='/Images/placeholder_album.png'}" 
                                                        Width="80" Height="80" Stretch="Uniform" VerticalAlignment="Center"
                                                        Cursor="Hand" MouseLeftButtonUp="Album_Click"/>
 
-                                                <!-- Clickable Text Panel -->
                                                 <StackPanel Grid.Column="1" Margin="15,0,15,0" VerticalAlignment="Center"
                                                             Cursor="Hand" MouseLeftButtonUp="Album_Click">
                                                     <TextBlock Text="{Binding AlbumName}" FontWeight="Bold" Foreground="{StaticResource LightTextColor}" FontSize="16" MaxWidth="250" TextTrimming="CharacterEllipsis"/>
                                                     <TextBlock Text="{Binding ArtistName}" Foreground="{StaticResource MediumTextColor}" FontSize="13" MaxWidth="250" TextTrimming="CharacterEllipsis"/>
-                                                    <TextBlock Foreground="{StaticResource DarkTextColor}" FontSize="11" FontStyle="Italic" MaxWidth="250" TextTrimming="CharacterEllipsis">
-                                                        <Run Text="Year: "/>
-                                                        <Run Text="{Binding ReleaseYear, TargetNullValue='N/A'}"/>
-                                                        <Run Text=", Genre: "/>
-                                                        <Run Text="{Binding Genre, TargetNullValue='N/A'}"/>
+                                                    <!-- ========= MODIFIED TEXTBLOCK ========= -->
+                                                    <TextBlock Text="{Binding DetailsLine}">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="{StaticResource DarkTextColor}"/>
+                                                                <Setter Property="FontSize" Value="11"/>
+                                                                <Setter Property="FontStyle" Value="Italic"/>
+                                                                <Setter Property="MaxWidth" Value="250"/>
+                                                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="Text" Value="">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
                                                     </TextBlock>
+                                                    <!-- ===================================== -->
                                                 </StackPanel>
 
-                                                <!-- "Listened To" CheckBox -->
                                                 <CheckBox Grid.Column="2" 
                                                           IsChecked="{Binding HasListened, Mode=TwoWay}"
                                                           VerticalAlignment="Center" 
@@ -200,7 +208,6 @@
                                                     </CheckBox.LayoutTransform>
                                                 </CheckBox>
 
-                                                <!-- NEW: Remove Button -->
                                                 <Button Grid.Column="3"
                                                         Content="✕" 
                                                         Click="RemoveAlbum_Click" 
@@ -230,7 +237,6 @@
                                                             <Style.Triggers>
                                                                 <Trigger Property="IsMouseOver" Value="True">
                                                                     <Setter Property="Background" Value="#44E53935"/>
-                                                                    <!-- Semi-transparent red -->
                                                                     <Setter Property="Foreground" Value="White"/>
                                                                 </Trigger>
                                                             </Style.Triggers>
@@ -238,7 +244,6 @@
                                                     </Button.Style>
                                                 </Button>
                                             </Grid>
-                                            <!-- === MODIFICATION END === -->
                                         </Border>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>

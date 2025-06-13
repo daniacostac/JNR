@@ -1,0 +1,20 @@
+﻿JNR
+1.0.0.0
+
+winexe
+C#
+.cs
+C:\Users\danie\OneDrive\Documentos\GitHub\JNR\obj\Release\net8.0-windows\
+JNR
+none
+false
+TRACE;RELEASE;NET;NET8_0;NETCOREAPP
+C:\Users\danie\OneDrive\Documentos\GitHub\JNR\App.xaml
+16-1335509721
+101678231767
+32-2012582662
+226757891483
+MainWindow.xaml;Themes\MainButtonTheme.xaml;Themes\SearchBoxStyle.xaml;Views\About.xaml;Views\Charts.xaml;Views\Controls\CloseButton.xaml;Views\Controls\MinimizeButton.xaml;Views\Controls\starRatingSampler.xaml;Views\Genres.xaml;Views\Login\LoginView.xaml;Views\MainPage\MainPage.xaml;Views\My Albums\MyAlbums.xaml;Views\Overview.xaml;Views\Profile.xaml;Views\Settings\Settings.xaml;Views\SignUp\SignUp.xaml;
+
+False
+

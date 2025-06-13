@@ -4,6 +4,7 @@ using JNR.Helpers; // For SessionManager
 using JNR.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -43,6 +44,24 @@ namespace JNR.Views.My_Albums
             }
         }
 
+        // ========= NEW PROPERTY FOR CLEANER DISPLAY =========
+        public string DetailsLine
+        {
+            get
+            {
+                var parts = new List<string>();
+                if (!string.IsNullOrWhiteSpace(ReleaseYear) && ReleaseYear != "0")
+                {
+                    parts.Add($"Year: {ReleaseYear}");
+                }
+                if (!string.IsNullOrWhiteSpace(Genre))
+                {
+                    parts.Add(Genre);
+                }
+                return string.Join(" | ", parts);
+            }
+        }
+        // ====================================================
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -227,9 +246,11 @@ namespace JNR.Views.My_Albums
                             AlbumName = uar.Album.Title,
                             ArtistName = uar.Album.Artist,
                             CoverArtUrl = uar.Album.CoverArtUrl ?? "/Images/placeholder_album.png",
-                            ReleaseYear = uar.Album.ReleaseYear.HasValue ? uar.Album.ReleaseYear.ToString() : "N/A",
-                            Genre = "N/A", // Placeholder
+                            // ========= MODIFIED: Safely get release year =========
+                            ReleaseYear = uar.Album.ReleaseYear.HasValue ? uar.Album.ReleaseYear.Value.ToString() : null,
                             Mbid = uar.Album.IdSource == "mbid" ? uar.Album.ExternalAlbumId : null,
+                            // NOTE: Genre is not available on the Album entity in the database,
+                            // so it remains null. The new DetailsLine property handles this.
                         })
                         .ToListAsync();
 
@@ -248,15 +269,13 @@ namespace JNR.Views.My_Albums
 
                         if (artistCounts.Any())
                         {
-                            // *** MODIFICATION HERE: Create a gradient for the bars ***
                             var barGradient = new LinearGradientBrush
                             {
-                                StartPoint = new Point(0.5, 0), // Top-center
-                                EndPoint = new Point(0.5, 1)   // Bottom-center
+                                StartPoint = new Point(0.5, 0),
+                                EndPoint = new Point(0.5, 1)
                             };
-                            barGradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#DA34A3"), 0.0)); // Pink at the top
-                            barGradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#462AD8"), 1.0)); // Blue at the bottom
-                            // **********************************************************
+                            barGradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#DA34A3"), 0.0));
+                            barGradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#462AD8"), 1.0));
 
                             UserAlbumsChartLabels = artistCounts.Select(ac => ac.Artist).ToArray();
                             UserAlbumsChartSeries = new SeriesCollection
@@ -266,7 +285,7 @@ namespace JNR.Views.My_Albums
                                     Title = "Albums",
                                     Values = new ChartValues<int>(artistCounts.Select(ac => ac.Count)),
                                     DataLabels = true,
-                                    Fill = barGradient // Assign the gradient here
+                                    Fill = barGradient
                                 }
                             };
                             ShowChart = true;
@@ -293,7 +312,6 @@ namespace JNR.Views.My_Albums
 
         private async void RemoveAlbum_Click(object sender, RoutedEventArgs e)
         {
-            // Getting the DataContext which is the MyAlbumDisplayItem
             if ((sender as FrameworkElement)?.DataContext is not MyAlbumDisplayItem albumToRemove)
             {
                 return;
@@ -313,7 +331,6 @@ namespace JNR.Views.My_Albums
                     return;
                 }
 
-                // The DiscogsDbId property holds the internal AlbumId from our database.
                 int albumDbId = albumToRemove.DiscogsDbId;
 
                 var optionsBuilder = new DbContextOptionsBuilder<JnrContext>();
@@ -332,17 +349,12 @@ namespace JNR.Views.My_Albums
                         {
                             dbContext.Useralbumratings.Remove(ratingToRemove);
                             await dbContext.SaveChangesAsync();
-
-                            // Re-loading is the safest way to ensure both list and chart are in sync.
                             await LoadUserAlbumsAsync();
-
                             MessageBox.Show($"'{albumToRemove.AlbumName}' has been removed.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         else
                         {
-                            // This case is unlikely if the UI is properly synced, but good to have.
                             MessageBox.Show("Could not find the album in your collection to remove. The list might be out of date.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            // Refreshing the list anyway.
                             await LoadUserAlbumsAsync();
                         }
                     }

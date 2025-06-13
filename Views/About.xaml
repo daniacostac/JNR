@@ -181,7 +181,7 @@
 
                             <TextBlock FontSize="13" Foreground="{StaticResource MediumTextColor}" Margin="0,5,0,5" HorizontalAlignment="Center" TextWrapping="Wrap">
                                 <Run Text="For feedback or support, please contact: "/>
-                                <Hyperlink NavigateUri="danielacostac03@gmail.com" RequestNavigate="Hyperlink_RequestNavigate">your.email@example.com</Hyperlink>
+                                <Hyperlink NavigateUri="danielacostac03@gmail.com" RequestNavigate="Hyperlink_RequestNavigate">danielacostac03@gmail.com</Hyperlink>
                             </TextBlock>
                         </StackPanel>
                     </ScrollViewer>
