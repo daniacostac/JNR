@@ -226,11 +226,20 @@ namespace JNR.Views.MainPage
         }
 
 
-        private async Task LoadMusicNewsAsync() // Unchanged
+        private async Task LoadMusicNewsAsync()
         {
-            Debug.WriteLine("LoadMusicNewsAsync: Fetching music news...");
+            Debug.WriteLine("LoadMusicNewsAsync: Fetching music news with expanded query...");
             MusicNewsItems.Clear();
-            string newsApiUrl = $"https://newsapi.org/v2/top-headlines?country=us&category=entertainment&q=music&pageSize=7";
+
+            // --- OLD URL (Too Restrictive) ---
+            // string newsApiUrl = $"https://newsapi.org/v2/top-headlines?country=us&category=entertainment&q=music&pageSize=7";
+
+            // --- NEW, MORE ROBUST URL ---
+            // This uses the /everything endpoint to search a wider range of articles.
+            // The query 'q' now looks for multiple keywords to get more results.
+            // We sort by 'publishedAt' to get the most recent articles first.
+            string newsApiUrl = $"https://newsapi.org/v2/everything?q=(music OR album OR artist OR concert OR song) AND NOT (politics)&language=en&sortBy=publishedAt&pageSize=10";
+
             try
             {
                 HttpResponseMessage response = await newsApiClient.GetAsync(newsApiUrl);
@@ -240,11 +249,18 @@ namespace JNR.Views.MainPage
                     string jsonResponse = await response.Content.ReadAsStringAsync();
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                     var newsApiResponse = JsonSerializer.Deserialize<NewsApiResponse>(jsonResponse, options);
+
                     if (newsApiResponse?.Status == "ok" && newsApiResponse.Articles != null && newsApiResponse.Articles.Any())
                     {
                         Debug.WriteLine($"LoadMusicNewsAsync: Found {newsApiResponse.Articles.Count} news articles.");
                         foreach (var article in newsApiResponse.Articles)
                         {
+                            // Basic filter to avoid completely irrelevant articles if the query slips up
+                            if (string.IsNullOrWhiteSpace(article.Title) || article.Title.Contains("[Removed]"))
+                            {
+                                continue;
+                            }
+
                             MusicNewsItems.Add(new NewsItemUI
                             {
                                 Title = article.Title,
@@ -254,18 +270,46 @@ namespace JNR.Views.MainPage
                                 PublishedAtDisplay = article.PublishedAt.ToLocalTime().ToString("g")
                             });
                         }
+
+                        if (!MusicNewsItems.Any())
+                        {
+                            Debug.WriteLine("LoadMusicNewsAsync: NewsAPI success, but all articles were filtered out.");
+                            MusicNewsItems.Add(new NewsItemUI { Title = "No relevant music news found after filtering.", SourceName = "NewsFeed" });
+                        }
                     }
                     else if (newsApiResponse?.Status == "error")
                     {
-                        Debug.WriteLine($"LoadMusicNewsAsync: NewsAPI returned error: {newsApiResponse.Code} - {newsApiResponse.Message}"); MusicNewsItems.Add(new NewsItemUI { Title = $"News Error: {newsApiResponse.Message}", SourceName = "NewsAPI" });
+                        Debug.WriteLine($"LoadMusicNewsAsync: NewsAPI returned error: {newsApiResponse.Code} - {newsApiResponse.Message}");
+                        MusicNewsItems.Add(new NewsItemUI { Title = $"News Error: {newsApiResponse.Message}", SourceName = "NewsAPI" });
                     }
-                    else { Debug.WriteLine("LoadMusicNewsAsync: NewsAPI success, but no articles or unexpected status."); MusicNewsItems.Add(new NewsItemUI { Title = "No music news found.", SourceName = "NewsFeed" }); }
+                    else
+                    {
+                        Debug.WriteLine("LoadMusicNewsAsync: NewsAPI success, but no articles or unexpected status.");
+                        MusicNewsItems.Add(new NewsItemUI { Title = "No music news found at this time.", SourceName = "NewsFeed" });
+                    }
                 }
-                else { string errorContent = await response.Content.ReadAsStringAsync(); Debug.WriteLine($"LoadMusicNewsAsync: NewsAPI HTTP Error: {response.StatusCode} - {response.ReasonPhrase}. Details: {errorContent}"); MusicNewsItems.Add(new NewsItemUI { Title = $"Error fetching news: {response.ReasonPhrase}", SourceName = "NewsFeed" }); }
+                else
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    Debug.WriteLine($"LoadMusicNewsAsync: NewsAPI HTTP Error: {response.StatusCode} - {response.ReasonPhrase}. Details: {errorContent}");
+                    MusicNewsItems.Add(new NewsItemUI { Title = $"Error fetching news: {response.ReasonPhrase}", SourceName = "NewsFeed" });
+                }
             }
-            catch (HttpRequestException httpEx) { Debug.WriteLine($"LoadMusicNewsAsync: HttpRequestException: {httpEx.Message}"); MusicNewsItems.Add(new NewsItemUI { Title = "Network error fetching news.", SourceName = "NewsFeed" }); }
-            catch (JsonException jsonEx) { Debug.WriteLine($"LoadMusicNewsAsync: JsonException: {jsonEx.Message}"); MusicNewsItems.Add(new NewsItemUI { Title = "Error parsing news data.", SourceName = "NewsFeed" }); }
-            catch (Exception ex) { Debug.WriteLine($"LoadMusicNewsAsync: Generic Exception: {ex.Message}"); MusicNewsItems.Add(new NewsItemUI { Title = "Unexpected error fetching news.", SourceName = "NewsFeed" }); }
+            catch (HttpRequestException httpEx)
+            {
+                Debug.WriteLine($"LoadMusicNewsAsync: HttpRequestException: {httpEx.Message}");
+                MusicNewsItems.Add(new NewsItemUI { Title = "Network error fetching news.", SourceName = "NewsFeed" });
+            }
+            catch (JsonException jsonEx)
+            {
+                Debug.WriteLine($"LoadMusicNewsAsync: JsonException: {jsonEx.Message}");
+                MusicNewsItems.Add(new NewsItemUI { Title = "Error parsing news data.", SourceName = "NewsFeed" });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"LoadMusicNewsAsync: Generic Exception: {ex.Message}");
+                MusicNewsItems.Add(new NewsItemUI { Title = "Unexpected error fetching news.", SourceName = "NewsFeed" });
+            }
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e) // Unchanged
